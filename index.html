@@ -31,52 +31,34 @@
     </style>
 </head>
 <body>
-
     <h1>Space Kill124</h1>
-
     <div class="btn-group">
-        <button class="btn-secondary" onclick="alert('请发送邮件反馈,官方邮箱tks124@foxmail.com')">意见反馈</button>
+        <button class="btn-secondary" onclick="alert('请前往完整页面进行意见反馈。')">意见反馈</button>
         <button class="btn-secret" onclick="checkInviteCode()">输入邀请码进入</button>
     </div>
-
     <div class="footer">© 太空杀124拥有最终解释权与所有权。</div>
-
     <script>
         const FULL_URL = "https://tks124.github.io/Space-Kill-124/";
         const AUTH_KEY = "sk124_auth_token";
-        const JSON_FILE = "https://tks124.github.io/cw.aa/code.json"; // 存放加密后邀请码的文件
+        const JSON_FILE = "https://tks124.github.io/cw.aa/code.json";
 
-        // 页面加载时检查本地标记
         window.onload = function() {
             if (localStorage.getItem(AUTH_KEY) === "true") {
                 window.location.replace(FULL_URL);
             }
         };
 
-        // 核心加密比对函数 (使用 SHA-256 算法)
-        async function getHash(str) {
-            const buffer = new TextEncoder().encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // 验证逻辑
         async function checkInviteCode() {
             let inputCode = prompt("请输入访问邀请码：");
             if (!inputCode) return;
-
             try {
                 const response = await fetch(JSON_FILE);
                 if (!response.ok) throw new Error("无法加载配置文件");
-                
                 const data = await response.json();
-                const encryptedList = data.encrypted_codes; // 获取密文列表
+                const codeList = data.codes; 
 
-                // 将用户输入的明文进行加密，然后比对
-                const inputHash = await getHash(inputCode.trim());
-                
-                if (encryptedList.includes(inputHash)) {
+                const userInput = inputCode.trim();
+                if (codeList.includes(userInput)) {
                     localStorage.setItem(AUTH_KEY, "true");
                     alert("验证成功！正在跳转...");
                     window.location.href = FULL_URL;
@@ -85,6 +67,7 @@
                 }
             } catch (error) {
                 alert("邀请码错误请重试");
+                console.error(error);
             }
         }
     </script>
