@@ -40,10 +40,6 @@
         button:active {
             transform: scale(0.98);
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
         .btn-secondary {
             background-color: #6c757d;
             color: white;
@@ -59,27 +55,103 @@
             font-size: 0.8rem;
             color: #666;
         }
+
+        /* --- 新增：模态框（弹窗）的样式 --- */
+        .modal-overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+            z-index: 1000; /* 确保在最上层 */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #1a1a1a;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box; /* 确保padding不撑大宽度 */
+        }
+        .modal-btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-confirm {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <h1>Space Kill124</h1>
     <div class="btn-group">
         <button class="btn-secondary" onclick="alert('请前往完整页面进行意见反馈。')">意见反馈</button>
-        <button class="btn-secret" onclick="checkInviteCode()">输入邀请码进入</button>
+        <!-- 修改onclick事件，调用新的打开弹窗函数 -->
+        <button class="btn-secret" onclick="openModal()">输入邀请码进入</button>
     </div>
     <div class="footer">© 太空杀124拥有最终解释权与所有权。</div>
+
+    <!-- --- 新增：模态框的HTML结构 --- -->
+    <div id="codeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>请输入邀请码</h2>
+            <input type="text" id="inviteInput" class="modal-input" placeholder="在此输入邀请码..." autofocus>
+            <div class="modal-btn-group">
+                <button class="modal-btn btn-cancel" onclick="closeModal()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="verifyCode()">确定进入</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const FULL_URL = "https://tks124.github.io/Space-Kill-124/";
         const AUTH_KEY = "sk124_auth_token";
 
-        const VALID_CODES = [
-            "1939",
-            "3838",
-            "tks124",
-            "9537"
-            "git2"
+        // ==========================================
+        // 🔑 在这里修改你的邀请码列表
+        // ==========================================
+        const validCodes = [
+            "123456", 
+            "admin888", 
+            "vip2024",
+            "sk124"
         ];
+        // ==========================================
 
         window.onload = function() {
             if (localStorage.getItem(AUTH_KEY) === "true") {
@@ -87,20 +159,49 @@
             }
         };
 
-        function checkInviteCode() {
-            let inputCode = prompt("请输入访问邀请码：");
-            if (!inputCode) return;
+        // --- 新增：控制弹窗显示的函数 ---
+        function openModal() {
+            document.getElementById('codeModal').style.display = 'flex';
+            // 打开时自动聚焦到输入框
+            setTimeout(() => {
+                document.getElementById('inviteInput').focus();
+            }, 100);
+        }
 
-            const userInput = inputCode.trim();
+        function closeModal() {
+            document.getElementById('codeModal').style.display = 'none';
+            // 清空输入框内容
+            document.getElementById('inviteInput').value = '';
+        }
 
-            if (VALID_CODES.includes(userInput)) {
+        // --- 修改：验证逻辑 ---
+        function verifyCode() {
+            const inputElement = document.getElementById('inviteInput');
+            const userInput = inputElement.value.trim();
+
+            if (!userInput) {
+                alert("请输入邀请码！");
+                return;
+            }
+
+            if (validCodes.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
                 alert("验证成功！正在跳转...");
+                closeModal(); // 关闭弹窗
                 window.location.href = FULL_URL;
             } else {
                 alert("邀请码无效，请核对后重试。");
+                inputElement.value = ''; // 清空错误密码
+                inputElement.focus(); // 重新聚焦
             }
         }
+
+        // 支持按回车键提交
+        document.getElementById('inviteInput').addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                verifyCode();
+            }
+        });
     </script>
 </body>
 </html>
