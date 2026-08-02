@@ -1,0 +1,131 @@
+[3(1).html](https://github.com/user-attachments/files/30628664/3.1.html)
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Kill124 - 官网入口</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+        }
+
+        button {
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            font-weight: bold;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secret {
+            background-color: #28a745;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Space Kill124</h1>
+
+    <div class="btn-group">
+        <!-- 保留的按钮：改版官网 -->
+        <button class="btn-primary" onclick="window.location.href='https://tks124.github.io/124/'">
+            改版官网
+        </button>
+
+        <!-- 保留的按钮：意见反馈 -->
+        <button class="btn-secondary" onclick="alert('请前往完整页面进行意见反馈。')">
+            意见反馈
+        </button>
+
+        <!-- 新增的按钮：邀请码入口 -->
+        <button class="btn-secret" onclick="checkInviteCode()">
+            输入邀请码进入
+        </button>
+    </div>
+
+    <div class="footer">
+        © 太空杀124拥有最终解释权与所有权。
+    </div>
+
+    <script>
+        const FULL_URL = "https://tks124.github.io/Space-Kill-124/";
+        const AUTH_KEY = "sk124_auth_token"; // 本地存储的键名
+        const CORRECT_CODE = "1939";
+
+        // 页面加载时执行：检查是否已经验证过
+        window.onload = function() {
+            const hasAccess = localStorage.getItem(AUTH_KEY);
+            if (hasAccess === "true") {
+                // 如果检测到了标记，直接跳转到完整页面
+                window.location.replace(FULL_URL);
+            }
+        };
+
+        // 处理邀请码逻辑
+        function checkInviteCode() {
+            let inputCode = prompt("请输入访问邀请码：");
+
+            if (inputCode !== null) { // 用户没有点击取消
+                if (inputCode.trim() === CORRECT_CODE) {
+                    // 密码正确
+                    localStorage.setItem(AUTH_KEY, "true"); // 写入本地标记
+                    alert("验证成功！正在跳转...");
+                    window.location.href = FULL_URL;
+                } else {
+                    // 密码错误
+                    alert("邀请码错误，请重试。");
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
