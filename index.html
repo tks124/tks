@@ -73,15 +73,13 @@
         const FULL_URL = "https://tks124.github.io/Space-Kill-124/";
         const AUTH_KEY = "sk124_auth_token";
 
-        // --- 修改开始 ---
-        // 在这里添加或修改你的邀请码，用英文逗号隔开
         const VALID_CODES = [
-            "invite123",
-            "spacekill",
-            "welcome2024",
-            "abcdefg"
+            "1939",
+            "3838",
+            "tks124",
+            "9537"
+            "git2"
         ];
-        // --- 修改结束 ---
 
         window.onload = function() {
             if (localStorage.getItem(AUTH_KEY) === "true") {
@@ -95,7 +93,6 @@
 
             const userInput = inputCode.trim();
 
-            // 在本地数组中检查邀请码
             if (VALID_CODES.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
                 alert("验证成功！正在跳转...");
