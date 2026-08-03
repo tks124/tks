@@ -56,16 +56,16 @@
             color: #666;
         }
 
-        /* --- 新增：模态框（弹窗）的样式 --- */
+        /* --- 模态框（弹窗）的样式 --- */
         .modal-overlay {
-            display: none; /* 默认隐藏 */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
-            z-index: 1000; /* 确保在最上层 */
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
         }
@@ -92,7 +92,7 @@
             background-color: #1a1a1a;
             color: white;
             font-size: 1rem;
-            box-sizing: border-box; /* 确保padding不撑大宽度 */
+            box-sizing: border-box;
         }
         .modal-btn-group {
             display: flex;
@@ -121,12 +121,11 @@
     <h1>Space Kill124</h1>
     <div class="btn-group">
         <button class="btn-secondary" onclick="alert('打开邮箱，向该tks124@foxmail.com邮箱发送申请二字')">获取专属邀请码</button>
-        <!-- 修改onclick事件，调用新的打开弹窗函数 -->
         <button class="btn-secret" onclick="openModal()">输入邀请码进入</button>
     </div>
     <div class="footer">© 太空杀124拥有最终解释权与所有权。</div>
 
-    <!-- --- 新增：模态框的HTML结构 --- -->
+    <!-- 模态框的HTML结构 -->
     <div id="codeModal" class="modal-overlay">
         <div class="modal-content">
             <h2>请输入邀请码</h2>
@@ -140,11 +139,15 @@
 
     <script>
         const FULL_URL = "https://tks124.github.io/rjyz/";
+        const BLOCK_URL = "https://tks124.github.io/jg/";
         const AUTH_KEY = "sk124_auth_token";
+        
+        // --- 安全配置 ---
+        const MAX_VISITS = 10;      // 允许的最大访问次数
+        const TIME_WINDOW = 60000;  // 时间窗口 (毫秒)，例如 60000 = 1分钟
+        const VISIT_COUNT_KEY = "sk124_visit_count";
+        const VISIT_TIME_KEY = "sk124_visit_time";
 
-        // ==========================================
-        // 🔑 在这里修改你的邀请码列表
-        // ==========================================
         const validCodes = [
             "1939", 
             "0124", 
@@ -152,6 +155,34 @@
            "3120",
             "3412"
         ];
+
+        // ==========================================
+        // 🛡️ 新增：访问频率检测逻辑
+        // ==========================================
+        function securityCheck() {
+            const now = Date.now();
+            let count = parseInt(localStorage.getItem(VISIT_COUNT_KEY)) || 0;
+            let lastTime = parseInt(localStorage.getItem(VISIT_TIME_KEY)) || 0;
+
+            // 如果超过了时间窗口，重置计数
+            if (now - lastTime > TIME_WINDOW) {
+                count = 1;
+                localStorage.setItem(VISIT_TIME_KEY, now.toString());
+            } else {
+                // 在时间窗口内，计数加一
+                count++;
+            }
+
+            localStorage.setItem(VISIT_COUNT_KEY, count.toString());
+
+            // 如果超过限制，跳转
+            if (count > MAX_VISITS) {
+                window.location.replace(BLOCK_URL);
+            }
+        }
+
+        // 页面加载时立即执行检测
+        securityCheck();
         // ==========================================
 
         window.onload = function() {
@@ -160,10 +191,8 @@
             }
         };
 
-        // --- 新增：控制弹窗显示的函数 ---
         function openModal() {
             document.getElementById('codeModal').style.display = 'flex';
-            // 打开时自动聚焦到输入框
             setTimeout(() => {
                 document.getElementById('inviteInput').focus();
             }, 100);
@@ -171,11 +200,9 @@
 
         function closeModal() {
             document.getElementById('codeModal').style.display = 'none';
-            // 清空输入框内容
             document.getElementById('inviteInput').value = '';
         }
 
-        // --- 修改：验证逻辑 ---
         function verifyCode() {
             const inputElement = document.getElementById('inviteInput');
             const userInput = inputElement.value.trim();
@@ -188,16 +215,15 @@
             if (validCodes.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
                 alert("验证成功！正在跳转...");
-                closeModal(); // 关闭弹窗
+                closeModal();
                 window.location.href = FULL_URL;
             } else {
                 alert("邀请码无效，请核对后重试。");
-                inputElement.value = ''; // 清空错误密码
-                inputElement.focus(); // 重新聚焦
+                inputElement.value = '';
+                inputElement.focus();
             }
         }
 
-        // 支持按回车键提交
         document.getElementById('inviteInput').addEventListener("keypress", function(e) {
             if (e.key === "Enter") {
                 verifyCode();
