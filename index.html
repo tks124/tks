@@ -178,9 +178,10 @@
 
         securityCheck();
 
+        // 修改点：页面加载时，如果已认证，先弹窗提示再跳转
         window.onload = function() {
             if (localStorage.getItem(AUTH_KEY) === "true") {
-                window.location.replace(FULL_URL);
+                showSafetyWarning(FULL_URL);
             }
         };
 
@@ -196,6 +197,16 @@
             document.getElementById('inviteInput').value = '';
         }
 
+        function showSafetyWarning(targetUrl) {
+            const isConfirmed = confirm("当前前往的网站并非Space Kill 124名下，注意隐私安全。");
+            
+            if (isConfirmed) {
+                window.location.replace(targetUrl);
+            } else {
+                console.log("用户取消了跳转");
+            }
+        }
+
         function verifyCode() {
             const inputElement = document.getElementById('inviteInput');
             const userInput = inputElement.value.trim();
@@ -207,11 +218,11 @@
 
             if (validCodes.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
-                alert("验证成功！正在跳转...");
+                alert("验证成功！即将进行安全提示...");
                 closeModal();
                 setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+                    showSafetyWarning(FULL_URL);
+                }, 500);
             } else {
                 alert("邀请码无效，请核对后重试。");
                 inputElement.value = '';
