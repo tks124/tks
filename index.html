@@ -209,7 +209,9 @@
                 localStorage.setItem(AUTH_KEY, "true");
                 alert("验证成功！正在跳转...");
                 closeModal();
-                window.location.href = FULL_URL;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             } else {
                 alert("邀请码无效，请核对后重试。");
                 inputElement.value = '';
