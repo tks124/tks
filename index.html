@@ -56,7 +56,6 @@
             color: #666;
         }
 
-        /* --- 模态框（弹窗）的样式 --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -125,7 +124,6 @@
     </div>
     <div class="footer">© 太空杀124拥有最终解释权与所有权。</div>
 
-    <!-- 模态框的HTML结构 -->
     <div id="codeModal" class="modal-overlay">
         <div class="modal-content">
             <h2>请输入邀请码</h2>
@@ -178,7 +176,6 @@
 
         securityCheck();
 
-        // 修改点：页面加载时，如果已认证，先弹窗提示再跳转
         window.onload = function() {
             if (localStorage.getItem(AUTH_KEY) === "true") {
                 showSafetyWarning(FULL_URL);
@@ -198,12 +195,13 @@
         }
 
         function showSafetyWarning(targetUrl) {
-            const isConfirmed = confirm("当前前往的网站并非Space Kill 124名下，注意隐私安全。");
-            
-            if (isConfirmed) {
-                window.location.replace(targetUrl);
+            if (!targetUrl.startsWith("https://tks124.github.io/")) {
+                const isConfirmed = confirm("当前前往的网站并非Space Kill 124名下，注意隐私安全。");
+                if (isConfirmed) {
+                    window.location.replace(targetUrl);
+                }
             } else {
-                console.log("用户取消了跳转");
+                window.location.replace(targetUrl);
             }
         }
 
