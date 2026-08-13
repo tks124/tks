@@ -16,6 +16,7 @@
             height: 100vh;
             margin: 0;
             text-align: center;
+            position: relative;
         }
         h1 {
             margin-bottom: 40px;
@@ -54,6 +55,23 @@
             margin-top: 50px;
             font-size: 0.8rem;
             color: #666;
+        }
+
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 100;
+        }
+        .lang-switch:hover {
+            background: #444;
         }
 
         .modal-overlay {
@@ -117,44 +135,95 @@
     </style>
 </head>
 <body>
-    <h1>Space Kill124</h1>
+    <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">English</button>
+
+    <h1 id="txt-title">Space Kill124</h1>
     <div class="btn-group">
-        <button class="btn-secondary" onclick="alert('打开邮箱，向该tks124@foxmail.com邮箱发送申请二字  管理员上班时间7:00~9:00，时间可能变动，请耐心等待')">获取专属邀请码</button>
-        <button class="btn-secret" onclick="openModal()">输入邀请码进入</button>
+        <button class="btn-secondary" onclick="handleGetCode()" id="btn-get-code">获取专属邀请码</button>
+        <button class="btn-secret" onclick="openModal()" id="btn-enter">输入邀请码进入</button>
     </div>
-    <div class="footer">© 太空杀124拥有最终解释权与所有权。</div>
+    <div class="footer" id="txt-footer">© 太空杀124拥有最终解释权与所有权。</div>
 
     <div id="codeModal" class="modal-overlay">
         <div class="modal-content">
-            <h2>请输入邀请码</h2>
+            <h2 id="modal-title">请输入邀请码</h2>
             <input type="text" id="inviteInput" class="modal-input" placeholder="请输入四至六位数邀请码...." autofocus>
             <div class="modal-btn-group">
-                <button class="modal-btn btn-cancel" onclick="closeModal()">取消</button>
-                <button class="modal-btn btn-confirm" onclick="verifyCode()">确定进入</button>
+                <button class="modal-btn btn-cancel" onclick="closeModal()" id="btn-cancel">取消</button>
+                <button class="modal-btn btn-confirm" onclick="verifyCode()" id="btn-confirm">确定进入</button>
             </div>
         </div>
     </div>
 
     <script>
+        const translations = {
+            zh: {
+                title: "Space Kill124",
+                footer: "© 太空杀124拥有最终解释权与所有权。",
+                btnGetCode: "获取专属邀请码",
+                btnEnter: "输入邀请码进入",
+                modalTitle: "请输入邀请码",
+                inputPlaceholder: "请输入四至六位数邀请码....",
+                btnCancel: "取消",
+                btnConfirm: "确定进入",
+                alertInputEmpty: "请输入邀请码！",
+                alertSuccess: "验证成功！即将进行安全提示",
+                alertInvalid: "邀请码无效，请核对后重试。",
+                alertSafety: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
+                emailHint: "打开邮箱，向该tks124@foxmail.com邮箱发送申请二字  管理员上班时间7:00~9:00，时间可能变动，请耐心等待"
+            },
+            en: {
+                title: "Space Kill124",
+                footer: "© Space Kill124 reserves all rights.",
+                btnGetCode: "Get Invite Code",
+                btnEnter: "Enter Invite Code",
+                modalTitle: "Enter Invite Code",
+                inputPlaceholder: "Enter 4-6 digit code...",
+                btnCancel: "Cancel",
+                btnConfirm: "Enter",
+                alertInputEmpty: "Please enter the invite code!",
+                alertSuccess: "Verified! Redirecting...",
+                alertInvalid: "Invalid code, please try again.",
+                alertSafety: "The target site is not owned by SpaceKill124. Proceed with caution.",
+                emailHint: "Open your email and send '申请' to tks124@foxmail.com. Admin hours: 7:00-9:00. Please wait patiently."
+            }
+        };
+
         const FULL_URL = "https://tks124.github.io/rjyz/";
         const BLOCK_URL = "https://tks124.github.io/jg/";
         const AUTH_KEY = "sk124_auth_token";
+        const LANG_KEY = "sk124_lang";
         
-        const MAX_VISITS = 20;      // 允许的最大访问次数
-        const TIME_WINDOW = 60000;  // 时间窗口 (毫秒)，例如 60000 = 1分钟
+        const MAX_VISITS = 20;
+        const TIME_WINDOW = 60000;
         const VISIT_COUNT_KEY = "sk124_visit_count";
         const VISIT_TIME_KEY = "sk124_visit_time";
 
         const validCodes = [
-            "1939", 
-            "0124", 
-            "tks124",
-           "3120",
-            "3434",
-            "12grr",
-            "3412"
+            "1939", "0124", "tks124", "3120", "3434", "12grr", "3412"
         ];
-        
+
+        let currentLang = localStorage.getItem(LANG_KEY) || 'zh'; // 默认中文
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem(LANG_KEY, currentLang);
+            updateText();
+        }
+
+        function updateText() {
+            const t = translations[currentLang];
+            document.getElementById('txt-title').innerText = t.title;
+            document.getElementById('txt-footer').innerText = t.footer;
+            document.getElementById('btn-get-code').innerText = t.btnGetCode;
+            document.getElementById('btn-enter').innerText = t.btnEnter;
+            document.getElementById('modal-title').innerText = t.modalTitle;
+            document.getElementById('inviteInput').placeholder = t.inputPlaceholder;
+            document.getElementById('btn-cancel').innerText = t.btnCancel;
+            document.getElementById('btn-confirm').innerText = t.btnConfirm;
+            document.getElementById('langBtn').innerText = currentLang === 'zh' ? 'English' : '中文';
+        }
+
         function securityCheck() {
             const now = Date.now();
             let count = parseInt(localStorage.getItem(VISIT_COUNT_KEY)) || 0;
@@ -166,7 +235,6 @@
             } else {
                 count++;
             }
-
             localStorage.setItem(VISIT_COUNT_KEY, count.toString());
 
             if (count > MAX_VISITS) {
@@ -174,13 +242,9 @@
             }
         }
 
-        securityCheck();
-
-        window.onload = function() {
-            if (localStorage.getItem(AUTH_KEY) === "true") {
-                showSafetyWarning(FULL_URL);
-            }
-        };
+        function handleGetCode() {
+            alert(translations[currentLang].emailHint);
+        }
 
         function openModal() {
             document.getElementById('codeModal').style.display = 'flex';
@@ -195,12 +259,8 @@
         }
 
         function showSafetyWarning(targetUrl) {
-            if (!targetUrl.startsWith("https://tks124.github.io/")) {
-                const isConfirmed = confirm("当前前往的网站并非SpaceKill124名下，注意隐私安全。");
-                if (isConfirmed) {
-                    window.location.replace(targetUrl);
-                }
-            } else {
+            const t = translations[currentLang];
+            if (confirm(t.alertSafety)) {
                 window.location.replace(targetUrl);
             }
         }
@@ -208,21 +268,22 @@
         function verifyCode() {
             const inputElement = document.getElementById('inviteInput');
             const userInput = inputElement.value.trim();
+            const t = translations[currentLang];
 
             if (!userInput) {
-                alert("请输入邀请码！");
+                alert(t.alertInputEmpty);
                 return;
             }
 
             if (validCodes.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
-                alert("验证成功！即将进行安全提示");
+                alert(t.alertSuccess);
                 closeModal();
                 setTimeout(() => {
                     showSafetyWarning(FULL_URL);
                 }, 500);
             } else {
-                alert("邀请码无效，请核对后重试。");
+                alert(t.alertInvalid);
                 inputElement.value = '';
                 inputElement.focus();
             }
@@ -233,8 +294,16 @@
                 verifyCode();
             }
         });
+
+        window.onload = function() {
+            securityCheck();
+            updateText();
+            if (localStorage.getItem(AUTH_KEY) === "true") {
+                showSafetyWarning(FULL_URL);
+            }
+        };
     </script>
     <meta name="robots" content="index, follow">
-<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 </body>
 </html>
