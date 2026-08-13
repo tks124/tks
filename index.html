@@ -143,16 +143,16 @@
     }
 
     function showSafetyWarning(targetUrl) {
-        const t = translations[currentLang];
-        
-        if (targetUrl.startsWith("https://tks124.github.io/")) {
-            window.location.replace(targetUrl);
-        } else {
-            if (confirm(t.alertSafety)) {
-                window.location.replace(targetUrl);
-            }
-        }
+    if (targetUrl.includes("tks124.github.io")) {
+        window.location.href = targetUrl;
+        return;
     }
+    
+    const t = translations[currentLang];
+    if (confirm(t.alertSafety)) {
+        window.location.href = targetUrl;
+    }
+}
 
     function verifyCode() {
         const inputElement = document.getElementById('inviteInput');
