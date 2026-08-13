@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Kill124 - 官网入口</title>
+    <title>SpaceKill124 - 官网入口</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -196,7 +196,7 @@
 
         function showSafetyWarning(targetUrl) {
             if (!targetUrl.startsWith("https://tks124.github.io/")) {
-                const isConfirmed = confirm("当前前往的网站并非Space Kill 124名下，注意隐私安全。");
+                const isConfirmed = confirm("当前前往的网站并非SpaceKill124名下，注意隐私安全。");
                 if (isConfirmed) {
                     window.location.replace(targetUrl);
                 }
@@ -216,7 +216,7 @@
 
             if (validCodes.includes(userInput)) {
                 localStorage.setItem(AUTH_KEY, "true");
-                alert("验证成功！即将进行安全提示...");
+                alert("验证成功！即将进行安全提示");
                 closeModal();
                 setTimeout(() => {
                     showSafetyWarning(FULL_URL);
