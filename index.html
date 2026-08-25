@@ -24,6 +24,23 @@
         .btn-confirm { background-color: #28a745; color: white; }
         .btn-cancel { background-color: #dc3545; color: white; }
     </style>
+
+    <script>
+    (function() {
+        var iconUrl = 'tubiao.png';
+        var link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = iconUrl;
+        document.head.appendChild(link);
+
+        var appleLink = document.createElement('link');
+        appleLink.rel = 'apple-touch-icon';
+        appleLink.href = iconUrl;
+        document.head.appendChild(appleLink);
+
+        console.log('favicon 已加载: ' + iconUrl);
+    })();
+    </script>
 </head>
 <body>
     <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">English</button>
@@ -89,7 +106,7 @@
     const VISIT_COUNT_KEY = "sk124_visit_count";
     const VISIT_TIME_KEY = "sk124_visit_time";
     
-    const validCodes = [ "1939", "0124", "tks124", "3120", "3434", "12grr", "3412" ];
+    const validCodes = [ "1426", "0124", "tks124", "3120", "3465", "12grr", "3412" ];
 
     let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
     
