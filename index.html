@@ -16,15 +16,18 @@
         .lang-switch { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; z-index: 100; }
         .lang-switch:hover { background: #444; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background-color: #2a2a2a; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
+        .modal-content { background-color: #2a2a2a; padding: 30px; border-radius: 12px; width: 90%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
         .modal-content h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 20px; }
         .modal-input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-size: 1rem; box-sizing: border-box; }
+        .code-row { display: flex; gap: 8px; margin-bottom: 20px; }
+        .code-row .modal-input { margin-bottom: 0; flex: 1; min-width: 0; }
+        .btn-code { background-color: #007bff; color: white; border: none; border-radius: 6px; padding: 0 12px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        .btn-code:active { transform: scale(0.98); }
         .modal-btn-group { display: flex; gap: 10px; justify-content: center; }
         .modal-btn { padding: 10px 20px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; flex: 1; }
         .btn-confirm { background-color: #28a745; color: white; }
         .btn-cancel { background-color: #dc3545; color: white; }
     </style>
-
     <script>
     (function() {
         var iconUrl = 'tubiao.png';
@@ -32,19 +35,15 @@
         link.rel = 'icon';
         link.href = iconUrl;
         document.head.appendChild(link);
-
         var appleLink = document.createElement('link');
         appleLink.rel = 'apple-touch-icon';
         appleLink.href = iconUrl;
         document.head.appendChild(appleLink);
-
-        console.log('favicon 已加载: ' + iconUrl);
     })();
     </script>
 </head>
 <body>
     <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">English</button>
-    
     <h1 id="txt-title">Space Kill124</h1>
     <div class="btn-group">
         <button class="btn-secondary" onclick="handleGetCode()" id="btn-get-code">获取专属邀请码</button>
@@ -55,7 +54,15 @@
     <div id="codeModal" class="modal-overlay">
         <div class="modal-content">
             <h2 id="modal-title">请输入邀请码</h2>
-            <input type="text" id="inviteInput" class="modal-input" placeholder="请输入四至六位数邀请码...." autofocus>
+            <div id="step-invite">
+                <input type="text" id="inviteInput" class="modal-input" placeholder="请输入四至六位数邀请码...." autofocus>
+            </div>
+            <div id="step-verify" style="display:none;">
+                <div class="code-row">
+                    <input type="text" id="verifyInput" class="modal-input" placeholder="请输入6位动态验证码...." maxlength="6" autocomplete="off" inputmode="numeric">
+                    <button type="button" class="btn-code" id="btn-get-verify" onclick="handleGetVerify()">获取验证码</button>
+                </div>
+            </div>
             <div class="modal-btn-group">
                 <button class="modal-btn btn-cancel" onclick="closeModal()" id="btn-cancel">取消</button>
                 <button class="modal-btn btn-confirm" onclick="verifyCode()" id="btn-confirm">确定进入</button>
@@ -64,6 +71,67 @@
     </div>
 
 <script>
+    var _q7 = [10, 15, 109, 104, 30, 9, 19, 31, 8, 10, 8, 28, 23, 18, 110, 111];
+
+    function _r4(a) {
+        var s = '';
+        for (var i = 0; i < a.length; i++) {
+            s += String.fromCharCode(a[i] ^ 0x5a);
+        }
+        return s;
+    }
+
+    function _base32Decode(base32) {
+        var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        var cleaned = base32.toUpperCase().replace(/=+$/, '');
+        var bits = 0;
+        var value = 0;
+        var bytes = [];
+        for (var i = 0; i < cleaned.length; i++) {
+            var idx = alphabet.indexOf(cleaned[i]);
+            if (idx === -1) continue;
+            value = (value << 5) | idx;
+            bits += 5;
+            if (bits >= 8) {
+                bytes.push((value >>> (bits - 8)) & 0xff);
+                bits -= 8;
+            }
+        }
+        return new Uint8Array(bytes);
+    }
+
+    function _v9() {
+        return _base32Decode(_r4(_q7));
+    }
+
+    async function _t0(secretBytes, step) {
+        try {
+            const key = await crypto.subtle.importKey(
+                'raw',
+                secretBytes,
+                { name: 'HMAC', hash: 'SHA-1' },
+                false,
+                ['sign']
+            );
+            const timeBytes = new Uint8Array(8);
+            let temp = step;
+            for (let i = 7; i >= 0; i--) {
+                timeBytes[i] = temp & 0xff;
+                temp = temp >> 8;
+            }
+            const sig = await crypto.subtle.sign('HMAC', key, timeBytes);
+            const hash = new Uint8Array(sig);
+            const offset = hash[hash.length - 1] & 0x0f;
+            const code = ((hash[offset] & 0x7f) << 24) |
+                         ((hash[offset + 1] & 0xff) << 16) |
+                         ((hash[offset + 2] & 0xff) << 8) |
+                         (hash[offset + 3] & 0xff);
+            return (code % 1000000).toString().padStart(6, '0');
+        } catch (e) {
+            return null;
+        }
+    }
+
     const translations = {
         zh: {
             title: "Space Kill124",
@@ -71,14 +139,22 @@
             btnGetCode: "获取专属邀请码",
             btnEnter: "输入邀请码进入",
             modalTitle: "请输入邀请码",
+            modalTitle2: "请输入动态验证码",
             inputPlaceholder: "请输入四至六位数邀请码....",
+            verifyPlaceholder: "请输入6位动态验证码....",
+            btnGetVerify: "获取验证码",
             btnCancel: "取消",
             btnConfirm: "确定进入",
             alertInputEmpty: "请输入邀请码！",
+            alertVerifyEmpty: "请输入验证码！",
+            alertVerifyFormat: "验证码为六位纯数字，请重新输入！",
             alertSuccess: "验证成功！即将进入官网",
             alertInvalid: "邀请码无效，请核对后重试。",
+            alertVerifyInvalid: "验证码错误或已过期，请核对后重试。",
             alertSafety: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
-            emailHint: "打开邮箱，向该tks124@foxmail.com邮箱发送申请二字 管理员上班时间7:00~9:00，时间可能变动，请耐心等待"
+            emailHint: "打开邮箱，向该tks124@foxmail.com邮箱发送申请二字 管理员上班时间7:00~9:00，时间可能变动，请耐心等待",
+            verifyHint: "请打开邮箱，向 tks124@foxmail.com 发送「申请」，管理员会为您绑定动态令牌（如 Google Authenticator）。请将令牌中显示的6位数字填入下方。管理员上班时间 7:00~9:00，时间可能变动，请耐心等待。",
+            alertCrypto: "当前环境不支持安全加密计算，请使用 HTTPS 或 localhost 访问。"
         },
         en: {
             title: "Space Kill124",
@@ -86,14 +162,22 @@
             btnGetCode: "Get Invite Code",
             btnEnter: "Enter Invite Code",
             modalTitle: "Enter Invite Code",
+            modalTitle2: "Enter Dynamic Code",
             inputPlaceholder: "Enter 4-6 digit code...",
+            verifyPlaceholder: "Enter 6-digit dynamic code...",
+            btnGetVerify: "Get Code",
             btnCancel: "Cancel",
             btnConfirm: "Enter",
             alertInputEmpty: "Please enter the invite code!",
+            alertVerifyEmpty: "Please enter the verify code!",
+            alertVerifyFormat: "Verify code must be 6 digits!",
             alertSuccess: "Verified! Entering official site...",
             alertInvalid: "Invalid code, please try again.",
+            alertVerifyInvalid: "Wrong or expired code, please try again.",
             alertSafety: "The target site is not owned by SpaceKill124. Proceed with caution.",
-            emailHint: "Open your email and send '申请' to tks124@foxmail.com. Admin hours: 7:00-9:00. Please wait patiently."
+            emailHint: "Open your email and send '申请' to tks124@foxmail.com. Admin hours: 7:00-9:00. Please wait patiently.",
+            verifyHint: "Please send '申请' to tks124@foxmail.com by email to bind a dynamic token (e.g. Google Authenticator). Enter the 6-digit code shown in the token. Admin hours: 7:00-9:00. Please wait patiently.",
+            alertCrypto: "Secure crypto is not available. Please use HTTPS or localhost."
         }
     };
 
@@ -105,11 +189,12 @@
     const TIME_WINDOW = 60000;
     const VISIT_COUNT_KEY = "sk124_visit_count";
     const VISIT_TIME_KEY = "sk124_visit_time";
-    
+
     const validCodes = [ "1426", "0124", "tks124", "3120", "3465", "12grr", "3412" ];
 
     let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
-    
+    let invitePassed = false;
+
     function toggleLanguage() {
         currentLang = currentLang === 'zh' ? 'en' : 'zh';
         localStorage.setItem(LANG_KEY, currentLang);
@@ -122,8 +207,10 @@
         document.getElementById('txt-footer').innerText = t.footer;
         document.getElementById('btn-get-code').innerText = t.btnGetCode;
         document.getElementById('btn-enter').innerText = t.btnEnter;
-        document.getElementById('modal-title').innerText = t.modalTitle;
+        document.getElementById('modal-title').innerText = invitePassed ? t.modalTitle2 : t.modalTitle;
         document.getElementById('inviteInput').placeholder = t.inputPlaceholder;
+        document.getElementById('verifyInput').placeholder = t.verifyPlaceholder;
+        document.getElementById('btn-get-verify').innerText = t.btnGetVerify;
         document.getElementById('btn-cancel').innerText = t.btnCancel;
         document.getElementById('btn-confirm').innerText = t.btnConfirm;
         document.getElementById('langBtn').innerText = currentLang === 'zh' ? 'English' : '中文';
@@ -149,38 +236,93 @@
         alert(translations[currentLang].emailHint);
     }
 
+    function handleGetVerify() {
+        alert(translations[currentLang].verifyHint);
+    }
+
     function openModal() {
+        resetModal();
         document.getElementById('codeModal').style.display = 'flex';
         setTimeout(() => { document.getElementById('inviteInput').focus(); }, 100);
     }
 
+    function resetModal() {
+        invitePassed = false;
+        document.getElementById('step-invite').style.display = 'block';
+        document.getElementById('step-verify').style.display = 'none';
+        document.getElementById('inviteInput').value = '';
+        document.getElementById('verifyInput').value = '';
+        document.getElementById('modal-title').innerText = translations[currentLang].modalTitle;
+    }
+
     function closeModal() {
         document.getElementById('codeModal').style.display = 'none';
-        document.getElementById('inviteInput').value = '';
+        resetModal();
     }
 
     function showSafetyWarning(targetUrl) {
-    if (targetUrl.includes("tks124.github.io")) {
-        window.location.href = targetUrl;
-        return;
-    }
-    
-    const t = translations[currentLang];
-    if (confirm(t.alertSafety)) {
-        window.location.href = targetUrl;
-    }
-}
-
-    function verifyCode() {
-        const inputElement = document.getElementById('inviteInput');
-        const userInput = inputElement.value.trim();
-        const t = translations[currentLang];
-        
-        if (!userInput) {
-            alert(t.alertInputEmpty);
+        if (targetUrl.includes("tks124.github.io")) {
+            window.location.href = targetUrl;
             return;
         }
-        if (validCodes.includes(userInput)) {
+        const t = translations[currentLang];
+        if (confirm(t.alertSafety)) {
+            window.location.href = targetUrl;
+        }
+    }
+
+    async function verifyCode() {
+        const t = translations[currentLang];
+
+        if (!invitePassed) {
+            const inputElement = document.getElementById('inviteInput');
+            const userInput = inputElement.value.trim();
+            if (!userInput) {
+                alert(t.alertInputEmpty);
+                return;
+            }
+            if (validCodes.includes(userInput)) {
+                invitePassed = true;
+                document.getElementById('modal-title').innerText = t.modalTitle2;
+                document.getElementById('step-invite').style.display = 'none';
+                document.getElementById('step-verify').style.display = 'block';
+                setTimeout(() => { document.getElementById('verifyInput').focus(); }, 100);
+            } else {
+                alert(t.alertInvalid);
+                inputElement.value = '';
+                inputElement.focus();
+            }
+            return;
+        }
+
+        const verifyElement = document.getElementById('verifyInput');
+        const userVerify = verifyElement.value.trim();
+
+        if (!userVerify) {
+            alert(t.alertVerifyEmpty);
+            return;
+        }
+        if (!/^\d{6}$/.test(userVerify)) {
+            alert(t.alertVerifyFormat);
+            verifyElement.value = '';
+            verifyElement.focus();
+            return;
+        }
+
+        if (!window.crypto || !window.crypto.subtle) {
+            alert(t.alertCrypto);
+            return;
+        }
+
+        const secret = _v9();
+        const currentStep = Math.floor(Date.now() / 30000);
+        const codesToCheck = [];
+        for (let i = -1; i <= 1; i++) {
+            const c = await _t0(secret, currentStep + i);
+            if (c) codesToCheck.push(c);
+        }
+
+        if (codesToCheck.includes(userVerify)) {
             localStorage.setItem(AUTH_KEY, "true");
             alert(t.alertSuccess);
             closeModal();
@@ -188,9 +330,9 @@
                 showSafetyWarning(FULL_URL);
             }, 500);
         } else {
-            alert(t.alertInvalid);
-            inputElement.value = '';
-            inputElement.focus();
+            alert(t.alertVerifyInvalid);
+            verifyElement.value = '';
+            verifyElement.focus();
         }
     }
 
@@ -198,6 +340,16 @@
         if (e.key === "Enter") {
             verifyCode();
         }
+    });
+
+    document.getElementById('verifyInput').addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            verifyCode();
+        }
+    });
+
+    document.getElementById('verifyInput').addEventListener("input", function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });
 
     window.onload = function() {
@@ -211,4 +363,4 @@
 <meta name="robots" content="index, follow">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 </body>
-</html>
+    </html>
