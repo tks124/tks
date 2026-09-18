@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>注册</title>
+    <style>
+        body { font-family: sans-serif; background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; color: white; }
+        .box { background: #222; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.5); width: 95%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; border: 1px solid #444; border-radius: 5px; background: #333; color: white; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:active { background: #0056b3; }
+        .err { color: #ff4444; font-size: 12px; display: none; margin-top: -5px; margin-bottom: 5px; text-align: left; padding-left: 5px; }
+        
+        #captcha-section { display: none; margin-top: 15px; border-top: 1px dashed #555; padding-top: 15px; }
+        .captcha-hint { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+        .target-display { font-size: 20px; font-weight: bold; color: #ffeb3b; letter-spacing: 5px; margin: 10px 0; }
+        
+        #scroll-container {
+            position: relative;
+            width: 280px; 
+            height: 280px;
+            margin: 0 auto 10px auto;
+            background: #000;
+            border-radius: 50%; 
+            overflow: hidden;
+            border: 2px solid #444;
+        }
+        #number-canvas { width: 100%; height: 100%; display: block; }
+        
+        #crosshair {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 30px; height: 30px;
+            border-bottom: 3px solid #007bff;
+            border-left: 3px solid #007bff;
+            border-right: 3px solid #007bff;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(0,123,255,0.8);
+        }
+
+        .status { font-size: 14px; height: 20px; margin-top: 5px; color: #4caf50; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 id="form-title">账号绑定 (3/3)</h2>
+        
+        <input type="text" id="phone" placeholder="请输入手机号">
+        <div id="err-phone" class="err">手机号长度不足20位</div>
+
+        <input type="text" id="email" placeholder="请输入邮箱">
+        <div id="err-email" class="err">邮箱后缀必须是 @114514</div>
+
+        <div id="captcha-section">
+            <div class="captcha-hint">倾斜手机微调转盘</div>
+            <div>目标验证码：<span class="target-display">1 4 6 7 0</span></div>
+            
+            <div id="scroll-container">
+                <canvas id="number-canvas"></canvas>
+                <div id="crosshair"></div>
+            </div>
+            
+            <div id="status" class="status"></div>
+        </div>
+
+        <button id="main-btn" onclick="handleClick()">完成注册</button>
+    </div>
+
+    <script>
+        let step = 1;
+        const TARGET_CODE = "14670";
+        let collected = "";
+        let numbers = [];
+        let currentAngle = 0;
+        let baseSpeed = 0.005;
+        let tiltOffset = 0;
+        let isListening = false;
+        let lastCollectTime = 0;
+
+        function initNumbers() {
+            numbers = [];
+            let targetArr = TARGET_CODE.split('').map(Number);
+            for(let i = 0; i < 1000 - TARGET_CODE.length; i++) {
+                targetArr.push(Math.floor(Math.random() * 10));
+            }
+            targetArr.sort(() => Math.random() - 0.5);
+            numbers = targetArr;
+        }
+
+        function handleClick() {
+            if (step === 1) validateBasicInfo();
+            else if (step === 2) validateCaptcha();
+        }
+
+        function validateBasicInfo() {
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const errPhone = document.getElementById('err-phone');
+            const errEmail = document.getElementById('err-email');
+            errPhone.style.display = 'none'; errEmail.style.display = 'none';
+
+            if (phone.length < 20) { errPhone.style.display = 'block'; return; }
+            if (!email.endsWith('@114514') || email.length < 10) { errEmail.style.display = 'block'; return; }
+
+            enterCaptchaStep();
+        }
+
+        function enterCaptchaStep() {
+            step = 2;
+            document.getElementById('form-title').innerText = "地狱级安全验证";
+            document.getElementById('phone').style.display = 'none';
+            document.getElementById('email').style.display = 'none';
+            document.getElementById('err-phone').style.display = 'none';
+            document.getElementById('err-email').style.display = 'none';
+            
+            document.getElementById('captcha-section').style.display = 'block';
+            document.getElementById('main-btn').innerText = "确认验证";
+            
+            initNumbers();
+            startGravitySensor();
+            drawLoop();
+        }
+
+        function startGravitySensor() {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(state => {
+                    if (state === 'granted') bindOrientation();
+                }).catch(console.error);
+            } else {
+                bindOrientation();
+            }
+        }
+
+        function bindOrientation() {
+            if (isListening) return;
+            isListening = true;
+            window.addEventListener('deviceorientation', (event) => {
+                tiltOffset = Math.max(-0.05, Math.min(0.05, -(event.gamma || 0) * 0.002)); 
+            });
+        }
+
+        const canvas = document.getElementById('number-canvas');
+        const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
+
+        function drawLoop() {
+            const size = canvas.parentElement.clientWidth;
+            canvas.width = size;
+            canvas.height = size;
+
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size / 2 - 20;
+
+            currentAngle += baseSpeed + tiltOffset;
+
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, size/2, 0, Math.PI*2);
+            ctx.fill();
+
+            ctx.font = 'bold 14px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            let nextTarget = TARGET_CODE[collected.length];
+            let matchedIndex = -1;
+
+            for (let i = 0; i < numbers.length; i++) {
+                let angle = currentAngle + (i / numbers.length) * Math.PI * 2;
+                let x = centerX + radius * Math.cos(angle);
+                let y = centerY + radius * Math.sin(angle);
+
+                let targetAngle = -Math.PI / 2;
+                let diff = Math.abs(angle - targetAngle);
+                if (diff > Math.PI) diff = 2 * Math.PI - diff;
+
+                if (diff < 0.05) {
+                    if (numbers[i].toString() === nextTarget) {
+                        ctx.fillStyle = '#007bff';
+                        matchedIndex = i;
+                    } else {
+                        ctx.fillStyle = '#ff4444';
+                    }
+                } else {
+                    ctx.fillStyle = '#aaa';
+                }
+                ctx.fillText(numbers[i], x, y);
+            }
+
+            if (matchedIndex !== -1 && Date.now() - lastCollectTime > 500) {
+                collected += nextTarget;
+                statusEl.innerText = `已输入: ${collected}`;
+                if (navigator.vibrate) navigator.vibrate(30);
+                lastCollectTime = Date.now();
+                
+                if (collected === TARGET_CODE) {
+                    statusEl.innerText = "✅ 验证通过！";
+                    statusEl.style.color = "#4caf50";
+                }
+            }
+
+            requestAnimationFrame(drawLoop);
+        }
+
+        function validateCaptcha() {
+            if (collected === TARGET_CODE) {
+                document.getElementById('main-btn').disabled = true;
+                setTimeout(() => { window.location.href = "zc4"; }, 800);
+            } else {
+                statusEl.style.color = "#ff4444";
+                statusEl.innerText = "❌ 还没输完呢！继续！";
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            }
+        }
+    </script>
+</body>
+</html>
