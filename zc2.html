@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .err { color: red; font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>完善信息 (2/3)</h2>
+        
+        <input type="text" id="age" placeholder="请输入年龄">
+        <div id="err-age" class="err">年龄已被占用，请重试</div>
+
+        <input type="text" id="gender" placeholder="请输入性别">
+        <div id="err-gender" class="err">该性别已被占用</div>
+
+        <input type="text" id="year" placeholder="请输入出生年份">
+        <div id="err-year" class="err">年份无效或已被占用</div>
+
+        <button onclick="check()">下一步</button>
+    </div>
+
+    <script>
+        function check() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value.toLowerCase();
+            const year = document.getElementById('year').value;
+            
+            const errAge = document.getElementById('err-age');
+            const errGender = document.getElementById('err-gender');
+            const errYear = document.getElementById('err-year');
+
+            errAge.style.display = 'none';
+            errGender.style.display = 'none';
+            errYear.style.display = 'none';
+
+            if (age.trim() !== '') {
+                errAge.style.display = 'block';
+                return;
+            }
+
+            const commonGenders = ['男', '女', 'male', 'female', 'man', 'woman', 'boy', 'girl', '其他', '保密', '未知', '非二元'];
+            if (commonGenders.includes(gender) || gender.trim() === '') {
+                errGender.style.display = 'block';
+                return;
+            }
+            
+            if (gender !== '114514') {
+                errGender.innerText = "该性别不存在或已被占用";
+                errGender.style.display = 'block';
+                return;
+            }
+
+            if (year !== '114514') {
+                errYear.style.display = 'block';
+                return;
+            }
+
+            window.location.href = "zc3";
+        }
+    </script>
+</body>
+</html>
