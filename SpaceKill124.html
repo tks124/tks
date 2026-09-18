@@ -1,0 +1,309 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空杀124 - Main Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e90ff;
+            font-family: 'Microsoft YaHei', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .btn {
+            display: block;
+            width: 250px;
+            margin: 15px auto;
+            padding: 15px 0;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: white;
+            color: #1e90ff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: #1e90ff;
+        }
+        .btn-primary:hover {
+            background-color: #f0f0f0;
+            color: #0066cc;
+        }
+        
+        .btn-register {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .lang-switch:hover {
+            background-color: white;
+            color: #1e90ff;
+        }
+
+        footer {
+            background-color: #333333; 
+            color: #ffffff; 
+            text-align: center; 
+            padding: 15px 0; 
+            font-size: 14px; 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            .btn-register, .lang-switch {
+                position: relative;
+                top: 0;
+                right: 0;
+                left: 0;
+                margin: 0 auto 20px auto;
+                width: 150px;
+            }
+        }
+    </style>
+
+    <script>
+    (function() {
+        try {
+            var link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/png';
+            link.href = 'tubiao.png';
+            document.head.appendChild(link);
+
+            var appleLink = document.createElement('link');
+            appleLink.rel = 'apple-touch-icon';
+            appleLink.href = 'tubiao.png';
+            document.head.appendChild(appleLink);
+
+            console.log('favicon tubiao.png 加载成功');
+        } catch(e) {
+            console.log('favicon 加载失败:', e);
+        }
+    })();
+    </script>
+</head>
+<body>
+
+    <div class="container">
+    <button class="lang-switch" id="langBtn">English</button>
+    <a href="https://tks124.github.io/zc/" class="btn btn-register" data-lang="register">注册</a>
+
+    <h1 data-lang="title">Space Kill124</h1>
+
+    <a href="https://tks124.github.io/124/" class="btn btn-primary" data-lang="modSite">改版官网</a>
+
+    <a href="https://app-d8gm4nxuj1fl.appmiaoda.com/" class="btn btn-primary" data-lang="landlord">斗地主</a>
+
+    <a href="https://m.bilibili.com/space/482735934?plat_id=1&share_from=space&share_medium=android&share_plat=android&share_session_id=a0b32709-0716-446b-941f-539de858dc73&share_source=COPY&share_tag=s_i&timestamp=1784629471&unique_k=A4FGJGl" class="btn" data-lang="adminProfile">管理员个人主页</a>
+
+    <a href="https://github.com/tks124/tks124-apk/releases/download/v1.0.1/SpaceKill124_v1.0.1.APK" class="btn" data-lang="officialApp">官网软件版/v1.0.1</a>
+
+    <a href="https://github.com/tks124/pvz2-apk/releases/download/v3.2.7/pvz2_v3.2.7.APK" class="btn" data-lang="pvzCreator">pvz2高级创作软件版/v3.2.7</a>
+
+    <a href="https://tks124.github.io/2wm/" class="btn" data-lang="qrcodeGen">二维码生成</a>
+
+    <a href="https://tks124.github.io/tp/" class="btn" data-lang="imgConvert">图片格式转换</a>
+
+    <a href="mailto:tks124@foxmail.com" class="btn" data-lang="feedback">意见反馈</a>
+
+    <a href="https://tks124444.github.io/rymd/" class="btn" data-lang="credits">制作人员名单</a>
+</div>
+    
+    <footer data-lang="footer">
+        © 太空杀124拥有最终解释权与所有权。
+    </footer>
+
+    <script>
+        const AUTH_KEY = "sk124_auth_token";
+        const AUTH_PAGE_URL = "https://spacekill124/";
+        const LANG_KEY = "sk124_lang";
+
+        const WHITELIST_DOMAINS = [
+            'bilibili.com',
+            'foxmail.com',
+            'tks124.github.io',
+            'tks124444.github.io'
+        ];
+
+        const translations = {
+    zh: {
+        register: "注册",
+        title: "Space Kill124",
+        modSite: "改版官网",
+        landlord: "斗地主",
+        adminProfile: "管理员个人主页",
+        officialApp: "官网软件版/v1.0.1",
+        pvzCreator: "pvz2高级创作软件版/v3.2.7",
+        qrcodeGen: "二维码生成",
+        imgConvert: "图片格式转换",
+        feedback: "意见反馈",
+        credits: "制作人员名单",
+        footer: "© 太空杀124拥有最终解释权与所有权。",
+        safetyAlert: "当前前往的网站并非SpaceKill124名下，注意隐私安全。"
+    },
+    en: {
+        register: "Register",
+        title: "Space Kill124",
+        modSite: "Redesigned Website",
+        landlord: "Landlord Game",
+        adminProfile: "Admin's Profile",
+        officialApp: "Official App / v1.0.1",
+        pvzCreator: "PVZ2 Advanced Creator / v3.2.7",
+        qrcodeGen: "QR Code Generator",
+        imgConvert: "Image Format Converter",
+        feedback: "Feedback",
+        credits: "Credits",
+        footer: "© SpaceKill124 owns the final interpretation rights and all rights.",
+        safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security."
+    }
+};
+
+        let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+
+        function updateText() {
+            const t = translations[currentLang];
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (t[key]) {
+                    if (el.tagName === 'A') {
+                        el.textContent = t[key];
+                    } else {
+                        el.innerText = t[key];
+                    }
+                }
+            });
+            document.getElementById('langBtn').textContent = currentLang === 'zh' ? 'English' : '中文';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem(LANG_KEY, currentLang);
+            updateText();
+        }
+
+        function isWhitelisted(url) {
+            if (url.startsWith('mailto:')) {
+                return true;
+            }
+            try {
+                const urlObj = new URL(url);
+                return WHITELIST_DOMAINS.some(domain => urlObj.hostname.includes(domain));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function navigateWithSafetyCheck(url) {
+            if (!url || url === '#') {
+                return;
+            }
+
+            if (url.includes('github.com/tks124')) {
+                window.location.href = url;
+                return;
+            }
+
+            if (isWhitelisted(url)) {
+                window.location.href = url;
+                return;
+            }
+
+            if (url.includes('github.com/tks124444')) {
+                window.location.href = url;
+                return;
+            }
+
+            if (isWhitelisted(url)) {
+                window.location.href = url;
+                return;
+            }
+
+            if (url.startsWith("https://tks124.github.io/")) {
+                window.location.replace(url);
+                return;
+            }
+
+            const isConfirmed = confirm(translations[currentLang].safetyAlert);
+            if (isConfirmed) {
+                window.location.href = url;
+            }
+        }
+
+        document.getElementById('langBtn').addEventListener('click', toggleLanguage);
+        
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetUrl = this.getAttribute('href');
+                navigateWithSafetyCheck(targetUrl);
+            });
+        });
+
+        window.onload = function() {
+            updateText();
+            if (localStorage.getItem(AUTH_KEY) !== "true") {
+                window.location.replace(AUTH_PAGE_URL);
+            }
+        };
+    </script>
+
+</body>
+    </html>
