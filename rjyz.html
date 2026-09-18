@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>124人机验证</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+
+        .captcha-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 360px;
+        }
+
+        h2 { margin-top: 0; color: #333; font-size: 20px; }
+        .instruction { color: #666; font-size: 14px; margin-bottom: 20px; }
+
+        .captcha-box {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: #e9ecef;
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+
+        .target-dot {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            user-select: none;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .target-dot:hover { transform: scale(1.1); }
+        .target-dot.clicked { background-color: #28a745; cursor: default; pointer-events: none; }
+        .target-dot.wrong { background-color: #dc3545; animation: shake 0.4s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .btn-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover { background-color: #0056b3; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
+        .status-msg { margin-top: 15px; font-size: 14px; height: 20px; font-weight: bold; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .lang-switch:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<button class="lang-switch" id="langBtn">English</button>
+
+<div class="captcha-container">
+    <h2 id="titleText">安全验证</h2>
+    <p class="instruction" id="instructionText">请按照从小到大的顺序，依次点击数字</p>
+
+    <div class="captcha-box" id="captchaBox"></div>
+
+    <div class="btn-group">
+        <button class="btn btn-secondary" id="notFoundBtn" onclick="handleNotFound()">未找到1-2-3-4-5</button>
+    </div>
+
+    <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<script>
+    const AUTH_KEY = "sk124_auth_token";
+    const AUTH_PAGE_URL = "https://tks124.github.io/tks/";
+    const LANG_KEY = "sk124_lang";
+
+    const WHITELIST_DOMAINS = [
+        'bilibili.com',
+        'foxmail.com'
+    ];
+
+    const translations = {
+        zh: {
+            pageTitle: "124人机验证",
+            title: "安全验证",
+            instructionNormal: "请按照从小到大的顺序，依次点击数字",
+            instructionFinal: "最终验证：请按顺序点击 1-5",
+            notFoundBtn: "未找到1-2-3-4-5",
+            errNotSequence: "❌ 这些数字没有顺序！",
+            passRound1: "✅ 第一轮通过！正在进行最终验证...",
+            successRedirect: "✅ 验证成功！{n}秒后跳转...",
+            errWrongOrder: "❌ 顺序错误，请重试",
+            passFinal: "✅ 判断正确！正在进行最终验证...",
+            errHasSequence: "❌ 有12345，请仔细检查！",
+            safetyAlert: "当前前往的网站并非Space Kill 124名下，注意隐私安全。",
+            langBtn: "English"
+        },
+        en: {
+            pageTitle: "124 CAPTCHA Verification",
+            title: "Security Verification",
+            instructionNormal: "Please click the numbers in ascending order",
+            instructionFinal: "Final step: click 1-5 in order",
+            notFoundBtn: "No 1-2-3-4-5 found",
+            errNotSequence: "❌ These numbers are not in order!",
+            passRound1: "✅ Round 1 passed! Proceeding to the final verification...",
+            successRedirect: "✅ Verification successful! Redirecting in {n} seconds...",
+            errWrongOrder: "❌ Wrong order, please try again",
+            passFinal: "✅ Correct! Proceeding to the final verification...",
+            errHasSequence: "❌ 1-2-3-4-5 is present, please look carefully!",
+            safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security.",
+            langBtn: "中文"
+        }
+    };
+
+    let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+    let currentInstructionKey = 'instructionNormal';
+    let captchaInitialized = false;
+
+    function t(key) {
+        return translations[currentLang][key] || key;
+    }
+
+    function updateText() {
+        document.title = t('pageTitle');
+        document.getElementById('titleText').innerText = t('title');
+        document.getElementById('notFoundBtn').innerText = t('notFoundBtn');
+        document.getElementById('instructionText').innerText = t(currentInstructionKey);
+        document.getElementById('langBtn').innerText = t('langBtn');
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        localStorage.setItem(LANG_KEY, currentLang);
+        updateText();
+        // 若验证码已经渲染，重新绘制一次，保证里面没有残留的旧语言文本
+        if (captchaInitialized) {
+            initCaptcha();
+        }
+    }
+
+    document.getElementById('langBtn').addEventListener('click', toggleLanguage);
+
+    function isWhitelisted(url) {
+        if (url.startsWith('mailto:')) {
+            return true;
+        }
+        try {
+            const urlObj = new URL(url);
+            return WHITELIST_DOMAINS.some(domain => urlObj.hostname.includes(domain));
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function navigateWithSafetyCheck(url) {
+        if (!url || url === '#') {
+            return;
+        }
+
+        if (isWhitelisted(url)) {
+            window.location.href = url;
+            return;
+        }
+
+        if (url.startsWith("https://tks124.github.io/")) {
+            window.location.replace(url);
+            return;
+        }
+
+        const isConfirmed = confirm(t('safetyAlert'));
+        if (isConfirmed) {
+            window.location.href = url;
+        }
+    }
+
+    window.onload = function() {
+        updateText();
+        if (localStorage.getItem(AUTH_KEY) !== "true") {
+            window.location.replace(AUTH_PAGE_URL);
+        } else {
+            captchaInitialized = true;
+            initCaptcha();
+        }
+    };
+
+    let nextTarget = 1;
+    const totalDots = 5;
+    let currentRound = 1;
+    let isRealSequence = false;
+    const redirectUrl = "https://tks124.github.io/Space-Kill-124/";
+    const delaySeconds = 3;
+
+    function getNonOverlappingPosition(existingPositions, boxWidth, boxHeight, dotSize, minGap) {
+        let x, y, overlapping;
+        let attempts = 0;
+        const maxAttempts = 200;
+
+        do {
+            overlapping = false;
+            x = Math.floor(Math.random() * (boxWidth - dotSize));
+            y = Math.floor(Math.random() * (boxHeight - dotSize));
+
+            for (let pos of existingPositions) {
+                const dx = x - pos.x;
+                const dy = y - pos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < minGap) {
+                    overlapping = true;
+                    break;
+                }
+            }
+            attempts++;
+        } while (overlapping && attempts < maxAttempts);
+
+        return { x, y };
+    }
+
+    function initCaptcha() {
+        const box = document.getElementById('captchaBox');
+        const statusMsg = document.getElementById('statusMsg');
+        const instruction = document.getElementById('instructionText');
+
+        box.innerHTML = '';
+        statusMsg.innerText = '';
+        statusMsg.className = 'status-msg';
+        nextTarget = 1;
+
+        if (currentRound === 2) {
+            isRealSequence = true;
+            currentInstructionKey = 'instructionFinal';
+        } else {
+            isRealSequence = Math.random() > 0.5;
+            currentInstructionKey = 'instructionNormal';
+        }
+        instruction.innerText = t(currentInstructionKey);
+
+        const dotSize = 36;
+        const boxWidth = box.offsetWidth;
+        const boxHeight = box.offsetHeight;
+        const minGap = 50;
+
+        let numbers = [];
+        if (isRealSequence) {
+            numbers = [1, 2, 3, 4, 5];
+        } else {
+            while (numbers.length < 5) {
+                let r = Math.floor(Math.random() * 20) + 1;
+                if (!numbers.includes(r)) {
+                    numbers.push(r);
+                }
+            }
+        }
+
+        const placedPositions = [];
+
+        numbers.forEach(num => {
+            const pos = getNonOverlappingPosition(placedPositions, boxWidth, boxHeight, dotSize, minGap);
+            placedPositions.push(pos);
+
+            const dot = document.createElement('div');
+            dot.className = 'target-dot';
+            dot.innerText = num;
+            dot.style.left = `${pos.x}px`;
+            dot.style.top = `${pos.y}px`;
+            dot.dataset.value = num;
+
+            dot.addEventListener('click', function() {
+                handleClick(this);
+            });
+
+            box.appendChild(dot);
+        });
+    }
+
+    function handleClick(dotElement) {
+        if (!isRealSequence) {
+            dotElement.classList.add('wrong');
+            document.getElementById('statusMsg').innerText = t('errNotSequence');
+            document.getElementById('statusMsg').className = 'status-msg error';
+            setTimeout(initCaptcha, 800);
+            return;
+        }
+
+        const clickedValue = parseInt(dotElement.dataset.value);
+        const statusMsg = document.getElementById('statusMsg');
+
+        if (clickedValue === nextTarget) {
+            dotElement.classList.add('clicked');
+            nextTarget++;
+
+            if (nextTarget > totalDots) {
+                if (currentRound === 1) {
+                    statusMsg.innerText = t('passRound1');
+                    statusMsg.className = 'status-msg success';
+                    currentRound = 2;
+                    setTimeout(initCaptcha, 1000);
+                } else {
+                    statusMsg.innerText = t('successRedirect').replace('{n}', delaySeconds);
+                    statusMsg.className = 'status-msg success';
+                    setTimeout(() => {
+                        navigateWithSafetyCheck(redirectUrl);
+                    }, delaySeconds * 1000);
+                }
+            }
+        } else {
+            dotElement.classList.add('wrong');
+            statusMsg.innerText = t('errWrongOrder');
+            statusMsg.className = 'status-msg error';
+            setTimeout(initCaptcha, 800);
+        }
+    }
+
+    function handleNotFound() {
+        const statusMsg = document.getElementById('statusMsg');
+
+        if (!isRealSequence) {
+            if (currentRound === 1) {
+                statusMsg.innerText = t('passFinal');
+                statusMsg.className = 'status-msg success';
+                currentRound = 2;
+                setTimeout(initCaptcha, 1000);
+            }
+        } else {
+            statusMsg.innerText = t('errHasSequence');
+            statusMsg.className = 'status-msg error';
+            setTimeout(initCaptcha, 800);
+        }
+    }
+</script>
+
+</body>
+</html>
