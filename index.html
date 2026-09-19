@@ -15,6 +15,7 @@
         .footer { margin-top: 50px; font-size: 0.8rem; color: #666; }
         .lang-switch { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; z-index: 100; }
         .lang-switch:hover { background: #444; }
+        .time-display { position: absolute; top: 20px; left: 20px; background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 0.8rem; border-radius: 4px; z-index: 100; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background-color: #2a2a2a; padding: 30px; border-radius: 12px; width: 90%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
         .modal-content h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 20px; }
@@ -43,6 +44,7 @@
     </script>
 </head>
 <body>
+    <div class="time-display" id="timeDisplay">--:--:--</div>
     <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">English</button>
     <h1 id="txt-title">Space Kill124</h1>
     <div class="btn-group">
@@ -194,6 +196,16 @@
 
     let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
     let invitePassed = false;
+
+    function updateClock() {
+        const el = document.getElementById('timeDisplay');
+        if (!el) return;
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        el.innerText = h + ':' + m + ':' + s;
+    }
 
     function toggleLanguage() {
         currentLang = currentLang === 'zh' ? 'en' : 'zh';
@@ -354,6 +366,8 @@
 
     window.onload = function() {
         securityCheck();
+        updateClock();
+        setInterval(updateClock, 1000);
         updateText();
         if (localStorage.getItem(AUTH_KEY) === "true") {
             showSafetyWarning(FULL_URL);
