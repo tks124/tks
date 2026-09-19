@@ -122,11 +122,12 @@
 
 <script>
     const AUTH_KEY = "sk124_auth_token";
-    const AUTH_PAGE_URL = "https://www.spacekill124.cn";
+    const AUTH_PAGE_URL = "https://www.spacekill124.cn/SpaceKill124";
     const LANG_KEY = "sk124_lang";
 
     const WHITELIST_DOMAINS = [
         'bilibili.com',
+        'spacekill124.cn',
         'foxmail.com'
     ];
 
@@ -212,7 +213,7 @@
             return;
         }
 
-        if (url.startsWith("https://spacekill124.cn/")) {
+        if (url.startsWith("https://www.spacekill124.cn/")) {
             window.location.replace(url);
             return;
         }
