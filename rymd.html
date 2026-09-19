@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>太空杀124所有相关内容制作者名单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a2e;
+            font-family: "Georgia", "SimSun", "Noto Serif SC", "STSong", serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+            touch-action: none;
+            cursor: default;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .credits-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #2a2a4a 0%, #1a1a2e 60%, #0d0d1a 100%);
+        }
+
+        .credits-content {
+            position: absolute;
+            bottom: -100%;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            padding: 40px 20px;
+            will-change: transform;
+            animation: none;
+        }
+
+        .credits-content.animate {
+            animation: scrollUp 60s linear 1 forwards;
+        }
+
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(0%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        .credits-content .title {
+            font-size: 2.2rem;
+            color: #f0e6c8;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 215, 140, 0.5), 0 0 40px rgba(255, 180, 100, 0.3);
+        }
+
+        .credits-content .subtitle {
+            font-size: 1.4rem;
+            color: #d4c5a0;
+            letter-spacing: 4px;
+            margin-bottom: 50px;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 200, 150, 0.4);
+        }
+
+        .credits-content .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #c9a96e, transparent);
+            margin: 30px auto;
+            border-radius: 1px;
+        }
+
+        .credits-content .role {
+            font-size: 1.0rem;
+            color: #b8a88a;
+            letter-spacing: 5px;
+            margin-top: 35px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        .credits-content .name {
+            font-size: 1.6rem;
+            color: #f5edd8;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(255, 220, 170, 0.45);
+        }
+
+        .credits-content .name-sub {
+            font-size: 1.1rem;
+            color: #c8b898;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .credits-content .footer-text {
+            font-size: 0.9rem;
+            color: #8a7a60;
+            letter-spacing: 3px;
+            margin-top: 60px;
+            font-style: italic;
+        }
+
+        .credits-content .year {
+            font-size: 1.3rem;
+            color: #d4c5a0;
+            letter-spacing: 6px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .credits-cover-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 70px;
+            margin-top: 20px;
+            position: relative;
+            pointer-events: none;
+        }
+
+        .credits-cover-image {
+            display: block;
+            max-width: 320px;
+            width: 70%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow:
+                0 0 35px rgba(255, 215, 140, 0.35),
+                0 0 80px rgba(255, 180, 100, 0.18),
+                0 0 120px rgba(255, 140, 80, 0.08);
+            border: 2px solid rgba(201, 169, 110, 0.4);
+            transition: all 0.4s ease;
+            -webkit-user-drag: none !important;
+            user-drag: none !important;
+            pointer-events: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+
+        .credits-cover-image-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            height: 110%;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 140, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .credits-cover-image-container img {
+            position: relative;
+            z-index: 1;
+        }
+
+        .black-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 9999;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 1.8s ease-out, visibility 1.8s ease-out;
+            cursor: pointer;
+        }
+
+        .black-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .jump-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            z-index: 10000;
+            display: none;
+            padding: 18px 48px;
+            font-size: 1.6rem;
+            font-family: "Georgia", "SimSun", serif;
+            letter-spacing: 4px;
+            color: #f5edd8;
+            background: rgba(20, 20, 35, 0.85);
+            border: 2px solid #c9a96e;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 0 35px rgba(255, 215, 140, 0.45);
+            transition: all 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            user-drag: none;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            touch-action: manipulation;
+            opacity: 0;
+            pointer-events: auto;
+        }
+
+        .jump-button.show {
+            display: block;
+            animation: btnAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes btnAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.6);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .jump-button:hover {
+            background: rgba(40, 40, 60, 0.95);
+            box-shadow: 0 0 60px rgba(255, 215, 140, 0.7);
+            letter-spacing: 6px;
+            border-color: #e6cfa0;
+        }
+
+        .jump-button:active {
+            transform: translate(-50%, -50%) scale(0.96);
+        }
+
+        img,
+        video,
+        audio {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        a:not(.jump-button) {
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+
+        @media (max-width: 600px) {
+            .credits-content .title {
+                font-size: 1.6rem;
+                letter-spacing: 4px;
+            }
+            .credits-content .subtitle {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+            .credits-content .name {
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+            }
+            .credits-content .role {
+                font-size: 0.8rem;
+                letter-spacing: 3px;
+            }
+            .credits-content .name-sub {
+                font-size: 0.9rem;
+            }
+            .credits-content .footer-text {
+                font-size: 0.75rem;
+            }
+            .credits-cover-image {
+                max-width: 220px;
+                width: 65%;
+                border-radius: 12px;
+            }
+            .credits-cover-image-container {
+                margin-bottom: 50px;
+                margin-top: 10px;
+            }
+            .jump-button {
+                padding: 14px 32px;
+                font-size: 1.2rem;
+                letter-spacing: 3px;
+                border-radius: 40px;
+            }
+        }
+
+        body,
+        body * {
+            -webkit-user-drag: none !important;
+            -khtml-user-drag: none !important;
+            -moz-user-drag: none !important;
+            -o-user-drag: none !important;
+            user-drag: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        img {
+            -webkit-user-drag: none !important;
+            pointer-events: none !important;
+        }
+
+        ::selection {
+            background: transparent;
+            color: inherit;
+        }
+        ::-moz-selection {
+            background: transparent;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="credits-wrapper">
+        <div class="credits-content" id="creditsContent">
+
+            <div class="credits-cover-image-container">
+                <img src="tks.png" alt="开场封面图片" class="credits-cover-image" draggable="false" data-lang-alt="coverAlt">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="title" data-lang="title">网 站</div>
+            <div class="subtitle">— A Journey Through Starlight —</div>
+
+            <div class="divider"></div>
+
+            <div class="role" data-lang="roleMain">主要</div>
+            <div class="name" data-lang="nameMain">太空杀124</div>
+
+            <div class="role" data-lang="roleHelp">帮助</div>
+            <div class="name">DeepSeek</div>
+            <div class="role" data-lang="roleHelp">帮助</div>
+            <div class="name">千问</div>
+            <div class="name-sub"></div>
+
+            <div class="role" data-lang="roleSoftware">软件制作</div>
+            <div class="name" data-lang="nameMain">太空杀124</div>
+            <div class="name-sub" data-lang="subUpdate">更新 &middot; 太空杀124</div>
+
+            <div class="role" data-lang="roleGameMod">游戏相关改版制作</div>
+            <div class="name" data-lang="nameMain">太空杀124</div>
+            <div class="role" data-lang="roleMusic">音乐提供</div>
+            <div class="name" data-lang="nameMain">太空杀124</div>
+            <div class="role" data-lang="roleMusic">音乐提供</div>
+            <div class="name-sub">biibii:3493259313679235</div>
+            <div class="name-sub" data-lang="allStaff">所 有 参 与 相 关 制 作 的 工 作 人 员</div>
+
+            <div class="divider"></div>
+
+            <div class="footer-text" data-lang="thanks">感 谢</div>
+            <div class="year" data-lang="year">二〇二六年</div>
+
+            <div style="height: 200px;"></div>
+        </div>
+    </div>
+
+    <a href="https://tks124444.github.io/cd/" target="_self" class="jump-button" id="jumpBtn" data-lang="jumpBtn">神秘彩蛋</a>
+
+    <div class="black-overlay" id="blackOverlay" aria-label="点击开始"></div>
+
+    <audio id="bgm" src="zdstks.mp3" preload="auto"></audio>
+
+    <script>
+        (function() {
+            const LANG_KEY = "sk124_lang";
+            const currentLang = localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'zh';
+
+            const translations = {
+                zh: {
+                    pageTitle: "太空杀124所有相关内容制作者名单",
+                    coverAlt: "开场封面图片",
+                    title: "网 站",
+                    roleMain: "主要",
+                    nameMain: "太空杀124",
+                    roleHelp: "帮助",
+                    roleSoftware: "软件制作",
+                    subUpdate: "更新 · 太空杀124",
+                    roleGameMod: "游戏相关改版制作",
+                    roleMusic: "音乐提供",
+                    allStaff: "所 有 参 与 相 关 制 作 的 工 作 人 员",
+                    thanks: "感 谢",
+                    year: "二〇二六年",
+                    jumpBtn: "神秘彩蛋"
+                },
+                en: {
+                    pageTitle: "SpaceKill124 Credits",
+                    coverAlt: "Opening cover image",
+                    title: "WEBSITE",
+                    roleMain: "Main",
+                    nameMain: "SpaceKill124",
+                    roleHelp: "Help",
+                    roleSoftware: "Software",
+                    subUpdate: "Update · SpaceKill124",
+                    roleGameMod: "Game Mod",
+                    roleMusic: "Music",
+                    allStaff: "All Related Staff",
+                    thanks: "Thanks",
+                    year: "2026",
+                    jumpBtn: "Mystery Easter Egg"
+                }
+            };
+
+            function applyLanguage() {
+                const t = translations[currentLang];
+                document.title = t.pageTitle;
+                document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+
+                document.querySelectorAll('[data-lang]').forEach(el => {
+                    const key = el.getAttribute('data-lang');
+                    if (t[key] !== undefined) {
+                        el.textContent = t[key];
+                    }
+                });
+
+                document.querySelectorAll('[data-lang-alt]').forEach(el => {
+                    const key = el.getAttribute('data-lang-alt');
+                    if (t[key] !== undefined) {
+                        el.setAttribute('alt', t[key]);
+                    }
+                });
+            }
+
+            applyLanguage();
+
+            var overlay = document.getElementById('blackOverlay');
+            var bgm = document.getElementById('bgm');
+            var creditsContent = document.getElementById('creditsContent');
+            var jumpBtn = document.getElementById('jumpBtn');
+            var overlayClicked = false;
+            var musicStarted = false;
+            var scrollStarted = false;
+
+            var now = new Date();
+            if (now.getMonth() === 3 && now.getDate() === 1) {
+                jumpBtn.href = 'https://tks124.github.io/zp/';
+            } else {
+                jumpBtn.href = 'cd';
+            }
+
+            addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            document.addEventListener('drop', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            document.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            document.addEventListener('mousedown', function(e) {
+                if (e.button === 0) {}
+            });
+
+            document.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) {
+                    e.preventDefault();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+
+            addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            }, true);
+
+            function preventScroll(e) {
+                e.preventDefault();
+                return false;
+            }
+
+            document.addEventListener('wheel', preventScroll, { passive: false });
+            document.addEventListener('touchmove', preventScroll, { passive: false });
+            document.addEventListener('scroll', preventScroll, { passive: false });
+
+            function playMusic() {
+                if (musicStarted) return;
+                var playPromise = bgm.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        musicStarted = true;
+                    }).catch(function(error) {
+                        musicStarted = false;
+                    });
+                } else {
+                    musicStarted = true;
+                }
+            }
+
+            function startScrollAfterDelay() {
+                if (scrollStarted) return;
+                scrollStarted = true;
+
+                setTimeout(function() {
+                    creditsContent.classList.add('animate');
+                    setTimeout(function() {
+                        jumpBtn.classList.add('show');
+                    }, 60500);
+                }, 1500);
+            }
+
+            bgm.addEventListener('ended', function() {
+                setTimeout(function() {
+                    var flwAudio = new Audio('flw.mp3');
+                    flwAudio.play().catch(function() {});
+                }, 5000);
+            });
+
+            overlay.addEventListener('click', function(e) {
+                if (overlayClicked) return;
+                overlayClicked = true;
+                overlay.classList.add('fade-out');
+                playMusic();
+                startScrollAfterDelay();
+                e.stopPropagation();
+            });
+
+            overlay.addEventListener('touchstart', function(e) {
+                if (overlayClicked) return;
+                overlayClicked = true;
+                overlay.classList.add('fade-out');
+                playMusic();
+                startScrollAfterDelay();
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
+
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            document.addEventListener('auxclick', function(e) {
+                e.preventDefault();
+                return false;
+            }, true);
+
+            bgm.volume = 1.0;
+            bgm.loop = false;
+            bgm.preload = 'auto';
+
+            window.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            window.addEventListener('drop', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            jumpBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            jumpBtn.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+
+        })();
+    </script>
+
+</body>
+</html>
