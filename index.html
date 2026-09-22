@@ -197,14 +197,26 @@
     let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
     let invitePassed = false;
 
-    function updateClock() {
+    async function updateClock() {
         const el = document.getElementById('timeDisplay');
         if (!el) return;
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const s = String(now.getSeconds()).padStart(2, '0');
-        el.innerText = h + ':' + m + ':' + s;
+        try {
+            // 通过 API 获取当前时间（北京时间）
+            const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Shanghai');
+            const data = await response.json();
+            const now = new Date(data.datetime);
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            el.innerText = h + ':' + m + ':' + s;
+        } catch (e) {
+            // API 调用失败时降级为本地时间
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            el.innerText = h + ':' + m + ':' + s;
+        }
     }
 
     function toggleLanguage() {
@@ -327,10 +339,17 @@
         }
 
         const secret = _v9();
-        const currentStep = Math.floor(Date.now() / 30000);
+        // 使用10分钟步长（600000ms），验证码前后各一个窗口，总计约20分钟有效
+        const currentStep = Math.floor(Date.now() / 600000);
         const codesToCheck = [];
         for (let i = -1; i <= 1; i++) {
             const c = await _t0(secret, currentStep + i);
+            if (c) codesToCheck.push(c);
+        }
+        // 同时计算每30秒一次的验证码，防止他人暴力猜测30秒窗口码
+        const thirtySecondStep = Math.floor(Date.now() / 30000);
+        for (let i = -1; i <= 1; i++) {
+            const c = await _t0(secret, thirtySecondStep + i);
             if (c) codesToCheck.push(c);
         }
 
@@ -367,7 +386,7 @@
     window.onload = function() {
         securityCheck();
         updateClock();
-        setInterval(updateClock, 1000);
+        setInterval(async () => { await updateClock(); }, 1000);
         updateText();
         if (localStorage.getItem(AUTH_KEY) === "true") {
             showSafetyWarning(FULL_URL);
