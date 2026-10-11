@@ -366,7 +366,7 @@
                 localStorage.setItem("email", pendingEmail);
                 localStorage.setItem("password", password);
                 localStorage.setItem("spacekill_verified", "true");
-
+                localStorage.setItem("sk124_auth_token", "logged_in");
                 alert("注册成功！");
                 closeModal("registerModal");
                 window.location.href = "rjyz.html";
@@ -446,7 +446,7 @@
                 localStorage.setItem("email", email);
                 localStorage.setItem("password", password);
                 localStorage.setItem("spacekill_verified", "true");
-
+                localStorage.setItem("sk124_auth_token", "logged_in");
                 alert("登录成功！");
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
@@ -481,11 +481,10 @@
                     return;
                 }
 
-                var userAccount = data.user && data.user.user_metadata ? data.user.user_metadata.account : "";
-                localStorage.setItem("account", userAccount || email);
-                localStorage.setItem("email", email);
-                localStorage.setItem("spacekill_verified", "true");
-
+                var userAccount = data.user.user_metadata ? data.user.user_metadata.account : "";
+                localStorage.setItem("account", userAccount || email); localStorage.setItem("email", email);
+                localStorage.setItem("password", password);
+                localStorage.setItem("sk124_auth_token", "logged_in");
                 alert("登录成功！");
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
