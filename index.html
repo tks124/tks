@@ -126,19 +126,17 @@
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             } catch (error) {
-                console.error("Supabase 初始化失败:", error);
+                console.error("Supabase初始化失败:", error);
             }
         } else {
-            console.error("Supabase 脚本未加载");
+            console.error("Supabase脚本未加载");
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             checkAuthState();
 
-
             document.getElementById("registerBtn").addEventListener("click", function() {
                 openModal("registerModal");
-
                 document.getElementById("regStep1").style.display = "block";
                 document.getElementById("regStep2").style.display = "none";
                 document.getElementById("regStep3").style.display = "none";
@@ -146,11 +144,9 @@
                 document.getElementById("regMsg").textContent = "";
             });
 
-
             document.getElementById("loginBtn").addEventListener("click", function() {
                 openModal("loginModal");
             });
-
 
             window.addEventListener("click", (e) => {
                 if (e.target === document.getElementById("registerModal")) {
@@ -170,9 +166,7 @@
             document.getElementById(id).style.display = "none";
         }
 
-
         let pendingEmail = "";
-
 
         document.getElementById("sendCodeBtn").addEventListener("click", async () => {
             const email = document.getElementById("regEmail").value.trim();
@@ -188,24 +182,29 @@
             document.getElementById("regMsg").textContent = "";
 
             try {
-
-                const { error } = await supabaseClient.auth.signInWithOtp({
-                    email: email,
-                    options: {
-                        emailRedirectTo: window.location.origin,
-                    }
+                const { error } = await supabaseClient.auth.signUp({
+                    email: email
                 });
 
                 if (error) {
-                    document.getElementById("regMsg").textContent = "发送失败: " + error.message;
-                    document.getElementById("regMsg").style.color = "#ef4444";
+                    var errorMsg = error.message;
+                    if (errorMsg.indexOf("already") !== -1 || errorMsg.indexOf("Existing") !== -1 || errorMsg.indexOf("存在") !== -1) {
+                        document.getElementById("regMsg").textContent = "该邮箱已注册，请直接登录";
+                        document.getElementById("regMsg").style.color = "#f59e0b";
+                        setTimeout(function() {
+                            closeModal("registerModal");
+                            openModal("loginModal");
+                        }, 1500);
+                    } else {
+                        document.getElementById("regMsg").textContent = "发送失败: " + errorMsg;
+                        document.getElementById("regMsg").style.color = "#ef4444";
+                    }
                     btn.disabled = false;
                     btn.textContent = "获取验证码";
                 } else {
                     pendingEmail = email;
                     document.getElementById("regMsg").textContent = "验证码已发送至邮箱，请查收！";
                     document.getElementById("regMsg").style.color = "#10b981";
-
                     document.getElementById("regStep1").style.display = "none";
                     document.getElementById("regStep2").style.display = "block";
                     document.getElementById("regCode").focus();
@@ -217,7 +216,6 @@
                 btn.textContent = "获取验证码";
             }
         });
-
 
         document.getElementById("verifyCodeBtn").addEventListener("click", async () => {
             const email = pendingEmail;
@@ -233,11 +231,10 @@
             btn.textContent = "验证中...";
 
             try {
-
                 const { data, error } = await supabaseClient.auth.verifyOtp({
                     email: email,
                     token: token,
-                    type: "email"
+                    type: "signup"
                 });
 
                 if (error) {
@@ -245,17 +242,8 @@
                     btn.disabled = false;
                     btn.textContent = "验证并注册";
                 } else {
-
-                    if (data.user && !data.user.email_confirmed_at) {
-
-                        document.getElementById("regStep2").style.display = "none";
-                        document.getElementById("regStep3").style.display = "block";
-                    } else {
-
-                        alert("验证成功！欢迎回来！");
-                        closeModal("registerModal");
-                        checkAuthState();
-                    }
+                    document.getElementById("regStep2").style.display = "none";
+                    document.getElementById("regStep3").style.display = "block";
                     btn.disabled = false;
                     btn.textContent = "验证并注册";
                 }
@@ -265,7 +253,6 @@
                 btn.textContent = "验证并注册";
             }
         });
-
 
         document.getElementById("completeRegBtn").addEventListener("click", async () => {
             const account = document.getElementById("regAccount").value.trim();
@@ -286,7 +273,6 @@
             btn.textContent = "注册中...";
 
             try {
-
                 const { error } = await supabaseClient.auth.updateUser({
                     password: password,
                     data: {
@@ -296,42 +282,22 @@
 
                 if (error) {
                     alert("注册完成失败: " + error.message);
+                    btn.disabled = false;
+                    btn.textContent = "完成注册";
                 } else {
-
-                    try {
-                        const { error: signInError } = await supabaseClient.auth.signInWithPassword({
-                            email: pendingEmail,
-                            password: password
-                        });
-                        if (signInError) {
-                            localStorage.setItem("email", pendingEmail);
-                            localStorage.setItem("password", password);
-                            localStorage.setItem("account", account);
-                            alert("密码已设置成功！请重新登录。");
-                        } else {
-                            localStorage.setItem("email", pendingEmail);
-                            localStorage.setItem("password", password);
-                            localStorage.setItem("account", account);
-                            alert("注册成功！");
-                            closeModal("registerModal");
-                            window.location.href = "rjyz.html";
-                        }
-                    } catch (err) {
-                        localStorage.setItem("email", pendingEmail);
-                        localStorage.setItem("password", password);
-                        localStorage.setItem("account", account);
-                        alert("注册成功但自动登录失败，请手动登录。");
-                    }
+                    localStorage.setItem("account", account);
+                    localStorage.setItem("email", pendingEmail);
+                    localStorage.setItem("password", password);
+                    alert("注册成功！");
+                    closeModal("registerModal");
+                    window.location.href = "rjyz.html";
                 }
-                btn.disabled = false;
-                btn.textContent = "完成注册";
             } catch (err) {
                 alert("注册出错: " + err.message);
                 btn.disabled = false;
                 btn.textContent = "完成注册";
             }
         });
-
 
         async function handleLogin() {
             const email = document.getElementById("loginEmail").value.trim();
@@ -351,8 +317,10 @@
                 if (error) {
                     alert("登录失败: " + error.message);
                 } else {
-
+                    const userAccount = data.user.user_metadata ? data.user.user_metadata.account : "";
+                    localStorage.setItem("account", userAccount || email);
                     localStorage.setItem("email", email);
+                    localStorage.setItem("password", password);
                     alert("登录成功！");
                     closeModal("loginModal");
                     document.getElementById("loginEmail").value = "";
@@ -364,13 +332,11 @@
             }
         }
 
-
         async function logout() {
             await supabaseClient.auth.signOut();
             checkAuthState();
             alert("已退出登录");
         }
-
 
         async function checkAuthState() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -380,14 +346,12 @@
             const userEmail = document.getElementById("userEmail");
 
             if (session) {
-
                 mainContainer.style.display = "none";
                 contentContainer.style.display = "block";
                 userInfo.style.display = "block";
                 const savedAccount = localStorage.getItem("account");
                 userEmail.textContent = savedAccount ? savedAccount : session.user.email;
             } else {
-
                 mainContainer.style.display = "block";
                 contentContainer.style.display = "none";
                 userInfo.style.display = "none";
