@@ -46,6 +46,8 @@
         <button id="enterBtn" class="btn btn-green">输入邀请码进入</button>
     </div>
 
+    <div id="verifiedBar" style="display:none;text-align:center;margin-top:10px;padding:10px;background:#1f2937;border-radius:8px;border:1px solid #374151;"></div>
+
     <div class="auth-links" id="authLinks">
         <button class="btn-small btn-register" onclick="openModal('registerModal')">注册</button>
         <button class="btn-small btn-login" onclick="openModal('loginModal')">登录</button>
@@ -106,6 +108,8 @@
     <script>
         const SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU';
+        const APPROVE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co/functions/v1/approve-request';
+        const VERIFY_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co/functions/v1/verify-invite';
 
         let supabaseClient = null;
 
@@ -121,6 +125,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthState();
+            showVerifiedAccount();
 
             const getInviteBtn = document.getElementById('getInviteBtn');
             const enterBtn = document.getElementById('enterBtn');
@@ -162,7 +167,7 @@
                 submitRequestBtn.disabled = true;
 
                 try {
-                    const { error } = await supabaseClient
+                    const { data, error } = await supabaseClient
                         .from('access_requests')
                         .insert([{ account: account, reason: reason, ip_address: ip, email: email }]);
 
@@ -170,7 +175,16 @@
                         console.error('Supabase error:', error);
                         alert('提交失败，错误信息: ' + error.message);
                     } else {
-                        alert('申请已提交！请耐心等待。');
+                        try {
+                            if (data && data.length > 0 && data[0].id) {
+                                fetch(APPROVE_URL, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ requestId: data[0].id })
+                                }).catch(e => console.error('approve失败:', e));
+                            }
+                        } catch(e) { console.error(e); }
+                        alert('申请已提交！管理员审核通过后你会收到邀请码。');
                         requestModal.style.display = 'none';
                         document.getElementById('accountInput').value = '';
                         document.getElementById('reasonInput').value = '';
@@ -196,13 +210,36 @@
                 document.getElementById('verifyCodeInput').value = '';
             });
 
-            submitVerifyBtn.addEventListener('click', () => {
+            submitVerifyBtn.addEventListener('click', async () => {
                 const code = document.getElementById('verifyCodeInput').value.trim();
-                if (code.length < 4 || code.length > 6) {
+                if (!code || code.length < 4 || code.length > 6) {
                     alert('请输入正确的4-6位邀请码');
-                } else {
-                    alert('验证功能开发中，目前仅做演示！');
-                    verifyModal.style.display = 'none';
+                    return;
+                }
+                submitVerifyBtn.textContent = '验证中...';
+                submitVerifyBtn.disabled = true;
+                try {
+                    const res = await fetch(VERIFY_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: code })
+                    });
+                    const result = await res.json();
+                    if (result.valid) {
+                        localStorage.setItem('account', result.account);
+                        localStorage.setItem('email', result.email);
+                        alert('验证成功！你的账号: ' + result.account);
+                        verifyModal.style.display = 'none';
+                        document.getElementById('verifyCodeInput').value = '';
+                    } else {
+                        alert('验证失败: ' + (result.reason || '未知错误'));
+                    }
+                } catch (err) {
+                    console.error('验证出错:', err);
+                    alert('系统错误，请稍后重试');
+                } finally {
+                    submitVerifyBtn.textContent = '确定进入';
+                    submitVerifyBtn.disabled = false;
                 }
             });
 
@@ -318,6 +355,26 @@
                 authLinks.style.display = 'block';
                 userInfo.style.display = 'none';
             }
+        }
+
+        function showVerifiedAccount() {
+            const account = localStorage.getItem('account');
+            const email = localStorage.getItem('email');
+            if (account) {
+                const verifiedBar = document.getElementById('verifiedBar');
+                if (verifiedBar) {
+                    verifiedBar.innerHTML = '已验证账号: <span style="color:#10b981;font-weight:bold;">' + account + '</span> (' + email + ') <button class="btn-small" onclick="clearVerification()" style="background:#ef4444;color:white;margin-left:10px;">清除</button>';
+                    verifiedBar.style.display = 'block';
+                }
+            }
+        }
+
+        function clearVerification() {
+            localStorage.removeItem('account');
+            localStorage.removeItem('email');
+            const verifiedBar = document.getElementById('verifiedBar');
+            if (verifiedBar) verifiedBar.style.display = 'none';
+            alert('已清除验证信息');
         }
     </script>
 </body>
