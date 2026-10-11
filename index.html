@@ -17,7 +17,6 @@
         .btn-register { background: linear-gradient(to right, #8b5cf6, #7c3aed); color: white; }
         .btn-login { background: linear-gradient(to right, #f59e0b, #d97706); color: white; }
         .footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #9ca3af; width: 100%; text-align: center; }
-        .auth-links { position: absolute; bottom: 40px; right: 20px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: #1f2937; padding: 40px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #374151; text-align: center; }
         .modal-content h2 { margin-top: 0; margin-bottom: 30px; font-size: 1.5rem; color: #f3f4f6; }
@@ -41,65 +40,42 @@
         <button class="btn-small btn-login" onclick="logout()" style="margin-left:10px;">退出</button>
     </div>
 
-    <div class="container">
+    <!-- 未登录时显示的主页：只有注册和登录两个按钮 -->
+    <div class="container" id="mainContainer">
         <h1>Space Kill124</h1>
-        <button id="getInviteBtn" class="btn btn-blue">获取专属邀请码</button>
-        <button id="enterBtn" class="btn btn-green">输入邀请码进入</button>
+        <button id="registerBtn" class="btn btn-blue">注册账号</button>
+        <button id="loginBtn" class="btn btn-green">登录</button>
     </div>
 
-    <div id="verifiedBar" style="display:none;text-align:center;margin-top:10px;padding:10px;background:#1f2937;border-radius:8px;border:1px solid #374151;"></div>
-
-    <div class="auth-links" id="authLinks">
-        <button class="btn-small btn-register" onclick="openModal('registerModal')">注册</button>
-        <button class="btn-small btn-login" onclick="openModal('loginModal')">登录</button>
+    <!-- 已登录时显示的内容区域 -->
+    <div class="container" id="contentContainer" style="display:none;">
+        <h1>Space Kill124</h1>
+        <p style="font-size:1.2rem;color:#10b981;">欢迎回来，你已经登录成功！</p>
+        <!-- 在这里添加你主页的其他内容 -->
     </div>
 
     <div class="footer">© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn</div>
 
-    <div id="requestModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>申请邀请码</h2>
-            <input type="text" id="accountInput" class="modal-input" placeholder="请输入你的账号名">
-            <input type="text" id="reasonInput" class="modal-input" placeholder="申请原因">
-            <input type="text" id="ipInput" class="modal-input" placeholder="常用IP">
-            <input type="email" id="emailInput" class="modal-input" placeholder="邮箱地址">
-            <div class="modal-buttons">
-                <button id="cancelRequestBtn" class="modal-btn btn-cancel">取消</button>
-                <button id="submitRequestBtn" class="modal-btn btn-confirm">提交申请</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="verifyModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>请输入邀请码</h2>
-            <input type="text" id="verifyCodeInput" class="modal-input" placeholder="请输入四至六位数邀请码..." style="text-align: center; letter-spacing: 2px;">
-            <div class="modal-buttons">
-                <button id="cancelVerifyBtn" class="modal-btn btn-cancel">取消</button>
-                <button id="submitVerifyBtn" class="modal-btn btn-confirm">确定进入</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- 注册弹窗 -->
     <div id="registerModal" class="modal-overlay">
         <div class="modal-content">
             <h2>注册账号</h2>
             
-            <!-- 第一步：输入邮箱 -->
+            <!-- 第一步：输入邮箱，获取验证码 -->
             <div id="regStep1">
                 <input type="email" id="regEmail" class="modal-input" placeholder="邮箱地址">
                 <button id="sendCodeBtn" class="modal-btn btn-confirm" style="width:100%;">获取验证码</button>
                 <p id="regMsg" style="color:#9ca3af;font-size:0.9rem;margin-top:10px;min-height:20px;"></p>
             </div>
             
-            <!-- 第二步：输入验证码 -->
+            <!-- 第二步：输入6位验证码 -->
             <div id="regStep2" style="display:none;">
                 <input type="text" id="regCode" class="modal-input" placeholder="输入6位验证码" maxlength="6" style="text-align:center;letter-spacing:2px;">
                 <button id="verifyCodeBtn" class="modal-btn btn-confirm" style="width:100%;">验证并注册</button>
                 <button class="modal-btn btn-cancel" onclick="closeModal('registerModal')" style="width:100%;margin-top:10px;">取消</button>
             </div>
             
-            <!-- 第三步：设置账号名和密码（验证通过后显示） -->
+            <!-- 第三步：设置账号名和密码 -->
             <div id="regStep3" style="display:none;">
                 <p style="color:#10b981;margin-bottom:15px;">邮箱验证通过！</p>
                 <input type="text" id="regAccount" class="modal-input" placeholder="设置账号名">
@@ -110,6 +86,7 @@
         </div>
     </div>
 
+    <!-- 登录弹窗 -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
             <h2>登录账号</h2>
@@ -123,10 +100,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU';
-        const APPROVE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co/functions/v1/approve-request';
-        const VERIFY_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co/functions/v1/verify-invite';
+        const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
 
         let supabaseClient = null;
 
@@ -134,173 +109,69 @@
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             } catch (error) {
-                console.error('Supabase 初始化失败:', error);
+                console.error("Supabase 初始化失败:", error);
             }
         } else {
-            console.error('Supabase 脚本未加载');
+            console.error("Supabase 脚本未加载");
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener("DOMContentLoaded", function() {
             checkAuthState();
-            showVerifiedAccount();
 
-            const getInviteBtn = document.getElementById('getInviteBtn');
-            const enterBtn = document.getElementById('enterBtn');
-
-            const requestModal = document.getElementById('requestModal');
-            const verifyModal = document.getElementById('verifyModal');
-
-            const cancelRequestBtn = document.getElementById('cancelRequestBtn');
-            const submitRequestBtn = document.getElementById('submitRequestBtn');
-
-            const cancelVerifyBtn = document.getElementById('cancelVerifyBtn');
-            const submitVerifyBtn = document.getElementById('submitVerifyBtn');
-
-            getInviteBtn.addEventListener('click', () => {
-                requestModal.style.display = 'flex';
+            // 注册按钮
+            document.getElementById("registerBtn").addEventListener("click", function() {
+                openModal("registerModal");
+                // 重置注册流程到第一步
+                document.getElementById("regStep1").style.display = "block";
+                document.getElementById("regStep2").style.display = "none";
+                document.getElementById("regStep3").style.display = "none";
+                document.getElementById("regEmail").value = "";
+                document.getElementById("regMsg").textContent = "";
             });
 
-            cancelRequestBtn.addEventListener('click', () => {
-                requestModal.style.display = 'none';
+            // 登录按钮
+            document.getElementById("loginBtn").addEventListener("click", function() {
+                openModal("loginModal");
             });
 
-            submitRequestBtn.addEventListener('click', async () => {
-                const account = document.getElementById('accountInput').value.trim();
-                const reason = document.getElementById('reasonInput').value.trim();
-                const ip = document.getElementById('ipInput').value.trim();
-                const email = document.getElementById('emailInput').value.trim();
-
-                if (!account || !reason || !ip || !email) {
-                    alert('请完整填写所有信息！');
-                    return;
+            // 点击遮罩层关闭弹窗
+            window.addEventListener("click", (e) => {
+                if (e.target === document.getElementById("registerModal")) {
+                    closeModal("registerModal");
                 }
-
-                if (!supabaseClient) {
-                    alert('系统初始化失败，请刷新页面重试。');
-                    return;
-                }
-
-                submitRequestBtn.textContent = '提交中...';
-                submitRequestBtn.disabled = true;
-
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('access_requests')
-                        .insert([{ account: account, reason: reason, ip_address: ip, email: email }]);
-
-                    if (error) {
-                        console.error('Supabase error:', error);
-                        alert('提交失败，错误信息: ' + error.message);
-                    } else {
-                        try {
-                            if (data && data.length > 0 && data[0].id) {
-                                fetch(APPROVE_URL, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ requestId: data[0].id })
-                                }).catch(e => console.error('approve失败:', e));
-                            }
-                        } catch(e) { console.error(e); }
-                        alert('申请已提交！管理员审核通过后你会收到邀请码。');
-                        requestModal.style.display = 'none';
-                        document.getElementById('accountInput').value = '';
-                        document.getElementById('reasonInput').value = '';
-                        document.getElementById('ipInput').value = '';
-                        document.getElementById('emailInput').value = '';
-                    }
-                } catch (err) {
-                    console.error('提交出错:', err);
-                    alert('系统错误，请稍后重试。');
-                } finally {
-                    submitRequestBtn.textContent = '提交申请';
-                    submitRequestBtn.disabled = false;
-                }
-            });
-
-            enterBtn.addEventListener('click', () => {
-                verifyModal.style.display = 'flex';
-                document.getElementById('verifyCodeInput').focus();
-            });
-
-            cancelVerifyBtn.addEventListener('click', () => {
-                verifyModal.style.display = 'none';
-                document.getElementById('verifyCodeInput').value = '';
-            });
-
-            submitVerifyBtn.addEventListener('click', async () => {
-                const code = document.getElementById('verifyCodeInput').value.trim();
-                if (!code || code.length < 4 || code.length > 6) {
-                    alert('请输入正确的4-6位邀请码');
-                    return;
-                }
-                submitVerifyBtn.textContent = '验证中...';
-                submitVerifyBtn.disabled = true;
-                try {
-                    const res = await fetch(VERIFY_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: code })
-                    });
-                    const result = await res.json();
-                    if (result.valid) {
-                        localStorage.setItem('account', result.account);
-                        localStorage.setItem('email', result.email);
-                        alert('验证成功！你的账号: ' + result.account);
-                        verifyModal.style.display = 'none';
-                        document.getElementById('verifyCodeInput').value = '';
-                    } else {
-                        alert('验证失败: ' + (result.reason || '未知错误'));
-                    }
-                } catch (err) {
-                    console.error('验证出错:', err);
-                    alert('系统错误，请稍后重试');
-                } finally {
-                    submitVerifyBtn.textContent = '确定进入';
-                    submitVerifyBtn.disabled = false;
-                }
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === requestModal) requestModal.style.display = 'none';
-                if (e.target === verifyModal) {
-                    verifyModal.style.display = 'none';
-                    document.getElementById('verifyCodeInput').value = '';
-                }
-                if (e.target === document.getElementById('registerModal')) {
-                    closeModal('registerModal');
-                }
-                if (e.target === document.getElementById('loginModal')) {
-                    closeModal('loginModal');
+                if (e.target === document.getElementById("loginModal")) {
+                    closeModal("loginModal");
                 }
             });
         });
 
         function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
+            document.getElementById(id).style.display = "flex";
         }
 
         function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
+            document.getElementById(id).style.display = "none";
         }
 
         // 全局变量：保存待验证的邮箱
-        let pendingEmail = '';
+        let pendingEmail = "";
 
         // 发送验证码按钮
-        document.getElementById('sendCodeBtn').addEventListener('click', async () => {
-            const email = document.getElementById('regEmail').value.trim();
+        document.getElementById("sendCodeBtn").addEventListener("click", async () => {
+            const email = document.getElementById("regEmail").value.trim();
             if (!email) {
-                document.getElementById('regMsg').textContent = '请先输入邮箱！';
-                document.getElementById('regMsg').style.color = '#ef4444';
+                document.getElementById("regMsg").textContent = "请先输入邮箱！";
+                document.getElementById("regMsg").style.color = "#ef4444";
                 return;
             }
 
-            const btn = document.getElementById('sendCodeBtn');
+            const btn = document.getElementById("sendCodeBtn");
             btn.disabled = true;
-            btn.textContent = '发送中...';
-            document.getElementById('regMsg').textContent = '';
+            btn.textContent = "发送中...";
+            document.getElementById("regMsg").textContent = "";
 
             try {
+                // 调用 Supabase 发送 OTP 验证码邮件
                 const { error } = await supabaseClient.auth.signInWithOtp({
                     email: email,
                     options: {
@@ -309,92 +180,93 @@
                 });
 
                 if (error) {
-                    document.getElementById('regMsg').textContent = '发送失败: ' + error.message;
-                    document.getElementById('regMsg').style.color = '#ef4444';
+                    document.getElementById("regMsg").textContent = "发送失败: " + error.message;
+                    document.getElementById("regMsg").style.color = "#ef4444";
                     btn.disabled = false;
-                    btn.textContent = '获取验证码';
+                    btn.textContent = "获取验证码";
                 } else {
                     pendingEmail = email;
-                    document.getElementById('regMsg').textContent = '验证码已发送至邮箱，请查收！';
-                    document.getElementById('regMsg').style.color = '#10b981';
-                    // 切换到第二步
-                    document.getElementById('regStep1').style.display = 'none';
-                    document.getElementById('regStep2').style.display = 'block';
-                    document.getElementById('regCode').focus();
+                    document.getElementById("regMsg").textContent = "验证码已发送至邮箱，请查收！";
+                    document.getElementById("regMsg").style.color = "#10b981";
+                    // 切换到第二步：输入验证码
+                    document.getElementById("regStep1").style.display = "none";
+                    document.getElementById("regStep2").style.display = "block";
+                    document.getElementById("regCode").focus();
                 }
             } catch (err) {
-                document.getElementById('regMsg').textContent = '系统错误: ' + err.message;
-                document.getElementById('regMsg').style.color = '#ef4444';
+                document.getElementById("regMsg").textContent = "系统错误: " + err.message;
+                document.getElementById("regMsg").style.color = "#ef4444";
                 btn.disabled = false;
-                btn.textContent = '获取验证码';
+                btn.textContent = "获取验证码";
             }
         });
 
         // 验证验证码按钮
-        document.getElementById('verifyCodeBtn').addEventListener('click', async () => {
+        document.getElementById("verifyCodeBtn").addEventListener("click", async () => {
             const email = pendingEmail;
-            const token = document.getElementById('regCode').value.trim();
+            const token = document.getElementById("regCode").value.trim();
 
             if (!token || token.length !== 6) {
-                alert('请输入6位验证码！');
+                alert("请输入6位验证码！");
                 return;
             }
 
-            const btn = document.getElementById('verifyCodeBtn');
+            const btn = document.getElementById("verifyCodeBtn");
             btn.disabled = true;
-            btn.textContent = '验证中...';
+            btn.textContent = "验证中...";
 
             try {
+                // 验证 OTP 验证码
                 const { data, error } = await supabaseClient.auth.verifyOtp({
                     email: email,
                     token: token,
-                    type: 'email'
+                    type: "email"
                 });
 
                 if (error) {
-                    alert('验证失败: ' + error.message);
+                    alert("验证失败: " + error.message);
                     btn.disabled = false;
-                    btn.textContent = '验证并注册';
+                    btn.textContent = "验证并注册";
                 } else {
                     // 验证成功
                     if (data.user && !data.user.email_confirmed_at) {
                         // 新用户：显示账号设置步骤
-                        document.getElementById('regStep2').style.display = 'none';
-                        document.getElementById('regStep3').style.display = 'block';
+                        document.getElementById("regStep2").style.display = "none";
+                        document.getElementById("regStep3").style.display = "block";
                     } else {
                         // 老用户：直接登录
-                        alert('验证成功！欢迎回来！');
-                        closeModal('registerModal');
+                        alert("验证成功！欢迎回来！");
+                        closeModal("registerModal");
                         checkAuthState();
                     }
                     btn.disabled = false;
-                    btn.textContent = '验证并注册';
+                    btn.textContent = "验证并注册";
                 }
             } catch (err) {
-                alert('验证出错: ' + err.message);
+                alert("验证出错: " + err.message);
                 btn.disabled = false;
-                btn.textContent = '验证并注册';
+                btn.textContent = "验证并注册";
             }
         });
 
         // 完成注册按钮（设置账号名和密码）
-        document.getElementById('completeRegBtn').addEventListener('click', async () => {
-            const account = document.getElementById('regAccount').value.trim();
-            const password = document.getElementById('regPassword').value;
+        document.getElementById("completeRegBtn").addEventListener("click", async () => {
+            const account = document.getElementById("regAccount").value.trim();
+            const password = document.getElementById("regPassword").value;
 
             if (!account) {
-                alert('请输入账号名！');
+                alert("请输入账号名！");
                 return;
             }
 
             if (!password || password.length < 6) {
-                alert('密码长度至少6位！');
+                alert("密码长度至少6位！");
                 return;
             }
 
-            const btn = document.getElementById('completeRegBtn');
+            const btn = document.getElementById("completeRegBtn");
             btn.disabled = true;
-            btn.textContent = '注册中...';
+            btn.textContent = "注册中...";
 
             try {
                 // 更新用户资料：设置密码和账号名
@@ -406,31 +278,31 @@
                 });
 
                 if (error) {
-                    alert('注册完成失败: ' + error.message);
+                    alert("注册完成失败: " + error.message);
                 } else {
                     // 保存到本地存储
-                    localStorage.setItem('account', account);
-                    localStorage.setItem('email', pendingEmail);
-                    alert('注册成功！');
-                    closeModal('registerModal');
+                    localStorage.setItem("account", account);
+                    localStorage.setItem("email", pendingEmail);
+                    alert("注册成功！");
+                    closeModal("registerModal");
                     checkAuthState();
-                    showVerifiedAccount();
                 }
                 btn.disabled = false;
-                btn.textContent = '完成注册';
+                btn.textContent = "完成注册";
             } catch (err) {
-                alert('注册出错: ' + err.message);
+                alert("注册出错: " + err.message);
                 btn.disabled = false;
-                btn.textContent = '完成注册';
+                btn.textContent = "完成注册";
             }
         });
 
+        // 登录功能
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
 
             if (!email || !password) {
-                alert('请填写邮箱和密码');
+                alert("请填写邮箱和密码");
                 return;
             }
 
@@ -441,59 +313,46 @@
                 });
 
                 if (error) {
-                    alert('登录失败: ' + error.message);
+                    alert("登录失败: " + error.message);
                 } else {
-                    alert('登录成功！');
-                    closeModal('loginModal');
-                    document.getElementById('loginEmail').value = '';
-                    document.getElementById('loginPassword').value = '';
+                    alert("登录成功！");
+                    closeModal("loginModal");
+                    document.getElementById("loginEmail").value = "";
+                    document.getElementById("loginPassword").value = "";
                     checkAuthState();
                 }
             } catch (err) {
-                alert('登录出错: ' + err.message);
+                alert("登录出错: " + err.message);
             }
         }
 
+        // 退出登录
         async function logout() {
             await supabaseClient.auth.signOut();
             checkAuthState();
-            alert('已退出登录');
+            alert("已退出登录");
         }
 
+        // 检查登录状态
         async function checkAuthState() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            const authLinks = document.getElementById('authLinks');
-            const userInfo = document.getElementById('userInfo');
-            const userEmail = document.getElementById('userEmail');
+            const mainContainer = document.getElementById("mainContainer");
+            const contentContainer = document.getElementById("contentContainer");
+            const userInfo = document.getElementById("userInfo");
+            const userEmail = document.getElementById("userEmail");
 
             if (session) {
-                authLinks.style.display = 'none';
-                userInfo.style.display = 'block';
+                // 已登录：显示内容区域和用户信息
+                mainContainer.style.display = "none";
+                contentContainer.style.display = "block";
+                userInfo.style.display = "block";
                 userEmail.textContent = session.user.email;
             } else {
-                authLinks.style.display = 'block';
-                userInfo.style.display = 'none';
+                // 未登录：显示主页（注册/登录按钮）
+                mainContainer.style.display = "block";
+                contentContainer.style.display = "none";
+                userInfo.style.display = "none";
             }
-        }
-
-        function showVerifiedAccount() {
-            const account = localStorage.getItem('account');
-            const email = localStorage.getItem('email');
-            if (account) {
-                const verifiedBar = document.getElementById('verifiedBar');
-                if (verifiedBar) {
-                    verifiedBar.innerHTML = '已验证账号: <span style="color:#10b981;font-weight:bold;">' + account + '</span> (' + email + ') <button class="btn-small" onclick="clearVerification()" style="background:#ef4444;color:white;margin-left:10px;">清除</button>';
-                    verifiedBar.style.display = 'block';
-                }
-            }
-        }
-
-        function clearVerification() {
-            localStorage.removeItem('account');
-            localStorage.removeItem('email');
-            const verifiedBar = document.getElementById('verifiedBar');
-            if (verifiedBar) verifiedBar.style.display = 'none';
-            alert('已清除验证信息');
         }
     </script>
 </body>
