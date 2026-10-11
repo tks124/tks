@@ -178,14 +178,14 @@
 
         let supabaseClient = null;
 
-        try {
-            if (window.supabase) {
+        if (window.supabase) {
+            try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } else {
-                alert('系统初始化失败，请刷新页面重试。');
+            } catch (error) {
+                console.error('Supabase 初始化失败:', error);
             }
-        } catch (error) {
-            alert('系统初始化失败，请刷新页面重试。');
+        } else {
+            console.error('Supabase 脚本未加载');
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -220,7 +220,7 @@
                 }
 
                 if (!supabaseClient) {
-                    alert('数据库连接失败，请刷新页面重试。');
+                    alert('系统初始化失败，请刷新页面重试。');
                     return;
                 }
 
@@ -230,11 +230,11 @@
                 try {
                     const { error } = await supabaseClient
                         .from('access_requests')
-                        .insert([{ reason: reason, ip: ip, email: email }]);
+                        .insert([{ reason: reason, ip_address: ip, email: email }]);
 
                     if (error) {
                         console.error('Supabase error:', error);
-                        alert('提交失败，请检查网络或稍后重试。');
+                        alert('提交失败，错误信息: ' + error.message);
                     } else {
                         alert('申请已提交！请耐心等待。');
                         requestModal.style.display = 'none';
@@ -243,6 +243,7 @@
                         document.getElementById('emailInput').value = '';
                     }
                 } catch (err) {
+                    console.error('提交出错:', err);
                     alert('系统错误，请稍后重试。');
                 } finally {
                     submitRequestBtn.textContent = '提交申请';
