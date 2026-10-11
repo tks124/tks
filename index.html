@@ -40,14 +40,12 @@
         <button class="btn-small btn-login" onclick="logout()" style="margin-left:10px;">退出</button>
     </div>
 
-    
     <div class="container" id="mainContainer">
         <h1>Space Kill124</h1>
         <button id="registerBtn" class="btn btn-blue">注册账号</button>
         <button id="loginBtn" class="btn btn-green">登录</button>
     </div>
 
-    
     <div class="container" id="contentContainer" style="display:none;">
         <h1>Space Kill124</h1>
         <p style="font-size:1.2rem;color:#10b981;">欢迎回来，你已经登录成功！</p>
@@ -56,26 +54,19 @@
 
     <div class="footer">© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn</div>
 
-    
     <div id="registerModal" class="modal-overlay">
         <div class="modal-content">
             <h2>注册账号</h2>
-            
-            
             <div id="regStep1">
                 <input type="email" id="regEmail" class="modal-input" placeholder="邮箱地址">
                 <button id="sendCodeBtn" class="modal-btn btn-confirm" style="width:100%;">获取验证码</button>
                 <p id="regMsg" style="color:#9ca3af;font-size:0.9rem;margin-top:10px;min-height:20px;"></p>
             </div>
-            
-            
             <div id="regStep2" style="display:none;">
                 <input type="text" id="regCode" class="modal-input" placeholder="输入6位验证码" maxlength="6" style="text-align:center;letter-spacing:2px;">
                 <button id="verifyCodeBtn" class="modal-btn btn-confirm" style="width:100%;">验证并注册</button>
                 <button class="modal-btn btn-cancel" onclick="closeModal('registerModal')" style="width:100%;margin-top:10px;">取消</button>
             </div>
-            
-            
             <div id="regStep3" style="display:none;">
                 <p style="color:#10b981;margin-bottom:15px;">邮箱验证通过！</p>
                 <input type="text" id="regAccount" class="modal-input" placeholder="设置账号名">
@@ -86,7 +77,6 @@
         </div>
     </div>
 
-    
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
             <h2>登录账号</h2>
@@ -98,7 +88,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <h2>编辑资料</h2>
@@ -119,9 +109,7 @@
     <script>
         const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
-
         let supabaseClient = null;
-
         if (window.supabase) {
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -134,7 +122,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             checkAuthState();
-
             document.getElementById("registerBtn").addEventListener("click", function() {
                 openModal("registerModal");
                 document.getElementById("regStep1").style.display = "block";
@@ -143,12 +130,10 @@
                 document.getElementById("regEmail").value = "";
                 document.getElementById("regMsg").textContent = "";
             });
-
             document.getElementById("loginBtn").addEventListener("click", function() {
                 openModal("loginModal");
             });
-
-            window.addEventListener("click", (e) => {
+            window.addEventListener("click", (e) {
                 if (e.target === document.getElementById("registerModal")) {
                     closeModal("registerModal");
                 }
@@ -161,7 +146,6 @@
         function openModal(id) {
             document.getElementById(id).style.display = "flex";
         }
-
         function closeModal(id) {
             document.getElementById(id).style.display = "none";
         }
@@ -175,17 +159,17 @@
                 document.getElementById("regMsg").style.color = "#ef4444";
                 return;
             }
-
             const btn = document.getElementById("sendCodeBtn");
             btn.disabled = true;
             btn.textContent = "发送中...";
             document.getElementById("regMsg").textContent = "";
-
             try {
-                const { error } = await supabaseClient.auth.signUp({
-                    email: email
+                const { error } = await supabaseClient.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.location.origin,
+                    }
                 });
-
                 if (error) {
                     var errorMsg = error.message;
                     if (errorMsg.indexOf("already") !== -1 || errorMsg.indexOf("Existing") !== -1 || errorMsg.indexOf("存在") !== -1) {
@@ -220,30 +204,32 @@
         document.getElementById("verifyCodeBtn").addEventListener("click", async () => {
             const email = pendingEmail;
             const token = document.getElementById("regCode").value.trim();
-
             if (!token || token.length !== 6) {
                 alert("请输入6位验证码！");
                 return;
             }
-
             const btn = document.getElementById("verifyCodeBtn");
             btn.disabled = true;
             btn.textContent = "验证中...";
-
             try {
                 const { data, error } = await supabaseClient.auth.verifyOtp({
                     email: email,
                     token: token,
-                    type: "signup"
+                    type: "email"
                 });
-
                 if (error) {
                     alert("验证失败: " + error.message);
                     btn.disabled = false;
                     btn.textContent = "验证并注册";
                 } else {
-                    document.getElementById("regStep2").style.display = "none";
-                    document.getElementById("regStep3").style.display = "block";
+                    if (data.user && !data.user.email_confirmed_at) {
+                        document.getElementById("regStep2").style.display = "none";
+                        document.getElementById("regStep3").style.display = "block";
+                    } else {
+                        alert("验证成功！欢迎回来！");
+                        closeModal("registerModal");
+                        checkAuthState();
+                    }
                     btn.disabled = false;
                     btn.textContent = "验证并注册";
                 }
@@ -257,21 +243,17 @@
         document.getElementById("completeRegBtn").addEventListener("click", async () => {
             const account = document.getElementById("regAccount").value.trim();
             const password = document.getElementById("regPassword").value;
-
             if (!account) {
                 alert("请输入账号名！");
                 return;
             }
-
             if (!password || password.length < 6) {
                 alert("密码长度至少6位！");
                 return;
             }
-
             const btn = document.getElementById("completeRegBtn");
             btn.disabled = true;
             btn.textContent = "注册中...";
-
             try {
                 const { error } = await supabaseClient.auth.updateUser({
                     password: password,
@@ -279,7 +261,6 @@
                         account: account
                     }
                 });
-
                 if (error) {
                     alert("注册完成失败: " + error.message);
                     btn.disabled = false;
@@ -302,18 +283,15 @@
         async function handleLogin() {
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value;
-
             if (!email || !password) {
                 alert("请填写邮箱和密码");
                 return;
             }
-
             try {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
-
                 if (error) {
                     alert("登录失败: " + error.message);
                 } else {
@@ -344,7 +322,6 @@
             const contentContainer = document.getElementById("contentContainer");
             const userInfo = document.getElementById("userInfo");
             const userEmail = document.getElementById("userEmail");
-
             if (session) {
                 mainContainer.style.display = "none";
                 contentContainer.style.display = "block";
@@ -357,6 +334,7 @@
                 userInfo.style.display = "none";
             }
         }
+
         function openProfileModal() {
             document.getElementById("profileModal").style.display = "flex";
             var savedAccount = localStorage.getItem("account");
