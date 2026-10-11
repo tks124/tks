@@ -107,8 +107,14 @@
 
 <script>
     const SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_ANON_KEY = '替换为你的supabase anon key';
+    let supabase = null;
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase客户端初始化成功');
+    } catch (e) {
+        console.warn('Supabase客户端初始化失败，数据库功能不可用:', e);
+    }
 
     const translations = {
     zh: {
@@ -243,9 +249,13 @@
             alert(t.alertFillAll);
             return;
         }
+        if (!supabase) {
+            alert('数据库连接不可用，请检查网络或稍后重试。');
+            return;
+        }
         const { error } = await supabase.from('access_requests').insert([{ reason: reason, ip_address: ip, email: email, status: 'pending', created_at: new Date().toISOString() }]);
         if (error) {
-            alert(t.alertSubmitFailed);
+            alert(t.alertSubmitFailed + ' (' + error.message + ')');
         } else {
             document.getElementById('step-verify').style.display = 'none';
             document.getElementById('step-success').style.display = 'block';
@@ -312,6 +322,7 @@
             }
             return;
         }
+        // invitePassed为true时，提交表单
         await handleGetVerify();
     }
 
