@@ -280,12 +280,26 @@
                 if (error) {
                     alert("注册完成失败: " + error.message);
                 } else {
-                    // 保存到本地存储
-                    localStorage.setItem("account", account);
-                    localStorage.setItem("email", pendingEmail);
-                    alert("注册成功！");
-                    closeModal("registerModal");
-                    checkAuthState();
+                    // 注册成功，显式用密码登录确保session生效
+                    try {
+                        const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+                            email: pendingEmail,
+                            password: password
+                        });
+                        if (signInError) {
+                            localStorage.setItem("email", pendingEmail);
+                            alert("密码已设置成功！请重新登录。");
+                        } else {
+                            localStorage.setItem("email", pendingEmail);
+                            alert("注册成功！");
+                            closeModal("registerModal");
+                            checkAuthState();
+                        }
+                    } catch (err) {
+                        console.error("自动登录出错:", err);
+                        localStorage.setItem("email", pendingEmail);
+                        alert("注册成功但自动登录失败，请手动登录。");
+                    }
                 }
                 btn.disabled = false;
                 btn.textContent = "完成注册";
@@ -315,6 +329,8 @@
                 if (error) {
                     alert("登录失败: " + error.message);
                 } else {
+                    // 登录成功，保存邮箱到localStorage
+                    localStorage.setItem("email", email);
                     alert("登录成功！");
                     closeModal("loginModal");
                     document.getElementById("loginEmail").value = "";
