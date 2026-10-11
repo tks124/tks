@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceKill124 - 官网入口</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; position: relative; }
         h1 { margin-bottom: 40px; font-size: 2.5rem; letter-spacing: 2px; }
@@ -28,36 +29,35 @@
         .modal-btn { padding: 10px 20px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; flex: 1; }
         .btn-confirm { background-color: #28a745; color: white; }
         .btn-cancel { background-color: #dc3545; color: white; }
-    
-    body[data-holiday] { background-color: var(--holiday-bg, #1a1a1a) !important; }
-    body[data-holiday] h1, body[data-holiday] .btn-group button, body[data-holiday] .footer,
-    body[data-holiday] .modal-content h2, body[data-holiday] .modal-content input,
-    body[data-holiday] .modal-content button, body[data-holiday] .modal-btn,
-    body[data-holiday] .time-display, body[data-holiday] .lang-switch {
-        color: var(--holiday-color, #ffffff) !important;
-    }
-    body[data-holiday="spring-festival"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
-    body[data-holiday="lantern-festival"] { --holiday-bg: #4a0080; --holiday-color: #ffd700; }
-    body[data-holiday="dragon-boat"] { --holiday-bg: #006400; --holiday-color: #ffd700; }
-    body[data-holiday="qixi"] { --holiday-bg: #8b004c; --holiday-color: #ffb6c1; }
-    body[data-holiday="ghost-festival"] { --holiday-bg: #2f2f2f; --holiday-color: #c0c0c0; }
-    body[data-holiday="mid-autumn"] { --holiday-bg: #0a1a3a; --holiday-color: #ffd700; }
-    body[data-holiday="double-nine"] { --holiday-bg: #8b4513; --holiday-color: #fff8dc; }
-    body[data-holiday="new-year"] { --holiday-bg: #00008b; --holiday-color: #ffd700; }
-    body[data-holiday="valentine"] { --holiday-bg: #8b0000; --holiday-color: #ff69b4; }
-    body[data-holiday="womens-day"] { --holiday-bg: #8b004c; --holiday-color: #ffb6c1; }
-    body[data-holiday="arbor-day"] { --holiday-bg: #006400; --holiday-color: #90ee90; }
-    body[data-holiday="fools-day"] { --holiday-bg: #8b8b00; --holiday-color: #ffff00; }
-    body[data-holiday="qingming"] { --holiday-bg: #2f4f4f; --holiday-color: #d3d3d3; }
-    body[data-holiday="labor-day"] { --holiday-bg: #8b0000; --holiday-color: #ffffff; }
-    body[data-holiday="youth-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
-    body[data-holiday="children-day"] { --holiday-bg: #8b8b00; --holiday-color: #ff4500; }
-    body[data-holiday="party-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
-    body[data-holiday="army-day"] { --holiday-bg: #006400; --holiday-color: #ffd700; }
-    body[data-holiday="teachers-day"] { --holiday-bg: #4a0080; --holiday-color: #ffd700; }
-    body[data-holiday="national-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
-    body[data-holiday="halloween"] { --holiday-bg: #ff6600; --holiday-color: #ffffff; }
-    body[data-holiday="christmas"] { --holiday-bg: #006400; --holiday-color: #ff0000; }
+        body[data-holiday] { background-color: var(--holiday-bg, #1a1a1a) !important; }
+        body[data-holiday] h1, body[data-holiday] .btn-group button, body[data-holiday] .footer,
+        body[data-holiday] .modal-content h2, body[data-holiday] .modal-content input,
+        body[data-holiday] .modal-content button, body[data-holiday] .modal-btn,
+        body[data-holiday] .time-display, body[data-holiday] .lang-switch {
+            color: var(--holiday-color, #ffffff) !important;
+        }
+        body[data-holiday="spring-festival"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
+        body[data-holiday="lantern-festival"] { --holiday-bg: #4a0080; --holiday-color: #ffd700; }
+        body[data-holiday="dragon-boat"] { --holiday-bg: #006400; --holiday-color: #ffd700; }
+        body[data-holiday="qixi"] { --holiday-bg: #8b004c; --holiday-color: #ffb6c1; }
+        body[data-holiday="ghost-festival"] { --holiday-bg: #2f2f2f; --holiday-color: #c0c0c0; }
+        body[data-holiday="mid-autumn"] { --holiday-bg: #0a1a3a; --holiday-color: #ffd700; }
+        body[data-holiday="double-nine"] { --holiday-bg: #8b4513; --holiday-color: #fff8dc; }
+        body[data-holiday="new-year"] { --holiday-bg: #00008b; --holiday-color: #ffd700; }
+        body[data-holiday="valentine"] { --holiday-bg: #8b0000; --holiday-color: #ff69b4; }
+        body[data-holiday="womens-day"] { --holiday-bg: #8b004c; --holiday-color: #ffb6c1; }
+        body[data-holiday="arbor-day"] { --holiday-bg: #006400; --holiday-color: #90ee90; }
+        body[data-holiday="fools-day"] { --holiday-bg: #8b8b00; --holiday-color: #ffff00; }
+        body[data-holiday="qingming"] { --holiday-bg: #2f4f4f; --holiday-color: #d3d3d3; }
+        body[data-holiday="labor-day"] { --holiday-bg: #8b0000; --holiday-color: #ffffff; }
+        body[data-holiday="youth-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
+        body[data-holiday="children-day"] { --holiday-bg: #8b8b00; --holiday-color: #ff4500; }
+        body[data-holiday="party-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
+        body[data-holiday="army-day"] { --holiday-bg: #006400; --holiday-color: #ffd700; }
+        body[data-holiday="teachers-day"] { --holiday-bg: #4a0080; --holiday-color: #ffd700; }
+        body[data-holiday="national-day"] { --holiday-bg: #8b0000; --holiday-color: #ffd700; }
+        body[data-holiday="halloween"] { --holiday-bg: #ff6600; --holiday-color: #ffffff; }
+        body[data-holiday="christmas"] { --holiday-bg: #006400; --holiday-color: #ff0000; }
     </style>
     <script>
     (function() {
@@ -90,10 +90,13 @@
                 <input type="text" id="inviteInput" class="modal-input" placeholder="请输入四至六位数邀请码...." autofocus>
             </div>
             <div id="step-verify" style="display:none;">
-                <div class="code-row">
-                    <input type="text" id="verifyInput" class="modal-input" placeholder="请输入6位验证码...." maxlength="6" autocomplete="off" inputmode="numeric">
-                    <button type="button" class="btn-code" id="btn-get-verify" onclick="handleGetVerify()">获取验证码</button>
-                </div>
+                <input type="text" id="reasonInput" class="modal-input" placeholder="请输入申请原因....">
+                <input type="text" id="ipInput" class="modal-input" placeholder="请输入常用IP....">
+                <input type="email" id="emailInput" class="modal-input" placeholder="请输入邮箱....">
+                <button type="button" class="btn-code" id="btn-get-verify" onclick="handleGetVerify()" style="width:100%; margin-top:10px;">获取验证码</button>
+            </div>
+            <div id="step-success" style="display:none;">
+                <p id="success-message"></p>
             </div>
             <div class="modal-btn-group">
                 <button class="modal-btn btn-cancel" onclick="closeModal()" id="btn-cancel">取消</button>
@@ -103,66 +106,9 @@
     </div>
 
 <script>
-    var _q7 = [10, 15, 109, 104, 30, 9, 19, 31, 8, 10, 8, 28, 23, 18, 110, 111];
-
-    function _r4(a) {
-        var s = '';
-        for (var i = 0; i < a.length; i++) {
-            s += String.fromCharCode(a[i] ^ 0x5a);
-        }
-        return s;
-    }
-
-    function _base32Decode(base32) {
-        var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-        var cleaned = base32.toUpperCase().replace(/=+$/, '');
-        var bits = 0;
-        var value = 0;
-        var bytes = [];
-        for (var i = 0; i < cleaned.length; i++) {
-            var idx = alphabet.indexOf(cleaned[i]);
-            if (idx === -1) continue;
-            value = (value << 5) | idx;
-            bits += 5;
-            if (bits >= 8) {
-                bytes.push((value >>> (bits - 8)) & 0xff);
-                bits -= 8;
-            }
-        }
-        return new Uint8Array(bytes);
-    }
-
-    function _v9() {
-        return _base32Decode(_r4(_q7));
-    }
-
-    async function _t0(secretBytes, step) {
-        try {
-            const key = await crypto.subtle.importKey(
-                'raw',
-                secretBytes,
-                { name: 'HMAC', hash: 'SHA-1' },
-                false,
-                ['sign']
-            );
-            const timeBytes = new Uint8Array(8);
-            let temp = step;
-            for (let i = 7; i >= 0; i--) {
-                timeBytes[i] = temp & 0xff;
-                temp = temp >> 8;
-            }
-            const sig = await crypto.subtle.sign('HMAC', key, timeBytes);
-            const hash = new Uint8Array(sig);
-            const offset = hash[hash.length - 1] & 0x0f;
-            const code = ((hash[offset] & 0x7f) << 24) |
-                         ((hash[offset + 1] & 0xff) << 16) |
-                         ((hash[offset + 2] & 0xff) << 8) |
-                         (hash[offset + 3] & 0xff);
-            return (code % 1000000).toString().padStart(6, '0');
-        } catch (e) {
-            return null;
-        }
-    }
+    const SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const translations = {
     zh: {
@@ -171,21 +117,21 @@
         btnGetCode: "获取专属邀请码",
         btnEnter: "输入邀请码进入",
         modalTitle: "请输入邀请码",
-        modalTitle2: "请输入验证码",
+        modalTitle2: "申请验证",
         inputPlaceholder: "请输入四至六位数邀请码....",
-        verifyPlaceholder: "请输入6位验证码....",
+        reasonPlaceholder: "请输入申请原因....",
+        ipPlaceholder: "请输入常用IP....",
+        emailPlaceholder: "请输入邮箱....",
         btnGetVerify: "获取验证码",
         btnCancel: "取消",
         btnConfirm: "确定进入",
         alertInputEmpty: "请输入邀请码！",
-        alertVerifyEmpty: "请输入验证码！",
-        alertVerifyFormat: "验证码为六位纯数字，请重新输入！",
-        alertSuccess: "验证成功！即将进入官网",
+        alertFillAll: "请填写所有字段！",
+        alertSubmitSuccess: "申请已提交成功！请等待管理员审核。",
+        alertSubmitFailed: "提交失败，请重试。",
         alertInvalid: "邀请码无效，请核对后重试。",
-        alertVerifyInvalid: "验证码错误或已过期，请核对后重试。",
         alertSafety: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
         emailHint: "打开邮箱，向该linjiayuan@spacekill124.cn邮箱发送申请二字 管理员上班时间7:00~9:00，时间可能变动，请耐心等待",
-        verifyHint: "请打开邮箱，向 linjiayuan@spacekill124.cn 发送「申请」，您所获取的验证码将由管理员发送，请将获取的验证码填入验证码区域的输入框，管理员上班时间 7:00~9:00，时间可能变动，请耐心等待。",
         alertCrypto: "当前环境不支持安全加密计算，请使用 HTTPS 或 localhost 访问。"
     },
     en: {
@@ -194,24 +140,23 @@
         btnGetCode: "Get Exclusive Invite Code",
         btnEnter: "Enter Invite Code to Proceed",
         modalTitle: "Please Enter the Invite Code",
-        modalTitle2: "Please Enter the Verification Code",
+        modalTitle2: "Verification Application",
         inputPlaceholder: "Please enter a 4-6 digit invite code....",
-        verifyPlaceholder: "Please enter the 6-digit verification code....",
+        reasonPlaceholder: "Please enter the reason....",
+        ipPlaceholder: "Please enter your common IP....",
+        emailPlaceholder: "Please enter your email....",
         btnGetVerify: "Get Verification Code",
         btnCancel: "Cancel",
         btnConfirm: "Confirm and Enter",
         alertInputEmpty: "Please enter the invite code!",
-        alertVerifyEmpty: "Please enter the verification code!",
-        alertVerifyFormat: "The verification code must be 6 digits only, please re-enter!",
-        alertSuccess: "Verification successful! Entering the official site...",
+        alertFillAll: "Please fill in all fields!",
+        alertSubmitSuccess: "Application submitted successfully! Please wait for admin review.",
+        alertSubmitFailed: "Submission failed, please try again.",
         alertInvalid: "The invite code is invalid, please check and try again.",
-        alertVerifyInvalid: "The verification code is wrong or expired, please check and try again.",
         alertSafety: "The site you are about to visit is not under the name of SpaceKill124, please pay attention to your privacy and security.",
         emailHint: "Open your email and send the two words 申请 to linjiayuan@spacekill124.cn. Admin working hours are 7:00~9:00, the time may change, please wait patiently.",
-        verifyHint: "Please open your email and send 「申请」 to linjiayuan@spacekill124.cn. The verification code you obtain will be sent by the admin. Please enter the code you obtain into the input box in the verification code area. Admin working hours are 7:00~9:00, the time may change, please wait patiently.",
         alertCrypto: "Secure encryption computation is not supported in the current environment, please access via HTTPS or localhost."
-    }
-};
+    }};
 
     const FULL_URL = "https://www.spacekill124.cn/rjyz";
     const BLOCK_URL = "jg";
@@ -221,7 +166,6 @@
     const TIME_WINDOW = 60000;
     const VISIT_COUNT_KEY = "sk124_visit_count";
     const VISIT_TIME_KEY = "sk124_visit_time";
-
     const validCodes = [ "1426", "0124", "tks124", "3120", "3465", "12grr", "3412" ];
 
     let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
@@ -261,7 +205,9 @@
         document.getElementById('btn-enter').innerText = t.btnEnter;
         document.getElementById('modal-title').innerText = invitePassed ? t.modalTitle2 : t.modalTitle;
         document.getElementById('inviteInput').placeholder = t.inputPlaceholder;
-        document.getElementById('verifyInput').placeholder = t.verifyPlaceholder;
+        document.getElementById('reasonInput').placeholder = t.reasonPlaceholder;
+        document.getElementById('ipInput').placeholder = t.ipPlaceholder;
+        document.getElementById('emailInput').placeholder = t.emailPlaceholder;
         document.getElementById('btn-get-verify').innerText = t.btnGetVerify;
         document.getElementById('btn-cancel').innerText = t.btnCancel;
         document.getElementById('btn-confirm').innerText = t.btnConfirm;
@@ -288,8 +234,24 @@
         alert(translations[currentLang].emailHint);
     }
 
-    function handleGetVerify() {
-        alert(translations[currentLang].verifyHint);
+    async function handleGetVerify() {
+        const t = translations[currentLang];
+        const reason = document.getElementById('reasonInput').value.trim();
+        const ip = document.getElementById('ipInput').value.trim();
+        const email = document.getElementById('emailInput').value.trim();
+        if (!reason || !ip || !email) {
+            alert(t.alertFillAll);
+            return;
+        }
+        const { error } = await supabase.from('access_requests').insert([{ reason: reason, ip_address: ip, email: email, status: 'pending', created_at: new Date().toISOString() }]);
+        if (error) {
+            alert(t.alertSubmitFailed);
+        } else {
+            document.getElementById('step-verify').style.display = 'none';
+            document.getElementById('step-success').style.display = 'block';
+            document.getElementById('success-message').innerText = t.alertSubmitSuccess;
+            document.getElementById('btn-confirm').style.display = 'flex';
+        }
     }
 
     function openModal() {
@@ -302,9 +264,13 @@
         invitePassed = false;
         document.getElementById('step-invite').style.display = 'block';
         document.getElementById('step-verify').style.display = 'none';
+        document.getElementById('step-success').style.display = 'none';
         document.getElementById('inviteInput').value = '';
-        document.getElementById('verifyInput').value = '';
+        document.getElementById('reasonInput').value = '';
+        document.getElementById('ipInput').value = '';
+        document.getElementById('emailInput').value = '';
         document.getElementById('modal-title').innerText = translations[currentLang].modalTitle;
+        document.getElementById('btn-confirm').style.display = 'flex';
     }
 
     function closeModal() {
@@ -325,7 +291,6 @@
 
     async function verifyCode() {
         const t = translations[currentLang];
-
         if (!invitePassed) {
             const inputElement = document.getElementById('inviteInput');
             const userInput = inputElement.value.trim();
@@ -338,7 +303,8 @@
                 document.getElementById('modal-title').innerText = t.modalTitle2;
                 document.getElementById('step-invite').style.display = 'none';
                 document.getElementById('step-verify').style.display = 'block';
-                setTimeout(() => { document.getElementById('verifyInput').focus(); }, 100);
+                document.getElementById('btn-confirm').style.display = 'none';
+                setTimeout(() => { document.getElementById('reasonInput').focus(); }, 100);
             } else {
                 alert(t.alertInvalid);
                 inputElement.value = '';
@@ -346,51 +312,7 @@
             }
             return;
         }
-
-        const verifyElement = document.getElementById('verifyInput');
-        const userVerify = verifyElement.value.trim();
-
-        if (!userVerify) {
-            alert(t.alertVerifyEmpty);
-            return;
-        }
-        if (!/^\d{6}$/.test(userVerify)) {
-            alert(t.alertVerifyFormat);
-            verifyElement.value = '';
-            verifyElement.focus();
-            return;
-        }
-
-        if (!window.crypto || !window.crypto.subtle) {
-            alert(t.alertCrypto);
-            return;
-        }
-
-        const secret = _v9();
-        const currentStep = Math.floor(Date.now() / 600000);
-        const codesToCheck = [];
-        for (let i = -1; i <= 1; i++) {
-            const c = await _t0(secret, currentStep + i);
-            if (c) codesToCheck.push(c);
-        }
-        const thirtySecondStep = Math.floor(Date.now() / 30000);
-        for (let i = -1; i <= 1; i++) {
-            const c = await _t0(secret, thirtySecondStep + i);
-            if (c) codesToCheck.push(c);
-        }
-
-        if (codesToCheck.includes(userVerify)) {
-            localStorage.setItem(AUTH_KEY, "true");
-            alert(t.alertSuccess);
-            closeModal();
-            setTimeout(() => {
-                showSafetyWarning(FULL_URL);
-            }, 500);
-        } else {
-            alert(t.alertVerifyInvalid);
-            verifyElement.value = '';
-            verifyElement.focus();
-        }
+        await handleGetVerify();
     }
 
     document.getElementById('inviteInput').addEventListener("keypress", function(e) {
@@ -399,16 +321,11 @@
         }
     });
 
-    document.getElementById('verifyInput').addEventListener("keypress", function(e) {
+    document.getElementById('verifyInput') && document.getElementById('verifyInput').addEventListener("keypress", function(e) {
         if (e.key === "Enter") {
             verifyCode();
         }
     });
-
-    document.getElementById('verifyInput').addEventListener("input", function(e) {
-        this.value = this.value.replace(/\D/g, '').slice(0, 6);
-    });
-
 
     function getLunarInfo(year) {
         var lunarInfo = [
@@ -421,11 +338,7 @@
         var monthNames = "正二三四五六七八九十冬腊";
         var dayNames = "初一初二初三初四初五初六初七初八初九初十十一十二十三十四十五十六十七十八十九二十廿一廿二廿三廿四廿五廿六廿七廿八廿九三十";
         var solarMonths = [31,28,31,30,31,30,31,31,30,31,30,31];
-        
-        function l2sYear(ly) {
-            return 1900 + ly;
-        }
-        
+        function l2sYear(ly) { return 1900 + ly; }
         function getLunarDay(sy, sm, sd) {
             var endTerm = new Date(sy, sm, sd).getTime();
             var i, termStart, termEnd;
@@ -435,7 +348,6 @@
                 var lYear = 1900 + ly;
                 var daysInLYear = 0;
                 var isLeap = false;
-                
                 for (var j = 0; j < 12; j++) {
                     var monthCode = (lunarInfo[yearOffset] >> (4 * (11 - j))) & 0xf;
                     var daysInMonth = (monthCode & 0x1) ? 30 : 29;
@@ -447,41 +359,18 @@
             return null;
         }
         var lunarHolidays = {
-            springFestival: {
-                2024: [2,10], 2025: [1,29], 2026: [2,17], 2027: [2,6], 2028: [1,26], 2029: [2,13], 2030: [2,3],
-                2031: [1,22], 2032: [2,11], 2033: [1,31], 2034: [2,19], 2035: [2,8]
-            },
-            lanternFestival: {
-                2024: [2,24], 2025: [2,12], 2026: [3,4], 2027: [2,22], 2028: [2,11], 2029: [2,28], 2030: [2,18],
-                2031: [2,7], 2032: [2,26], 2033: [2,15], 2034: [3,6], 2035: [2,23]
-            },
-            dragonBoat: {
-                2024: [6,10], 2025: [5,31], 2026: [6,19], 2027: [6,9], 2028: [5,28], 2029: [6,16], 2030: [6,6],
-                2031: [5,26], 2032: [6,14], 2033: [6,3], 2034: [6,22], 2035: [6,11]
-            },
-            qixi: {
-                2024: [8,10], 2025: [8,9], 2026: [8,18], 2027: [8,9], 2028: [7,29], 2029: [8,16], 2030: [8,6],
-                2031: [7,26], 2032: [8,14], 2033: [8,3], 2034: [8,22], 2035: [8,11]
-            },
-            ghostFestival: {
-                2024: [8,18], 2025: [8,17], 2026: [8,26], 2027: [8,17], 2028: [8,6], 2029: [8,24], 2030: [8,14],
-                2031: [8,3], 2032: [8,21], 2033: [8,10], 2034: [8,30], 2035: [8,19]
-            },
-            midAutumn: {
-                2024: [9,17], 2025: [10,6], 2026: [9,25], 2027: [9,15], 2028: [9,28], 2029: [9,17], 2030: [9,7],
-                2031: [8,27], 2032: [9,15], 2033: [9,4], 2034: [9,23], 2035: [9,12]
-            },
-            doubleNine: {
-                2024: [10,11], 2025: [10,9], 2026: [10,28], 2027: [10,17], 2028: [9,27], 2029: [10,15], 2030: [10,5],
-                2031: [9,24], 2032: [10,12], 2033: [10,1], 2034: [10,20], 2035: [10,9]
-            }
+            springFestival: { 2024: [2,10], 2025: [1,29], 2026: [2,17], 2027: [2,6], 2028: [1,26], 2029: [2,13], 2030: [2,3], 2031: [1,22], 2032: [2,11], 2033: [1,31], 2034: [2,19], 2035: [2,8] },
+            lanternFestival: { 2024: [2,24], 2025: [2,12], 2026: [3,4], 2027: [2,22], 2028: [2,11], 2029: [2,28], 2030: [2,18], 2031: [2,7], 2032: [2,26], 2033: [2,15], 2034: [3,6], 2035: [2,23] },
+            dragonBoat: { 2024: [6,10], 2025: [5,31], 2026: [6,19], 2027: [6,9], 2028: [5,28], 2029: [6,16], 2030: [6,6], 2031: [5,26], 2032: [6,14], 2033: [6,3], 2034: [6,22], 2035: [6,11] },
+            qixi: { 2024: [8,10], 2025: [8,9], 2026: [8,18], 2027: [8,9], 2028: [7,29], 2029: [8,16], 2030: [8,6], 2031: [7,26], 2032: [8,14], 2033: [8,3], 2034: [8,22], 2035: [8,11] },
+            ghostFestival: { 2024: [8,18], 2025: [8,17], 2026: [8,26], 2027: [8,17], 2028: [8,6], 2029: [8,24], 2030: [8,14], 2031: [8,3], 2032: [8,21], 2033: [8,10], 2034: [8,30], 2035: [8,19] },
+            midAutumn: { 2024: [9,17], 2025: [10,6], 2026: [9,25], 2027: [9,15], 2028: [9,28], 2029: [9,17], 2030: [9,7], 2031: [8,27], 2032: [9,15], 2033: [9,4], 2034: [9,23], 2035: [9,12] },
+            doubleNine: { 2024: [10,11], 2025: [10,9], 2026: [10,28], 2027: [10,17], 2028: [9,27], 2029: [10,15], 2030: [10,5], 2031: [9,24], 2032: [10,12], 2033: [10,1], 2034: [10,20], 2035: [10,9] }
         };
-        
         var now = new Date();
         var year = now.getFullYear();
         var month = now.getMonth() + 1;
         var day = now.getDate();
-        
         if (year < 2024 || year > 2035) return null;
         var lunarKeys = ['springFestival','lanternFestival','dragonBoat','qixi','ghostFestival','midAutumn','doubleNine'];
         for (var k = 0; k < lunarKeys.length; k++) {
@@ -489,59 +378,26 @@
             if (lunarHolidays[key] && lunarHolidays[key][year]) {
                 var d = lunarHolidays[key][year];
                 if (d[0] === month && d[1] === day) {
-                    var map = {
-                        springFestival: 'spring-festival',
-                        lanternFestival: 'lantern-festival',
-                        dragonBoat: 'dragon-boat',
-                        qixi: 'qixi',
-                        ghostFestival: 'ghost-festival',
-                        midAutumn: 'mid-autumn',
-                        doubleNine: 'double-nine'
-                    };
+                    var map = { springFestival: 'spring-festival', lanternFestival: 'lantern-festival', dragonBoat: 'dragon-boat', qixi: 'qixi', ghostFestival: 'ghost-festival', midAutumn: 'mid-autumn', doubleNine: 'double-nine' };
                     return map[key];
                 }
             }
         }
-        var fixedHolidays = {
-            '1-1': 'new-year',
-            '1-14': 'valentine',
-            '3-8': 'womens-day',
-            '3-12': 'arbor-day',
-            '4-1': 'fools-day',
-            '4-4': 'qingming', '4-5': 'qingming', '4-6': 'qingming',
-            '5-1': 'labor-day',
-            '5-4': 'youth-day',
-            '6-1': 'children-day',
-            '7-1': 'party-day',
-            '8-1': 'army-day',
-            '9-10': 'teachers-day',
-            '10-1': 'national-day', '10-2': 'national-day', '10-3': 'national-day',
-            '10-4': 'national-day', '10-5': 'national-day', '10-6': 'national-day',
-            '10-7': 'national-day',
-            '10-31': 'halloween',
-            '12-25': 'christmas'
-        };
-        
+        var fixedHolidays = { '1-1': 'new-year', '1-14': 'valentine', '3-8': 'womens-day', '3-12': 'arbor-day', '4-1': 'fools-day', '4-4': 'qingming', '4-5': 'qingming', '4-6': 'qingming', '5-1': 'labor-day', '5-4': 'youth-day', '6-1': 'children-day', '7-1': 'party-day', '8-1': 'army-day', '9-10': 'teachers-day', '10-1': 'national-day', '10-2': 'national-day', '10-3': 'national-day', '10-4': 'national-day', '10-5': 'national-day', '10-6': 'national-day', '10-7': 'national-day', '10-31': 'halloween', '12-25': 'christmas' };
         var key2 = month + '-' + day;
-        if (fixedHolidays[key2]) {
-            return fixedHolidays[key2];
-        }
-        
+        if (fixedHolidays[key2]) { return fixedHolidays[key2]; }
         return null;
     }
-    
+
     function applyHolidayTheme() {
         var holiday = getLunarInfo();
         var body = document.body;
-        if (holiday) {
-            body.setAttribute('data-holiday', holiday);
-        } else {
-            body.removeAttribute('data-holiday');
-        }
+        if (holiday) { body.setAttribute('data-holiday', holiday); }
+        else { body.removeAttribute('data-holiday'); }
     }
+
     window.addEventListener('load', applyHolidayTheme);
     setInterval(applyHolidayTheme, 60000);
-
 
     window.onload = function() {
         securityCheck();
@@ -549,12 +405,8 @@
         updateClock();
         setInterval(async () => { await updateClock(); }, 1000);
         updateText();
-        if (localStorage.getItem(AUTH_KEY) === "true") {
-            showSafetyWarning(FULL_URL);
-        }
+        if (localStorage.getItem(AUTH_KEY) === "true") { showSafetyWarning(FULL_URL); }
     };
 </script>
-<meta name="robots" content="index, follow">
-<link rel="sitemap" type="application/xml" href="/sitemap.xml">
-</body>
-    </html>
+<meta name="robots" content="index, follow"><link rel="sitemap" type="application/xml" href="/sitemap.xml"></body>
+</html>
