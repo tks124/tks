@@ -75,11 +75,11 @@
 </head>
 <body>
     <div class="time-display" id="timeDisplay">--:--:--</div>
-    <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">English</button>
+    <button class="lang-switch" id="langBtn">English</button>
     <h1 id="txt-title">Space Kill124</h1>
     <div class="btn-group">
-        <button class="btn-secondary" onclick="handleGetCode()" id="btn-get-code">获取专属邀请码</button>
-        <button class="btn-secret" onclick="openModal()" id="btn-enter">输入邀请码进入</button>
+        <button class="btn-secondary" id="btn-get-code">获取专属邀请码</button>
+        <button class="btn-secret" id="btn-enter">输入邀请码进入</button>
     </div>
     <div class="footer" id="txt-footer">© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn</div>
 
@@ -93,107 +93,123 @@
                 <input type="text" id="reasonInput" class="modal-input" placeholder="请输入申请原因....">
                 <input type="text" id="ipInput" class="modal-input" placeholder="请输入常用IP....">
                 <input type="email" id="emailInput" class="modal-input" placeholder="请输入邮箱....">
-                <button type="button" class="btn-code" id="btn-get-verify" onclick="handleGetVerify()" style="width:100%; margin-top:10px;">获取验证码</button>
+                <button type="button" class="btn-code" id="btn-get-verify" style="width:100%; margin-top:10px;">获取验证码</button>
             </div>
             <div id="step-success" style="display:none;">
                 <p id="success-message"></p>
             </div>
             <div class="modal-btn-group">
-                <button class="modal-btn btn-cancel" onclick="closeModal()" id="btn-cancel">取消</button>
-                <button class="modal-btn btn-confirm" onclick="verifyCode()" id="btn-confirm">确定进入</button>
+                <button class="modal-btn btn-cancel" id="btn-cancel">取消</button>
+                <button class="modal-btn btn-confirm" id="btn-confirm">确定进入</button>
             </div>
         </div>
     </div>
 
 <script>
-    const SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
-    const SUPABASE_ANON_KEY = '替换为你的supabase anon key';
-    let supabase = null;
+    // === 第一步：先定义所有关键变量和翻译文本（绝不被后面的错误影响） ===
+    var translations = {
+        zh: {
+            title: "Space Kill124",
+            footer: "© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn",
+            btnGetCode: "获取专属邀请码",
+            btnEnter: "输入邀请码进入",
+            modalTitle: "请输入邀请码",
+            modalTitle2: "申请验证",
+            inputPlaceholder: "请输入四至六位数邀请码....",
+            reasonPlaceholder: "请输入申请原因....",
+            ipPlaceholder: "请输入常用IP....",
+            emailPlaceholder: "请输入邮箱....",
+            btnGetVerify: "获取验证码",
+            btnCancel: "取消",
+            btnConfirm: "确定进入",
+            alertInputEmpty: "请输入邀请码！",
+            alertFillAll: "请填写所有字段！",
+            alertSubmitSuccess: "申请已提交成功！请等待管理员审核。",
+            alertSubmitFailed: "提交失败，请重试。",
+            alertInvalid: "邀请码无效，请核对后重试。",
+            alertSafety: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
+            emailHint: "打开邮箱，向该linjiayuan@spacekill124.cn邮箱发送申请二字 管理员上班时间7:00~9:00，时间可能变动，请耐心等待",
+            alertCrypto: "当前环境不支持安全加密计算，请使用 HTTPS 或 localhost 访问。"
+        },
+        en: {
+            title: "Space Kill124",
+            footer: "© 太空杀124 owns the final interpretation rights and all rights/www.spacekill124.cn",
+            btnGetCode: "Get Exclusive Invite Code",
+            btnEnter: "Enter Invite Code to Proceed",
+            modalTitle: "Please Enter the Invite Code",
+            modalTitle2: "Verification Application",
+            inputPlaceholder: "Please enter a 4-6 digit invite code....",
+            reasonPlaceholder: "Please enter the reason....",
+            ipPlaceholder: "Please enter your common IP....",
+            emailPlaceholder: "Please enter your email....",
+            btnGetVerify: "Get Verification Code",
+            btnCancel: "Cancel",
+            btnConfirm: "Confirm and Enter",
+            alertInputEmpty: "Please enter the invite code!",
+            alertFillAll: "Please fill in all fields!",
+            alertSubmitSuccess: "Application submitted successfully! Please wait for admin review.",
+            alertSubmitFailed: "Submission failed, please try again.",
+            alertInvalid: "The invite code is invalid, please check and try again.",
+            alertSafety: "The site you are about to visit is not under the name of SpaceKill124, please pay attention to your privacy and security.",
+            emailHint: "Open your email and send the two words 申请 to linjiayuan@spacekill124.cn. Admin working hours are 7:00~9:00, the time may change, please wait patiently.",
+            alertCrypto: "Secure encryption computation is not supported in the current environment, please access via HTTPS or localhost."
+        }
+    };
+
+    var FULL_URL = "https://www.spacekill124.cn/rjyz";
+    var BLOCK_URL = "jg";
+    var AUTH_KEY = "sk124_auth_token";
+    var LANG_KEY = "sk124_lang";
+    var MAX_VISITS = 20;
+    var TIME_WINDOW = 60000;
+    var VISIT_COUNT_KEY = "sk124_visit_count";
+    var VISIT_TIME_KEY = "sk124_visit_time";
+    var validCodes = ["1426", "0124", "tks124", "3120", "3465", "12grr", "3412"];
+
+    var currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+    var invitePassed = false;
+
+    // === 第二步：Supabase初始化（用try-catch保护，崩溃也不影响页面） ===
+    var SUPABASE_URL = 'https://xryfrqxelzetzkgsaycl.supabase.co';
+    var SUPABASE_ANON_KEY = '替换为你的supabase anon key';
+    var supabase = null;
     try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('Supabase客户端初始化成功');
+        if (window.supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase客户端初始化成功');
+        } else {
+            console.warn('Supabase CDN未加载，数据库功能不可用（不影响网页基本功能）');
+        }
     } catch (e) {
-        console.warn('Supabase客户端初始化失败，数据库功能不可用:', e);
+        console.warn('Supabase初始化异常:', e);
     }
 
-    const translations = {
-    zh: {
-        title: "Space Kill124",
-        footer: "© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn",
-        btnGetCode: "获取专属邀请码",
-        btnEnter: "输入邀请码进入",
-        modalTitle: "请输入邀请码",
-        modalTitle2: "申请验证",
-        inputPlaceholder: "请输入四至六位数邀请码....",
-        reasonPlaceholder: "请输入申请原因....",
-        ipPlaceholder: "请输入常用IP....",
-        emailPlaceholder: "请输入邮箱....",
-        btnGetVerify: "获取验证码",
-        btnCancel: "取消",
-        btnConfirm: "确定进入",
-        alertInputEmpty: "请输入邀请码！",
-        alertFillAll: "请填写所有字段！",
-        alertSubmitSuccess: "申请已提交成功！请等待管理员审核。",
-        alertSubmitFailed: "提交失败，请重试。",
-        alertInvalid: "邀请码无效，请核对后重试。",
-        alertSafety: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
-        emailHint: "打开邮箱，向该linjiayuan@spacekill124.cn邮箱发送申请二字 管理员上班时间7:00~9:00，时间可能变动，请耐心等待",
-        alertCrypto: "当前环境不支持安全加密计算，请使用 HTTPS 或 localhost 访问。"
-    },
-    en: {
-        title: "Space Kill124",
-        footer: "© 太空杀124 owns the final interpretation rights and all rights/www.spacekill124.cn",
-        btnGetCode: "Get Exclusive Invite Code",
-        btnEnter: "Enter Invite Code to Proceed",
-        modalTitle: "Please Enter the Invite Code",
-        modalTitle2: "Verification Application",
-        inputPlaceholder: "Please enter a 4-6 digit invite code....",
-        reasonPlaceholder: "Please enter the reason....",
-        ipPlaceholder: "Please enter your common IP....",
-        emailPlaceholder: "Please enter your email....",
-        btnGetVerify: "Get Verification Code",
-        btnCancel: "Cancel",
-        btnConfirm: "Confirm and Enter",
-        alertInputEmpty: "Please enter the invite code!",
-        alertFillAll: "Please fill in all fields!",
-        alertSubmitSuccess: "Application submitted successfully! Please wait for admin review.",
-        alertSubmitFailed: "Submission failed, please try again.",
-        alertInvalid: "The invite code is invalid, please check and try again.",
-        alertSafety: "The site you are about to visit is not under the name of SpaceKill124, please pay attention to your privacy and security.",
-        emailHint: "Open your email and send the two words 申请 to linjiayuan@spacekill124.cn. Admin working hours are 7:00~9:00, the time may change, please wait patiently.",
-        alertCrypto: "Secure encryption computation is not supported in the current environment, please access via HTTPS or localhost."
-    }};
-
-    const FULL_URL = "https://www.spacekill124.cn/rjyz";
-    const BLOCK_URL = "jg";
-    const AUTH_KEY = "sk124_auth_token";
-    const LANG_KEY = "sk124_lang";
-    const MAX_VISITS = 20;
-    const TIME_WINDOW = 60000;
-    const VISIT_COUNT_KEY = "sk124_visit_count";
-    const VISIT_TIME_KEY = "sk124_visit_time";
-    const validCodes = [ "1426", "0124", "tks124", "3120", "3465", "12grr", "3412" ];
-
-    let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
-    let invitePassed = false;
-
-    async function updateClock() {
-        const el = document.getElementById('timeDisplay');
+    // === 第三步：所有函数定义 ===
+    function updateClock() {
+        var el = document.getElementById('timeDisplay');
         if (!el) return;
         try {
-            const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Shanghai');
-            const data = await response.json();
-            const now = new Date(data.datetime);
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            el.innerText = h + ':' + m + ':' + s;
+            fetch('https://worldtimeapi.org/api/timezone/Asia/Shanghai').then(function(response) {
+                return response.json();
+            }).then(function(data) {
+                var now = new Date(data.datetime);
+                var h = String(now.getHours()).padStart(2, '0');
+                var m = String(now.getMinutes()).padStart(2, '0');
+                var s = String(now.getSeconds()).padStart(2, '0');
+                el.innerText = h + ':' + m + ':' + s;
+            }).catch(function() {
+                var now = new Date();
+                var h = String(now.getHours()).padStart(2, '0');
+                var m = String(now.getMinutes()).padStart(2, '0');
+                var s = String(now.getSeconds()).padStart(2, '0');
+                el.innerText = h + ':' + m + ':' + s;
+            });
         } catch (e) {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            el.innerText = h + ':' + m + ':' + s;
+            var now2 = new Date();
+            var h2 = String(now2.getHours()).padStart(2, '0');
+            var m2 = String(now2.getMinutes()).padStart(2, '0');
+            var s2 = String(now2.getSeconds()).padStart(2, '0');
+            el.innerText = h2 + ':' + m2 + ':' + s2;
         }
     }
 
@@ -204,7 +220,7 @@
     }
 
     function updateText() {
-        const t = translations[currentLang];
+        var t = translations[currentLang];
         document.getElementById('txt-title').innerText = t.title;
         document.getElementById('txt-footer').innerText = t.footer;
         document.getElementById('btn-get-code').innerText = t.btnGetCode;
@@ -221,9 +237,9 @@
     }
 
     function securityCheck() {
-        const now = Date.now();
-        let count = parseInt(localStorage.getItem(VISIT_COUNT_KEY)) || 0;
-        let lastTime = parseInt(localStorage.getItem(VISIT_TIME_KEY)) || 0;
+        var now = Date.now();
+        var count = parseInt(localStorage.getItem(VISIT_COUNT_KEY)) || 0;
+        var lastTime = parseInt(localStorage.getItem(VISIT_TIME_KEY)) || 0;
         if (now - lastTime > TIME_WINDOW) {
             count = 1;
             localStorage.setItem(VISIT_TIME_KEY, now.toString());
@@ -240,11 +256,11 @@
         alert(translations[currentLang].emailHint);
     }
 
-    async function handleGetVerify() {
-        const t = translations[currentLang];
-        const reason = document.getElementById('reasonInput').value.trim();
-        const ip = document.getElementById('ipInput').value.trim();
-        const email = document.getElementById('emailInput').value.trim();
+    function handleGetVerify() {
+        var t = translations[currentLang];
+        var reason = document.getElementById('reasonInput').value.trim();
+        var ip = document.getElementById('ipInput').value.trim();
+        var email = document.getElementById('emailInput').value.trim();
         if (!reason || !ip || !email) {
             alert(t.alertFillAll);
             return;
@@ -253,21 +269,26 @@
             alert('数据库连接不可用，请检查网络或稍后重试。');
             return;
         }
-        const { error } = await supabase.from('access_requests').insert([{ reason: reason, ip_address: ip, email: email, status: 'pending', created_at: new Date().toISOString() }]);
-        if (error) {
-            alert(t.alertSubmitFailed + ' (' + error.message + ')');
-        } else {
-            document.getElementById('step-verify').style.display = 'none';
-            document.getElementById('step-success').style.display = 'block';
-            document.getElementById('success-message').innerText = t.alertSubmitSuccess;
-            document.getElementById('btn-confirm').style.display = 'flex';
-        }
+        supabase.from('access_requests').insert([
+            { reason: reason, ip_address: ip, email: email, status: 'pending', created_at: new Date().toISOString() }
+        ]).then(function(result) {
+            if (result.error) {
+                alert(t.alertSubmitFailed + ' (' + result.error.message + ')');
+            } else {
+                document.getElementById('step-verify').style.display = 'none';
+                document.getElementById('step-success').style.display = 'block';
+                document.getElementById('success-message').innerText = t.alertSubmitSuccess;
+                document.getElementById('btn-confirm').style.display = 'flex';
+            }
+        }).catch(function(err) {
+            alert(t.alertSubmitFailed + ' (' + err.message + ')');
+        });
     }
 
     function openModal() {
         resetModal();
         document.getElementById('codeModal').style.display = 'flex';
-        setTimeout(() => { document.getElementById('inviteInput').focus(); }, 100);
+        setTimeout(function() { document.getElementById('inviteInput').focus(); }, 100);
     }
 
     function resetModal() {
@@ -293,17 +314,17 @@
             window.location.href = targetUrl;
             return;
         }
-        const t = translations[currentLang];
+        var t = translations[currentLang];
         if (confirm(t.alertSafety)) {
             window.location.href = targetUrl;
         }
     }
 
-    async function verifyCode() {
-        const t = translations[currentLang];
+    function verifyCode() {
+        var t = translations[currentLang];
         if (!invitePassed) {
-            const inputElement = document.getElementById('inviteInput');
-            const userInput = inputElement.value.trim();
+            var inputElement = document.getElementById('inviteInput');
+            var userInput = inputElement.value.trim();
             if (!userInput) {
                 alert(t.alertInputEmpty);
                 return;
@@ -314,7 +335,7 @@
                 document.getElementById('step-invite').style.display = 'none';
                 document.getElementById('step-verify').style.display = 'block';
                 document.getElementById('btn-confirm').style.display = 'none';
-                setTimeout(() => { document.getElementById('reasonInput').focus(); }, 100);
+                setTimeout(function() { document.getElementById('reasonInput').focus(); }, 100);
             } else {
                 alert(t.alertInvalid);
                 inputElement.value = '';
@@ -322,22 +343,67 @@
             }
             return;
         }
-        // invitePassed为true时，提交表单
-        await handleGetVerify();
+        handleGetVerify();
     }
 
-    document.getElementById('inviteInput').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            verifyCode();
+    // === 第四步：页面加载完成后绑定事件（用addEventListener代替inline onclick） ===
+    window.addEventListener('DOMContentLoaded', function() {
+        console.log('页面DOM已加载，开始绑定事件');
+
+        // 绑定按钮事件
+        document.getElementById('btn-get-code').addEventListener('click', handleGetCode);
+        document.getElementById('btn-enter').addEventListener('click', openModal);
+        document.getElementById('btn-cancel').addEventListener('click', closeModal);
+        document.getElementById('btn-confirm').addEventListener('click', verifyCode);
+        document.getElementById('btn-get-verify').addEventListener('click', handleGetVerify);
+        document.getElementById('langBtn').addEventListener('click', toggleLanguage);
+
+        // 邀请码输入框回车确认
+        document.getElementById('inviteInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+
+        // 申请页面输入框回车 → 提交
+        document.getElementById('reasonInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+        document.getElementById('ipInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+        document.getElementById('emailInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('codeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 初始化
+        securityCheck();
+        applyHolidayTheme();
+        updateClock();
+        setInterval(function() { updateClock(); }, 1000);
+        updateText();
+
+        if (localStorage.getItem(AUTH_KEY) === "true") {
+            showSafetyWarning(FULL_URL);
         }
+
+        console.log('事件绑定完成，页面交互已启用');
     });
 
-    document.getElementById('verifyInput') && document.getElementById('verifyInput').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            verifyCode();
-        }
-    });
-
+    // === 节日主题 ===
     function getLunarInfo(year) {
         var lunarInfo = [
             0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
@@ -346,29 +412,6 @@
             0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e0,0x092e0,0x1c8d7,0x0c950,
             0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557
         ];
-        var monthNames = "正二三四五六七八九十冬腊";
-        var dayNames = "初一初二初三初四初五初六初七初八初九初十十一十二十三十四十五十六十七十八十九二十廿一廿二廿三廿四廿五廿六廿七廿八廿九三十";
-        var solarMonths = [31,28,31,30,31,30,31,31,30,31,30,31];
-        function l2sYear(ly) { return 1900 + ly; }
-        function getLunarDay(sy, sm, sd) {
-            var endTerm = new Date(sy, sm, sd).getTime();
-            var i, termStart, termEnd;
-            for (i = 0; i < 50; i++) {
-                var yearOffset = i;
-                var ly = yearOffset;
-                var lYear = 1900 + ly;
-                var daysInLYear = 0;
-                var isLeap = false;
-                for (var j = 0; j < 12; j++) {
-                    var monthCode = (lunarInfo[yearOffset] >> (4 * (11 - j))) & 0xf;
-                    var daysInMonth = (monthCode & 0x1) ? 30 : 29;
-                    daysInLYear += daysInMonth;
-                    if ((monthCode & 0x8) !== 0) isLeap = true;
-                }
-                break;
-            }
-            return null;
-        }
         var lunarHolidays = {
             springFestival: { 2024: [2,10], 2025: [1,29], 2026: [2,17], 2027: [2,6], 2028: [1,26], 2029: [2,13], 2030: [2,3], 2031: [1,22], 2032: [2,11], 2033: [1,31], 2034: [2,19], 2035: [2,8] },
             lanternFestival: { 2024: [2,24], 2025: [2,12], 2026: [3,4], 2027: [2,22], 2028: [2,11], 2029: [2,28], 2030: [2,18], 2031: [2,7], 2032: [2,26], 2033: [2,15], 2034: [3,6], 2035: [2,23] },
@@ -409,15 +452,6 @@
 
     window.addEventListener('load', applyHolidayTheme);
     setInterval(applyHolidayTheme, 60000);
-
-    window.onload = function() {
-        securityCheck();
-        applyHolidayTheme();
-        updateClock();
-        setInterval(async () => { await updateClock(); }, 1000);
-        updateText();
-        if (localStorage.getItem(AUTH_KEY) === "true") { showSafetyWarning(FULL_URL); }
-    };
 </script>
 <meta name="robots" content="index, follow"><link rel="sitemap" type="application/xml" href="/sitemap.xml"></body>
 </html>
