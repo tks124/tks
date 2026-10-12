@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 - SpaceKill124</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 15px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 560px;
+            padding: 36px 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 38px;
+            font-weight: bold;
+            color: white;
+            margin: 0 auto 18px auto;
+            box-shadow: 0 8px 20px rgba(139,92,246,0.4);
+        }
+
+        .account-name {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .uid-badge {
+            display: block;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        .uid-badge span {
+            background: rgba(139,92,246,0.2);
+            border: 1px solid rgba(139,92,246,0.5);
+            padding: 3px 12px;
+            border-radius: 20px;
+            color: #c4b5fd;
+            font-weight: bold;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 15px;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #94a3b8; }
+        .info-value { color: #f1f5f9; font-weight: 500; text-align: right; max-width: 65%; word-break: break-all; }
+
+        .bio-box {
+            margin-top: 18px;
+            background: rgba(255,255,255,0.04);
+            border-left: 3px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            min-height: 50px;
+            word-break: break-word;
+        }
+        .bio-title {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .my-messages-box {
+            margin-top: 18px;
+            background: rgba(255,255,255,0.04);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .my-messages-list {
+            max-height: 260px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+        .my-message-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .my-message-item .msg-time {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .no-msg {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        .actions button {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+            color: white;
+        }
+        .btn-edit { background: linear-gradient(to right, #8b5cf6, #7c3aed); }
+        .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(139,92,246,0.4); }
+        .btn-back { background: linear-gradient(to right, #3b82f6, #2563eb); }
+        .btn-back:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(59,130,246,0.4); }
+        .btn-logout { background: linear-gradient(to right, #ef4444, #dc2626); }
+        .btn-logout:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(239,68,68,0.4); }
+
+        .loading {
+            text-align: center;
+            color: #94a3b8;
+            padding: 60px 0;
+            font-size: 15px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 30px;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 360px;
+        }
+        .modal-content h3 { margin: 0 0 20px 0; color: #f1f5f9; text-align: center; }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .modal-content input:focus, .modal-content select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.25);
+        }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .modal-buttons button {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-cancel { background: #64748b; }
+        .btn-cancel:hover { background: #475569; }
+        .btn-confirm { background: #10b981; }
+        .btn-confirm:hover { background: #059669; }
+        .modal-status { font-size: 12px; text-align: center; margin-top: 8px; min-height: 16px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="card">
+        <div id="loadingBox" class="loading">加载中...</div>
+
+        <div id="profileBox" style="display:none;">
+            <div class="avatar" id="avatarBox">?</div>
+            <div class="account-name" id="nameBox">—</div>
+            <div class="uid-badge">UID: <span id="uidBox">—</span></div>
+
+            <div class="info-row">
+                <span class="info-label">邮箱</span>
+                <span class="info-value" id="emailBox">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">性别</span>
+                <span class="info-value" id="genderBox">—</span>
+            </div>
+
+            <div class="bio-box">
+                <div class="bio-title">个性签名</div>
+                <div id="bioBox">这个人很懒，什么都没留下。</div>
+            </div>
+
+            <div class="my-messages-box">
+                <div class="bio-title">我的留言 <span id="msgCount">(0)</span></div>
+                <div id="myMessagesList" class="my-messages-list">
+                    <div class="no-msg">还没有发表过留言。</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-edit" onclick="openEdit()">编辑资料</button>
+                <button class="btn-back" onclick="goBack()">返回首页</button>
+                <button class="btn-logout" onclick="doLogout()">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>编辑资料</h3>
+            <input type="text" id="editAccount" placeholder="账号名称">
+            <select id="editGender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+                <option value="保密">保密</option>
+            </select>
+            <input type="text" id="editBio" placeholder="个性签名">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeEdit()">取消</button>
+                <button class="btn-confirm" onclick="saveEdit()">保存</button>
+            </div>
+            <p class="modal-status" id="editStatus"></p>
+        </div>
+    </div>
+
+<script>
+    const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
+    let supabaseClient = null;
+    if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    const AUTH_KEY = "sk124_auth_token";
+    const AUTH_PAGE_URL = "https://tks124.github.io/tks";
+    let currentEmail = "";
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    async function loadProfile() {
+        if (!supabaseClient) {
+            document.getElementById("loadingBox").textContent = "Supabase 未加载";
+            return;
+        }
+
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.replace(AUTH_PAGE_URL);
+            return;
+        }
+
+        currentEmail = session.user.email;
+
+        let { data: profile, error } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("email", currentEmail)
+            .maybeSingle();
+
+        if (error) {
+            document.getElementById("loadingBox").textContent = "读取资料失败: " + error.message;
+            return;
+        }
+
+        if (!profile) {
+            const account = (session.user.user_metadata && session.user.user_metadata.account) || currentEmail;
+            const { data: inserted } = await supabaseClient
+                .from("profiles")
+                .insert([{ email: currentEmail, account: account }])
+                .select()
+                .single();
+            profile = inserted;
+        }
+
+        if (!profile) {
+            document.getElementById("loadingBox").textContent = "无法获取资料";
+            return;
+        }
+
+        document.getElementById("loadingBox").style.display = "none";
+        document.getElementById("profileBox").style.display = "block";
+
+        const account = profile.account || currentEmail;
+        const uid = profile.uid || "-";
+        const gender = profile.gender || "保密";
+        const bio = profile.bio || "";
+
+        document.getElementById("avatarBox").textContent = account.charAt(0).toUpperCase();
+        document.getElementById("nameBox").textContent = account;
+        document.getElementById("uidBox").textContent = uid;
+        document.getElementById("emailBox").textContent = currentEmail;
+        document.getElementById("genderBox").textContent = gender;
+        document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
+
+        localStorage.setItem("account", account);
+        localStorage.setItem("uid", uid);
+        localStorage.setItem("gender", gender);
+        localStorage.setItem("bio", bio);
+        localStorage.setItem("email", currentEmail);
+
+        await loadMyMessages();
+    }
+
+    async function loadMyMessages() {
+        const list = document.getElementById("myMessagesList");
+        const count = document.getElementById("msgCount");
+        if (!list || !count) return;
+
+        const { data, error } = await supabaseClient
+            .from("my_messages")
+            .select("*")
+            .eq("user_email", currentEmail);
+
+        if (error) {
+            list.innerHTML = '<div class="no-msg">加载失败: ' + escapeHtml(error.message) + '</div>';
+            count.textContent = "(0)";
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            list.innerHTML = '<div class="no-msg">还没有发表过留言。</div>';
+            count.textContent = "(0)";
+            return;
+        }
+
+        count.textContent = "(" + data.length + ")";
+        list.innerHTML = data.map(function(m) {
+            const content = escapeHtml(m.content || "");
+            const time = m.created_at ? new Date(m.created_at).toLocaleString("zh-CN") : "";
+            return '<div class="my-message-item">' +
+                '<div>' + content + '</div>' +
+                '<div class="msg-time">' + escapeHtml(time) + '</div>' +
+            '</div>';
+        }).join("");
+    }
+
+    function openEdit() {
+        document.getElementById("editModal").style.display = "flex";
+        document.getElementById("editAccount").value = localStorage.getItem("account") || "";
+        document.getElementById("editGender").value = localStorage.getItem("gender") || "保密";
+        document.getElementById("editBio").value = localStorage.getItem("bio") || "";
+        document.getElementById("editStatus").textContent = "";
+    }
+
+    function closeEdit() {
+        document.getElementById("editModal").style.display = "none";
+    }
+
+    async function saveEdit() {
+        const account = document.getElementById("editAccount").value.trim();
+        const gender = document.getElementById("editGender").value;
+        const bio = document.getElementById("editBio").value.trim();
+        const status = document.getElementById("editStatus");
+
+        if (!account) {
+            status.textContent = "账号名不能为空！";
+            status.style.color = "#ef4444";
+            return;
+        }
+
+        status.textContent = "保存中...";
+        status.style.color = "#94a3b8";
+
+        const { error } = await supabaseClient
+            .from("profiles")
+            .update({ account: account, gender: gender, bio: bio })
+            .eq("email", currentEmail);
+
+        if (error) {
+            status.textContent = "保存失败: " + error.message;
+            status.style.color = "#ef4444";
+            return;
+        }
+
+        status.textContent = "保存成功！";
+        status.style.color = "#10b981";
+
+        document.getElementById("avatarBox").textContent = account.charAt(0).toUpperCase();
+        document.getElementById("nameBox").textContent = account;
+        document.getElementById("genderBox").textContent = gender;
+        document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
+
+        localStorage.setItem("account", account);
+        localStorage.setItem("gender", gender);
+        localStorage.setItem("bio", bio);
+
+        setTimeout(closeEdit, 500);
+    }
+
+    function goBack() {
+        window.location.href = "SpaceKill124_源代码.html";
+    }
+
+    async function doLogout() {
+        if (supabaseClient) {
+            try { await supabaseClient.auth.signOut(); } catch (e) {}
+        }
+        localStorage.removeItem("account");
+        localStorage.removeItem("email");
+        localStorage.removeItem("password");
+        localStorage.removeItem("uid");
+        localStorage.removeItem("gender");
+        localStorage.removeItem("bio");
+        localStorage.removeItem("sk124_auth_token");
+        window.location.replace(AUTH_PAGE_URL);
+    }
+
+    window.addEventListener("click", (e) => {
+        if (e.target === document.getElementById("editModal")) closeEdit();
+    });
+
+    window.addEventListener("DOMContentLoaded", async function() {
+        if (localStorage.getItem(AUTH_KEY) !== "true") {
+            window.location.replace(AUTH_PAGE_URL);
+            return;
+        }
+        await loadProfile();
+    });
+</script>
+</body>
+</html>
