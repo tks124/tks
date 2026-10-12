@@ -75,6 +75,20 @@
             margin: 0;
         }
 
+        #accountDisplay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            display: none;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid white;
+        }
+
         .lang-switch {
             position: absolute;
             top: 20px;
@@ -108,13 +122,14 @@
         }
 
         @media (max-width: 600px) {
-            .btn-register, .lang-switch {
+            .btn-register, .lang-switch, #accountDisplay {
                 position: relative;
                 top: 0;
                 right: 0;
                 left: 0;
                 margin: 0 auto 20px auto;
                 width: 150px;
+                text-align: center;
             }
         }
     </style>
@@ -144,7 +159,8 @@
 
     <div class="container">
     <button class="lang-switch" id="langBtn">English</button>
-    <a href="http://tks124.github.io/tks/zc" class="btn btn-register" data-lang="register">注册</a>
+    <a href="http://tks124.github.io/tks/zc" id="registerBtn" class="btn btn-register" data-lang="register">注册</a>
+    <div id="accountDisplay"></div>
 
     <h1 data-lang="title">Space Kill124</h1>
 
@@ -235,6 +251,24 @@
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             localStorage.setItem(LANG_KEY, currentLang);
             updateText();
+            updateAccountDisplay();
+        }
+
+        function updateAccountDisplay() {
+            const regBtn = document.getElementById("registerBtn");
+            const accDisplay = document.getElementById("accountDisplay");
+            const savedAccount = localStorage.getItem("account");
+
+            if (savedAccount) {
+                if (regBtn) regBtn.style.display = "none";
+                if (accDisplay) {
+                    accDisplay.textContent = (currentLang === "zh" ? "账号: " : "Account: ") + savedAccount;
+                    accDisplay.style.display = "block";
+                }
+            } else {
+                if (regBtn) regBtn.style.display = "";
+                if (accDisplay) accDisplay.style.display = "none";
+            }
         }
 
         function isWhitelisted(url) {
@@ -299,7 +333,9 @@
             updateText();
             if (localStorage.getItem(AUTH_KEY) !== "true") {
                 window.location.replace(AUTH_PAGE_URL);
+                return;
             }
+            updateAccountDisplay();
         };
     </script>
 
