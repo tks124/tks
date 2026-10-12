@@ -58,6 +58,8 @@
     <div class="container" id="contentContainer" style="display:none;">
         <h1>Space Kill124</h1>
         <p style="font-size:1.2rem;color:#10b981;">欢迎回来，你已经登录成功！</p>
+        <p style="font-size:1rem;color:#f3f4f6;margin-top:8px;">UID: <span id="userUid">-</span></p>
+        <p style="font-size:0.95rem;color:#9ca3af;margin-top:4px;">个性签名: <span id="userBio">-</span></p>
         <button class="btn btn-blue" onclick="enterSite()" style="margin-top:20px;">进入网页</button>
     </div>
 
@@ -140,8 +142,6 @@
             } catch (error) {
                 console.error("Supabase 初始化失败:", error);
             }
-        } else {
-            console.error("Supabase 脚本未加载");
         }
 
         let pendingEmail = "";
@@ -173,13 +173,8 @@
             });
         });
 
-        function openModal(id) {
-            document.getElementById(id).style.display = "flex";
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
-        }
+        function openModal(id) { document.getElementById(id).style.display = "flex"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function resetRegisterModal() {
             pendingEmail = "";
@@ -230,28 +225,80 @@
             }
         }
 
+        async function ensureProfile(email, account) {
+            if (!supabaseClient || !email) return null;
+            try {
+                const { data, error } = await supabaseClient
+                    .from("profiles")
+                    .select("*")
+                    .eq("email", email)
+                    .maybeSingle();
+                if (error) { console.error("查询资料失败:", error); return null; }
+                if (data) return data;
+
+                const { data: inserted, error: insErr } = await supabaseClient
+                    .from("profiles")
+                    .insert([{ email: email, account: account || email }])
+                    .select()
+                    .single();
+                if (insErr) { console.error("创建资料失败:", insErr); return null; }
+                return inserted;
+            } catch (e) {
+                console.error("ensureProfile 异常:", e);
+                return null;
+            }
+        }
+
+        async function loadProfile(email) {
+            if (!supabaseClient || !email) return null;
+            const { data, error } = await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq("email", email)
+                .maybeSingle();
+            if (error) { console.error("加载资料失败:", error); return null; }
+            return data;
+        }
+
+        async function saveProfileToDB(email, account, gender, bio) {
+            if (!supabaseClient || !email) return false;
+            const { error } = await supabaseClient
+                .from("profiles")
+                .update({ account: account, gender: gender, bio: bio })
+                .eq("email", email);
+            if (error) { console.error("保存资料失败:", error); return false; }
+            return true;
+        }
+
+        function renderUserInfo(profile, fallbackEmail) {
+            const span = document.getElementById("userEmail");
+            const uidSpan = document.getElementById("userUid");
+            const bioSpan = document.getElementById("userBio");
+            const acc = profile && profile.account ? profile.account : (fallbackEmail || "");
+            const uid = profile && profile.uid ? profile.uid : "-";
+            const bio = profile && profile.bio ? profile.bio : "还没有个性签名";
+            if (span) span.textContent = "UID:" + uid + " " + acc;
+            if (uidSpan) uidSpan.textContent = uid;
+            if (bioSpan) bioSpan.textContent = bio;
+            localStorage.setItem("account", acc);
+            localStorage.setItem("uid", uid);
+            localStorage.setItem("bio", profile && profile.bio ? profile.bio : "");
+            localStorage.setItem("gender", profile && profile.gender ? profile.gender : "保密");
+        }
+
         document.getElementById("sendCodeBtn").addEventListener("click", async () => {
             const email = document.getElementById("regEmail").value.trim();
             const msg = document.getElementById("regMsg");
-            if (!email) {
-                msg.textContent = "请先输入邮箱！";
-                msg.style.color = "#ef4444";
-                return;
-            }
-
+            if (!email) { msg.textContent = "请先输入邮箱！"; msg.style.color = "#ef4444"; return; }
             const btn = document.getElementById("sendCodeBtn");
             btn.disabled = true;
             btn.textContent = "发送中...";
             msg.textContent = "";
-
             try {
                 const { error } = await supabaseClient.auth.signInWithOtp({
                     email: email,
-                    options: {
-                        emailRedirectTo: window.location.origin,
-                    }
+                    options: { emailRedirectTo: window.location.origin }
                 });
-
                 if (error) {
                     msg.textContent = "发送失败: " + error.message;
                     msg.style.color = "#ef4444";
@@ -276,23 +323,12 @@
         document.getElementById("verifyCodeBtn").addEventListener("click", async () => {
             const email = pendingEmail;
             const token = document.getElementById("regCode").value.trim();
-
-            if (!token || token.length !== 6) {
-                alert("请输入6位验证码！");
-                return;
-            }
-
+            if (!token || token.length !== 6) { alert("请输入6位验证码！"); return; }
             const btn = document.getElementById("verifyCodeBtn");
             btn.disabled = true;
             btn.textContent = "验证中...";
-
             try {
-                const { data, error } = await supabaseClient.auth.verifyOtp({
-                    email: email,
-                    token: token,
-                    type: "email"
-                });
-
+                const { error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
                 if (error) {
                     alert("验证失败: " + error.message);
                     btn.disabled = false;
@@ -313,41 +349,22 @@
         document.getElementById("completeRegBtn").addEventListener("click", async () => {
             const account = document.getElementById("regAccount").value.trim();
             const password = document.getElementById("regPassword").value;
-
-            if (!account) {
-                alert("请输入账号名！");
-                return;
-            }
-
-            if (!password || password.length < 6) {
-                alert("密码长度至少6位！");
-                return;
-            }
-
+            if (!account) { alert("请输入账号名！"); return; }
+            if (!password || password.length < 6) { alert("密码长度至少6位！"); return; }
             const btn = document.getElementById("completeRegBtn");
             btn.disabled = true;
             btn.textContent = "注册中...";
-
             try {
                 const { error } = await supabaseClient.auth.updateUser({
                     password: password,
-                    data: {
-                        account: account
-                    }
+                    data: { account: account }
                 });
-
-                if (error) {
-                    alert("注册失败: " + error.message);
-                    btn.disabled = false;
-                    btn.textContent = "完成注册";
-                    return;
-                }
+                if (error) { alert("注册失败: " + error.message); btn.disabled = false; btn.textContent = "完成注册"; return; }
 
                 const { error: signInError } = await supabaseClient.auth.signInWithPassword({
                     email: pendingEmail,
                     password: password
                 });
-
                 if (signInError) {
                     localStorage.setItem("email", pendingEmail);
                     alert("密码已设置成功！请重新登录。");
@@ -356,12 +373,13 @@
                     return;
                 }
 
-                localStorage.setItem("account", account);
+                const profile = await ensureProfile(pendingEmail, account);
                 localStorage.setItem("email", pendingEmail);
                 localStorage.setItem("password", password);
                 localStorage.setItem("sk124_auth_token", "true");
+                if (profile) renderUserInfo(profile, pendingEmail);
 
-                alert("注册成功！");
+                alert("注册成功！你的 UID 是 " + (profile ? profile.uid : "-"));
                 closeModal("registerModal");
                 window.location.href = "rjyz.html";
             } catch (err) {
@@ -373,23 +391,15 @@
 
         document.getElementById("loginSendCodeBtn").addEventListener("click", async () => {
             const email = document.getElementById("loginCodeEmail").value.trim();
-            if (!email) {
-                alert("请先输入邮箱！");
-                return;
-            }
-
+            if (!email) { alert("请先输入邮箱！"); return; }
             const btn = document.getElementById("loginSendCodeBtn");
             btn.disabled = true;
             btn.textContent = "发送中...";
-
             try {
                 const { error } = await supabaseClient.auth.signInWithOtp({
                     email: email,
-                    options: {
-                        emailRedirectTo: window.location.origin,
-                    }
+                    options: { emailRedirectTo: window.location.origin }
                 });
-
                 if (error) {
                     alert("发送失败: " + error.message);
                     btn.disabled = false;
@@ -408,84 +418,44 @@
         });
 
         async function handleLogin() {
-            if (loginMode === "pwd") {
-                await loginWithPassword();
-            } else {
-                await loginWithCode();
-            }
+            if (loginMode === "pwd") await loginWithPassword();
+            else await loginWithCode();
         }
 
         async function loginWithPassword() {
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value;
-
-            if (!email || !password) {
-                alert("请填写邮箱和密码");
-                return;
-            }
-
+            if (!email || !password) { alert("请填写邮箱和密码"); return; }
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) {
-                    alert("登录失败: " + error.message);
-                    return;
-                }
-
-                var userAccount = data.user.user_metadata ? data.user.user_metadata.account : "";
-                localStorage.setItem("account", userAccount || email);
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                if (error) { alert("登录失败: " + error.message); return; }
+                const profile = await ensureProfile(email, data.user.user_metadata ? data.user.user_metadata.account : "");
                 localStorage.setItem("email", email);
                 localStorage.setItem("password", password);
                 localStorage.setItem("sk124_auth_token", "true");
-
-                alert("登录成功！");
+                if (profile) renderUserInfo(profile, email);
+                alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
-            } catch (err) {
-                alert("登录出错: " + err.message);
-            }
+            } catch (err) { alert("登录出错: " + err.message); }
         }
 
         async function loginWithCode() {
             const email = document.getElementById("loginCodeEmail").value.trim();
             const token = document.getElementById("loginCode").value.trim();
-
-            if (!email) {
-                alert("请输入邮箱地址！");
-                return;
-            }
-
-            if (!token || token.length !== 6) {
-                alert("请输入6位验证码！");
-                return;
-            }
-
+            if (!email) { alert("请输入邮箱地址！"); return; }
+            if (!token || token.length !== 6) { alert("请输入6位验证码！"); return; }
             try {
-                const { data, error } = await supabaseClient.auth.verifyOtp({
-                    email: email,
-                    token: token,
-                    type: "email"
-                });
-
-                if (error) {
-                    alert("登录失败: " + error.message);
-                    return;
-                }
-
-                var userAccount = data.user && data.user.user_metadata ? data.user.user_metadata.account : "";
-                localStorage.setItem("account", userAccount || email);
+                const { data, error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
+                if (error) { alert("登录失败: " + error.message); return; }
+                const profile = await ensureProfile(email, data.user && data.user.user_metadata ? data.user.user_metadata.account : "");
                 localStorage.setItem("email", email);
                 localStorage.setItem("sk124_auth_token", "true");
-
-                alert("登录成功！");
+                if (profile) renderUserInfo(profile, email);
+                alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
-            } catch (err) {
-                alert("登录出错: " + err.message);
-            }
+            } catch (err) { alert("登录出错: " + err.message); }
         }
 
         async function logout() {
@@ -493,6 +463,9 @@
             localStorage.removeItem("account");
             localStorage.removeItem("email");
             localStorage.removeItem("password");
+            localStorage.removeItem("uid");
+            localStorage.removeItem("gender");
+            localStorage.removeItem("bio");
             localStorage.removeItem("sk124_auth_token");
             checkAuthState();
             alert("已退出登录");
@@ -508,14 +481,12 @@
             const mainContainer = document.getElementById("mainContainer");
             const contentContainer = document.getElementById("contentContainer");
             const userInfo = document.getElementById("userInfo");
-            const userEmail = document.getElementById("userEmail");
-
             if (session) {
                 mainContainer.style.display = "none";
                 contentContainer.style.display = "block";
                 userInfo.style.display = "block";
-                var savedAccount = localStorage.getItem("account");
-                userEmail.textContent = savedAccount ? savedAccount : session.user.email;
+                const profile = await ensureProfile(session.user.email, session.user.user_metadata ? session.user.user_metadata.account : "");
+                if (profile) renderUserInfo(profile, session.user.email);
             } else {
                 mainContainer.style.display = "block";
                 contentContainer.style.display = "none";
@@ -525,29 +496,34 @@
 
         function openProfileModal() {
             document.getElementById("profileModal").style.display = "flex";
-            var savedAccount = localStorage.getItem("account");
-            var savedGender = localStorage.getItem("gender");
-            var savedBio = localStorage.getItem("bio");
-            if (savedAccount) document.getElementById("profileAccount").value = savedAccount;
-            if (savedGender) document.getElementById("profileGender").value = savedGender;
-            if (savedBio) document.getElementById("profileBio").value = savedBio;
+            document.getElementById("profileAccount").value = localStorage.getItem("account") || "";
+            document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
+            document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
         }
 
         function closeProfileModal() {
             document.getElementById("profileModal").style.display = "none";
         }
 
-        function saveProfile() {
-            var account = document.getElementById("profileAccount").value.trim();
-            var gender = document.getElementById("profileGender").value;
-            var bio = document.getElementById("profileBio").value.trim();
+        async function saveProfile() {
+            const account = document.getElementById("profileAccount").value.trim();
+            const gender = document.getElementById("profileGender").value;
+            const bio = document.getElementById("profileBio").value.trim();
             if (!account) { alert("请输入账号名称！"); return; }
+
+            const email = localStorage.getItem("email");
+            const ok = await saveProfileToDB(email, account, gender, bio);
+            if (!ok) { alert("保存失败，请检查网络或 Supabase 配置。"); return; }
+
             localStorage.setItem("account", account);
             localStorage.setItem("gender", gender);
             localStorage.setItem("bio", bio);
-            localStorage.setItem("sk124_auth_token", "true");
-            var userEmailSpan = document.getElementById("userEmail");
-            if (userEmailSpan) { userEmailSpan.textContent = account; }
+
+            const uid = localStorage.getItem("uid") || "-";
+            document.getElementById("userEmail").textContent = "UID:" + uid + " " + account;
+            document.getElementById("userUid").textContent = uid;
+            document.getElementById("userBio").textContent = bio || "还没有个性签名";
+
             alert("资料已保存！");
             closeProfileModal();
         }
