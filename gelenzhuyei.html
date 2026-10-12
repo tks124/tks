@@ -135,11 +135,13 @@
 
         .actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-top: 28px;
+            flex-wrap: wrap;
         }
         .actions button {
             flex: 1;
+            min-width: 110px;
             padding: 13px;
             border: none;
             border-radius: 10px;
@@ -151,6 +153,8 @@
         }
         .btn-edit { background: linear-gradient(to right, #8b5cf6, #7c3aed); }
         .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(139,92,246,0.4); }
+        .btn-friend { background: linear-gradient(to right, #06b6d4, #0891b2); }
+        .btn-friend:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(6,182,212,0.4); }
         .btn-back { background: linear-gradient(to right, #3b82f6, #2563eb); }
         .btn-back:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(59,130,246,0.4); }
         .btn-logout { background: linear-gradient(to right, #ef4444, #dc2626); }
@@ -250,6 +254,7 @@
 
             <div class="actions">
                 <button class="btn-edit" onclick="openEdit()">编辑资料</button>
+                <button class="btn-friend" onclick="goFriends()">好友</button>
                 <button class="btn-back" onclick="goBack()">返回首页</button>
                 <button class="btn-logout" onclick="doLogout()">退出登录</button>
             </div>
@@ -284,6 +289,8 @@
 
     const AUTH_KEY = "sk124_auth_token";
     const AUTH_PAGE_URL = "https://tks124.github.io/tks";
+    const RESERVED_NAME = "太空杀124";
+    const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
     let currentEmail = "";
 
     function escapeHtml(str) {
@@ -291,6 +298,23 @@
             .replace(/&/g, "&amp;").replace(/</g, "&lt;")
             .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
             .replace(/'/g, "&#39;");
+    }
+
+    function isReservedName(account, email) {
+        if (!account) return false;
+        const a = account.trim();
+        if (a !== RESERVED_NAME) return false;
+        if (email && email === RESERVED_OWNER_EMAIL) return false;
+        return true;
+    }
+
+    async function isAccountTaken(account, excludeEmail) {
+        if (!supabaseClient || !account) return false;
+        let query = supabaseClient.from("profiles").select("uid, email").eq("account", account);
+        if (excludeEmail) query = query.neq("email", excludeEmail);
+        const { data, error } = await query;
+        if (error) { console.error("查重失败:", error); return false; }
+        return data && data.length > 0;
     }
 
     async function loadProfile() {
@@ -308,10 +332,7 @@
         currentEmail = session.user.email;
 
         let { data: profile, error } = await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq("email", currentEmail)
-            .maybeSingle();
+            .from("profiles").select("*").eq("email", currentEmail).maybeSingle();
 
         if (error) {
             document.getElementById("loadingBox").textContent = "读取资料失败: " + error.message;
@@ -363,9 +384,7 @@
         if (!list || !count) return;
 
         const { data, error } = await supabaseClient
-            .from("my_messages")
-            .select("*")
-            .eq("user_email", currentEmail);
+            .from("my_messages").select("*").eq("user_email", currentEmail);
 
         if (error) {
             list.innerHTML = '<div class="no-msg">加载失败: ' + escapeHtml(error.message) + '</div>';
@@ -414,8 +433,21 @@
             return;
         }
 
+        if (isReservedName(account, currentEmail)) {
+            status.textContent = "该账号名为保留名称，仅限指定邮箱使用！";
+            status.style.color = "#ef4444";
+            return;
+        }
+
         status.textContent = "保存中...";
         status.style.color = "#94a3b8";
+
+        const taken = await isAccountTaken(account, currentEmail);
+        if (taken) {
+            status.textContent = "该账号名已被使用，请换一个！";
+            status.style.color = "#ef4444";
+            return;
+        }
 
         const { error } = await supabaseClient
             .from("profiles")
@@ -443,8 +475,12 @@
         setTimeout(closeEdit, 500);
     }
 
+    function goFriends() {
+        window.location.href = "friends.html";
+    }
+
     function goBack() {
-        window.location.href = "https://tks124.github.io/tks/SpaceKill124";
+        window.location.href = "https://tks124.github.io/tks";
     }
 
     async function doLogout() {
