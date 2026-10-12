@@ -66,19 +66,16 @@
     <div id="registerModal" class="modal-overlay">
         <div class="modal-content">
             <h2>注册账号</h2>
-
             <div id="regStep1">
                 <input type="email" id="regEmail" class="modal-input" placeholder="邮箱地址">
                 <button id="sendCodeBtn" class="modal-btn btn-confirm" style="width:100%;">获取验证码</button>
                 <p id="regMsg" style="color:#9ca3af;font-size:0.9rem;margin-top:10px;min-height:20px;"></p>
             </div>
-
             <div id="regStep2" style="display:none;">
                 <input type="text" id="regCode" class="modal-input" placeholder="输入6位验证码" maxlength="6" style="text-align:center;letter-spacing:2px;">
                 <button id="verifyCodeBtn" class="modal-btn btn-confirm" style="width:100%;">验证并注册</button>
                 <button class="modal-btn btn-cancel" onclick="closeModal('registerModal')" style="width:100%;margin-top:10px;">取消</button>
             </div>
-
             <div id="regStep3" style="display:none;">
                 <p style="color:#10b981;margin-bottom:15px;">邮箱验证通过！</p>
                 <input type="text" id="regAccount" class="modal-input" placeholder="设置账号名">
@@ -96,12 +93,10 @@
                 <button id="tabPwd" class="login-tab active" onclick="switchLoginTab('pwd')">密码登录</button>
                 <button id="tabCode" class="login-tab" onclick="switchLoginTab('code')">验证码登录</button>
             </div>
-
             <div id="loginPwdPane">
                 <input type="email" id="loginEmail" class="modal-input" placeholder="邮箱地址">
                 <input type="password" id="loginPassword" class="modal-input" placeholder="密码">
             </div>
-
             <div id="loginCodePane" style="display:none;">
                 <input type="email" id="loginCodeEmail" class="modal-input" placeholder="邮箱地址">
                 <div class="code-row">
@@ -109,7 +104,6 @@
                     <button id="loginSendCodeBtn" class="modal-btn btn-confirm">获取验证码</button>
                 </div>
             </div>
-
             <div class="modal-buttons">
                 <button class="modal-btn btn-cancel" onclick="closeModal('loginModal')">取消</button>
                 <button class="modal-btn btn-confirm" onclick="handleLogin()">登录</button>
@@ -365,8 +359,8 @@
                 localStorage.setItem("account", account);
                 localStorage.setItem("email", pendingEmail);
                 localStorage.setItem("password", password);
-                localStorage.setItem("spacekill_verified", "true");
-                localStorage.setItem("sk124_auth_token", "logged_in");
+                localStorage.setItem("sk124_auth_token", "true");
+
                 alert("注册成功！");
                 closeModal("registerModal");
                 window.location.href = "rjyz.html";
@@ -445,8 +439,8 @@
                 localStorage.setItem("account", userAccount || email);
                 localStorage.setItem("email", email);
                 localStorage.setItem("password", password);
-                localStorage.setItem("spacekill_verified", "true");
-                localStorage.setItem("sk124_auth_token", "logged_in");
+                localStorage.setItem("sk124_auth_token", "true");
+
                 alert("登录成功！");
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
@@ -481,10 +475,11 @@
                     return;
                 }
 
-                var userAccount = data.user.user_metadata ? data.user.user_metadata.account : "";
-                localStorage.setItem("account", userAccount || email); localStorage.setItem("email", email);
-                localStorage.setItem("password", password);
-                localStorage.setItem("sk124_auth_token", "logged_in");
+                var userAccount = data.user && data.user.user_metadata ? data.user.user_metadata.account : "";
+                localStorage.setItem("account", userAccount || email);
+                localStorage.setItem("email", email);
+                localStorage.setItem("sk124_auth_token", "true");
+
                 alert("登录成功！");
                 closeModal("loginModal");
                 window.location.href = "rjyz.html";
@@ -498,13 +493,13 @@
             localStorage.removeItem("account");
             localStorage.removeItem("email");
             localStorage.removeItem("password");
-            localStorage.removeItem("spacekill_verified");
+            localStorage.removeItem("sk124_auth_token");
             checkAuthState();
             alert("已退出登录");
         }
 
         function enterSite() {
-            localStorage.setItem("spacekill_verified", "true");
+            localStorage.setItem("sk124_auth_token", "true");
             window.location.href = "rjyz.html";
         }
 
@@ -550,7 +545,7 @@
             localStorage.setItem("account", account);
             localStorage.setItem("gender", gender);
             localStorage.setItem("bio", bio);
-            localStorage.setItem("spacekill_verified", "true");
+            localStorage.setItem("sk124_auth_token", "true");
             var userEmailSpan = document.getElementById("userEmail");
             if (userEmailSpan) { userEmailSpan.textContent = account; }
             alert("资料已保存！");
