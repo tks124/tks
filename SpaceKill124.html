@@ -81,13 +81,30 @@
             right: 20px;
             color: white;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             display: none;
             background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 8px;
             border: 2px solid white;
+            text-align: right;
+            line-height: 1.5;
         }
+        #accountDisplay .uid-line { font-size: 12px; opacity: 0.9; font-weight: normal; }
+        #accountDisplay .bio-line { font-size: 12px; opacity: 0.9; font-weight: normal; max-width: 200px; word-break: break-all; }
+        #accountDisplay .acc-buttons { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; }
+        #accountDisplay .acc-buttons button {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-edit { background: #8b5cf6; }
+        .btn-edit:hover { background: #7c3aed; }
+        .btn-logout { background: #ef4444; }
+        .btn-logout:hover { background: #dc2626; }
 
         .lang-switch {
             position: absolute;
@@ -121,19 +138,38 @@
             font-family: 'Microsoft YaHei', sans-serif;
         }
 
-        @media (max-width: 600px) {
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: #1f2937; padding: 30px; border-radius: 12px; width: 90%; max-width: 340px; text-align: center; color: white; }
+        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #f3f4f6; }
+        .modal-content input, .modal-content select {
+            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #4b5563; border-radius: 6px;
+            background: #111827; color: white; box-sizing: border-box; font-size: 14px;
+        }
+        .modal-content input::placeholder { color: #6b7280; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: white; }
+        .btn-cancel { background: #ef4444; }
+        .btn-cancel:hover { background: #dc2626; }
+        .btn-confirm { background: #10b981; }
+        .btn-confirm:hover { background: #059669; }
+        .profile-status { font-size: 12px; margin-top: 6px; min-height: 16px; }
+
+        @media (max-width: 700px) {
             .btn-register, .lang-switch, #accountDisplay {
                 position: relative;
                 top: 0;
                 right: 0;
                 left: 0;
-                margin: 0 auto 20px auto;
-                width: 150px;
+                margin: 0 auto 12px auto;
+                width: 200px;
                 text-align: center;
             }
+            #accountDisplay .acc-buttons { justify-content: center; }
+            #accountDisplay .bio-line { max-width: none; }
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
     (function() {
         try {
@@ -147,8 +183,6 @@
             appleLink.rel = 'apple-touch-icon';
             appleLink.href = 'tubiao.png';
             document.head.appendChild(appleLink);
-
-            console.log('favicon tubiao.png 加载成功');
         } catch(e) {
             console.log('favicon 加载失败:', e);
         }
@@ -185,18 +219,41 @@
         © 太空杀124拥有最终解释权与所有权。
     </footer>
 
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>编辑资料</h3>
+            <input type="text" id="profileAccount" placeholder="账号名称">
+            <select id="profileGender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+                <option value="保密">保密</option>
+            </select>
+            <input type="text" id="profileBio" placeholder="个性签名">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeProfileModal()">取消</button>
+                <button class="btn-confirm" onclick="saveProfile()">保存</button>
+            </div>
+            <p class="profile-status" id="profileStatus"></p>
+        </div>
+    </div>
+
     <script>
+        const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
+        let supabaseClient = null;
+        if (window.supabase) {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (e) { console.error("Supabase 初始化失败:", e); }
+        }
+
         const AUTH_KEY = "sk124_auth_token";
         const AUTH_PAGE_URL = "https://tks124.github.io/tks";
         const LANG_KEY = "sk124_lang";
 
         const WHITELIST_DOMAINS = [
-            'bilibili.com',
-            'foxmail.com',
-            'tks124.github.io',
-            'spacekill124.cn',
-            'www.spacekill124.cn',
-            'tks124444.github.io'
+            'bilibili.com', 'foxmail.com', 'tks124.github.io',
+            'spacekill124.cn', 'www.spacekill124.cn', 'tks124444.github.io'
         ];
 
         const translations = {
@@ -212,7 +269,12 @@
         feedback: "意见反馈",
         credits: "制作人员名单",
         footer: "© 太空杀124拥有最终解释权与所有权。",
-        safetyAlert: "当前前往的网站并非SpaceKill124名下，注意隐私安全。"
+        safetyAlert: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
+        edit: "编辑资料",
+        logout: "退出登录",
+        accountPrefix: "账号: ",
+        uidPrefix: "UID: ",
+        bioPrefix: "签名: "
     },
     en: {
         register: "Register",
@@ -226,101 +288,186 @@
         feedback: "Feedback",
         credits: "Credits",
         footer: "© SpaceKill124 owns the final interpretation rights and all rights.",
-        safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security."
+        safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security.",
+        edit: "Edit Profile",
+        logout: "Logout",
+        accountPrefix: "Account: ",
+        uidPrefix: "UID: ",
+        bioPrefix: "Bio: "
     }
 };
 
         let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
 
         function updateText() {
             const t = translations[currentLang];
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
                 if (t[key]) {
-                    if (el.tagName === 'A') {
-                        el.textContent = t[key];
-                    } else {
-                        el.innerText = t[key];
-                    }
+                    if (el.tagName === 'A') el.textContent = t[key];
+                    else el.innerText = t[key];
                 }
             });
             document.getElementById('langBtn').textContent = currentLang === 'zh' ? 'English' : '中文';
+            updateAccountDisplay();
         }
 
         function toggleLanguage() {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             localStorage.setItem(LANG_KEY, currentLang);
             updateText();
-            updateAccountDisplay();
         }
 
-        function updateAccountDisplay() {
+        async function loadProfileFromDB(email) {
+            if (!supabaseClient || !email) return null;
+            try {
+                const { data, error } = await supabaseClient
+                    .from("profiles").select("*").eq("email", email).maybeSingle();
+                if (error) { console.error("加载资料失败:", error); return null; }
+                return data;
+            } catch (e) { console.error(e); return null; }
+        }
+
+        async function saveProfileToDB(email, account, gender, bio) {
+            if (!supabaseClient || !email) return { ok: false, msg: "未登录" };
+            try {
+                const { error } = await supabaseClient
+                    .from("profiles")
+                    .update({ account: account, gender: gender, bio: bio })
+                    .eq("email", email);
+                if (error) return { ok: false, msg: error.message };
+                return { ok: true };
+            } catch (e) { return { ok: false, msg: e.message }; }
+        }
+
+        async function updateAccountDisplay() {
             const regBtn = document.getElementById("registerBtn");
             const accDisplay = document.getElementById("accountDisplay");
-            const savedAccount = localStorage.getItem("account");
+            const email = localStorage.getItem("email");
+            const t = translations[currentLang];
 
-            if (savedAccount) {
-                if (regBtn) regBtn.style.display = "none";
-                if (accDisplay) {
-                    accDisplay.textContent = (currentLang === "zh" ? "账号: " : "Account: ") + savedAccount;
-                    accDisplay.style.display = "block";
-                }
-            } else {
+            if (!email) {
                 if (regBtn) regBtn.style.display = "";
                 if (accDisplay) accDisplay.style.display = "none";
+                return;
             }
+
+            let profile = await loadProfileFromDB(email);
+            let account = (profile && profile.account) || localStorage.getItem("account") || email;
+            let uid = (profile && profile.uid) ? profile.uid : (localStorage.getItem("uid") || "-");
+            let bio = (profile && profile.bio) ? profile.bio : (localStorage.getItem("bio") || "");
+
+            localStorage.setItem("account", account);
+            localStorage.setItem("uid", uid);
+            localStorage.setItem("bio", bio);
+            if (profile && profile.gender) localStorage.setItem("gender", profile.gender);
+
+            if (regBtn) regBtn.style.display = "none";
+            if (accDisplay) {
+                accDisplay.innerHTML =
+                    '<div>' + t.accountPrefix + escapeHtml(account) + '</div>' +
+                    '<div class="uid-line">' + t.uidPrefix + escapeHtml(uid) + '</div>' +
+                    '<div class="bio-line">' + t.bioPrefix + escapeHtml(bio || "—") + '</div>' +
+                    '<div class="acc-buttons">' +
+                        '<button class="btn-edit" onclick="openProfileModal()">' + t.edit + '</button>' +
+                        '<button class="btn-logout" onclick="doLogout()">' + t.logout + '</button>' +
+                    '</div>';
+                accDisplay.style.display = "block";
+            }
+        }
+
+        function openProfileModal() {
+            document.getElementById("profileModal").style.display = "flex";
+            document.getElementById("profileAccount").value = localStorage.getItem("account") || "";
+            document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
+            document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
+            document.getElementById("profileStatus").textContent = "";
+        }
+
+        function closeProfileModal() {
+            document.getElementById("profileModal").style.display = "none";
+        }
+
+        async function saveProfile() {
+            const account = document.getElementById("profileAccount").value.trim();
+            const gender = document.getElementById("profileGender").value;
+            const bio = document.getElementById("profileBio").value.trim();
+            const status = document.getElementById("profileStatus");
+
+            if (!account) {
+                status.textContent = "请输入账号名称！";
+                status.style.color = "#ef4444";
+                return;
+            }
+
+            const email = localStorage.getItem("email");
+            if (!email) {
+                status.textContent = "未登录，无法保存。";
+                status.style.color = "#ef4444";
+                return;
+            }
+
+            status.textContent = "保存中...";
+            status.style.color = "#9ca3af";
+
+            const res = await saveProfileToDB(email, account, gender, bio);
+            if (!res.ok) {
+                status.textContent = "保存失败: " + res.msg;
+                status.style.color = "#ef4444";
+                return;
+            }
+
+            localStorage.setItem("account", account);
+            localStorage.setItem("gender", gender);
+            localStorage.setItem("bio", bio);
+
+            status.textContent = "保存成功！";
+            status.style.color = "#10b981";
+            await updateAccountDisplay();
+            setTimeout(closeProfileModal, 500);
+        }
+
+        async function doLogout() {
+            if (supabaseClient) {
+                try { await supabaseClient.auth.signOut(); } catch (e) {}
+            }
+            localStorage.removeItem("account");
+            localStorage.removeItem("email");
+            localStorage.removeItem("password");
+            localStorage.removeItem("uid");
+            localStorage.removeItem("gender");
+            localStorage.removeItem("bio");
+            localStorage.removeItem("sk124_auth_token");
+            window.location.replace(AUTH_PAGE_URL);
         }
 
         function isWhitelisted(url) {
-            if (url.startsWith('mailto:')) {
-                return true;
-            }
+            if (url.startsWith('mailto:')) return true;
             try {
                 const urlObj = new URL(url);
                 return WHITELIST_DOMAINS.some(domain => urlObj.hostname.includes(domain));
-            } catch (e) {
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
         function navigateWithSafetyCheck(url) {
-            if (!url || url === '#') {
-                return;
-            }
-
-            if (url.includes('github.com/tks124')) {
-                window.location.href = url;
-                return;
-            }
-
-            if (isWhitelisted(url)) {
-                window.location.href = url;
-                return;
-            }
-
-            if (url.includes('github.com/tks124444')) {
-                window.location.href = url;
-                return;
-            }
-
-            if (isWhitelisted(url)) {
-                window.location.href = url;
-                return;
-            }
-
-            if (url.startsWith("https://tks124.github.io/")) {
-                window.location.replace(url);
-                return;
-            }
-
+            if (!url || url === '#') return;
+            if (url.includes('github.com/tks124')) { window.location.href = url; return; }
+            if (isWhitelisted(url)) { window.location.href = url; return; }
+            if (url.includes('github.com/tks124444')) { window.location.href = url; return; }
+            if (url.startsWith("https://tks124.github.io/")) { window.location.replace(url); return; }
             const isConfirmed = confirm(translations[currentLang].safetyAlert);
-            if (isConfirmed) {
-                window.location.href = url;
-            }
+            if (isConfirmed) window.location.href = url;
         }
 
         document.getElementById('langBtn').addEventListener('click', toggleLanguage);
-        
+
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -340,4 +487,4 @@
     </script>
 
 </body>
-    </html>
+</html>
