@@ -16,6 +16,7 @@
         .btn-small { display: inline-block; width: auto; padding: 8px 16px; margin: 5px; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; }
         .btn-register { background: linear-gradient(to right, #8b5cf6, #7c3aed); color: white; }
         .btn-login { background: linear-gradient(to right, #f59e0b, #d97706); color: white; }
+        .btn-friend { background: linear-gradient(to right, #06b6d4, #0891b2); color: white; }
         .footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #9ca3af; width: 100%; text-align: center; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: #1f2937; padding: 40px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #374151; text-align: center; }
@@ -45,6 +46,7 @@
         <div style="margin-bottom:8px;">已登录: <span id="userEmail"></span></div>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
             <button class="btn-small btn-register" style="margin:0;" onclick="openProfileModal()">编辑资料</button>
+            <button class="btn-small btn-friend" style="margin:0;" onclick="goFriends()">好友</button>
             <button class="btn-small btn-login" style="margin:0;" onclick="logout()">退出登录</button>
         </div>
     </div>
@@ -60,7 +62,8 @@
         <p style="font-size:1.2rem;color:#10b981;">欢迎回来，你已经登录成功！</p>
         <p style="font-size:1rem;color:#f3f4f6;margin-top:8px;">UID: <span id="userUid">-</span></p>
         <p style="font-size:0.95rem;color:#9ca3af;margin-top:4px;">个性签名: <span id="userBio">-</span></p>
-        <button class="btn btn-blue" onclick="enterSite()" style="margin-top:20px;">进入网页</button>
+        <button class="btn btn-friend" onclick="goFriends()" style="margin-top:16px;">好友与聊天</button>
+        <button class="btn btn-blue" onclick="enterSite()" style="margin-top:12px;">进入网页</button>
     </div>
 
     <div class="footer">© 太空杀124拥有最终解释权与所有权/www.spacekill124.cn</div>
@@ -133,48 +136,44 @@
 <script>
         const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
+        const RESERVED_NAME = "太空杀124";
+        const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
 
         let supabaseClient = null;
-
         if (window.supabase) {
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch (error) {
-                console.error("Supabase 初始化失败:", error);
-            }
+            try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+            catch (error) { console.error("Supabase 初始化失败:", error); }
         }
 
         let pendingEmail = "";
         let loginMode = "pwd";
 
+        function isReservedName(account, email) {
+            if (!account) return false;
+            const a = account.trim();
+            if (a !== RESERVED_NAME) return false;
+            if (email && email === RESERVED_OWNER_EMAIL) return false;
+            return true;
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             checkAuthState();
-
             document.getElementById("registerBtn").addEventListener("click", function() {
-                resetRegisterModal();
-                openModal("registerModal");
+                resetRegisterModal(); openModal("registerModal");
             });
-
             document.getElementById("loginBtn").addEventListener("click", function() {
-                resetLoginModal();
-                openModal("loginModal");
+                resetLoginModal(); openModal("loginModal");
             });
-
             window.addEventListener("click", (e) => {
-                if (e.target === document.getElementById("registerModal")) {
-                    closeModal("registerModal");
-                }
-                if (e.target === document.getElementById("loginModal")) {
-                    closeModal("loginModal");
-                }
-                if (e.target === document.getElementById("profileModal")) {
-                    closeModal("profileModal");
-                }
+                if (e.target === document.getElementById("registerModal")) closeModal("registerModal");
+                if (e.target === document.getElementById("loginModal")) closeModal("loginModal");
+                if (e.target === document.getElementById("profileModal")) closeModal("profileModal");
             });
         });
 
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        function goFriends() { window.location.href = "friends.html"; }
 
         function resetRegisterModal() {
             pendingEmail = "";
@@ -187,14 +186,11 @@
             document.getElementById("regPassword").value = "";
             document.getElementById("regMsg").textContent = "";
             const sendBtn = document.getElementById("sendCodeBtn");
-            sendBtn.disabled = false;
-            sendBtn.textContent = "获取验证码";
+            sendBtn.disabled = false; sendBtn.textContent = "获取验证码";
             const verifyBtn = document.getElementById("verifyCodeBtn");
-            verifyBtn.disabled = false;
-            verifyBtn.textContent = "验证并注册";
+            verifyBtn.disabled = false; verifyBtn.textContent = "验证并注册";
             const completeBtn = document.getElementById("completeRegBtn");
-            completeBtn.disabled = false;
-            completeBtn.textContent = "完成注册";
+            completeBtn.disabled = false; completeBtn.textContent = "完成注册";
         }
 
         function resetLoginModal() {
@@ -204,8 +200,7 @@
             document.getElementById("loginCodeEmail").value = "";
             document.getElementById("loginCode").value = "";
             const sendBtn = document.getElementById("loginSendCodeBtn");
-            sendBtn.disabled = false;
-            sendBtn.textContent = "获取验证码";
+            sendBtn.disabled = false; sendBtn.textContent = "获取验证码";
         }
 
         function switchLoginTab(mode) {
@@ -213,13 +208,11 @@
             const pwdTab = document.getElementById("tabPwd");
             const codeTab = document.getElementById("tabCode");
             if (mode === "pwd") {
-                pwdTab.classList.add("active");
-                codeTab.classList.remove("active");
+                pwdTab.classList.add("active"); codeTab.classList.remove("active");
                 document.getElementById("loginPwdPane").style.display = "block";
                 document.getElementById("loginCodePane").style.display = "none";
             } else {
-                codeTab.classList.add("active");
-                pwdTab.classList.remove("active");
+                codeTab.classList.add("active"); pwdTab.classList.remove("active");
                 document.getElementById("loginPwdPane").style.display = "none";
                 document.getElementById("loginCodePane").style.display = "block";
             }
@@ -228,38 +221,20 @@
         async function ensureProfile(email, account) {
             if (!supabaseClient || !email) return null;
             try {
-                const { data, error } = await supabaseClient
-                    .from("profiles").select("*").eq("email", email).maybeSingle();
+                const { data, error } = await supabaseClient.from("profiles").select("*").eq("email", email).maybeSingle();
                 if (error) { console.error("查询资料失败:", error); return null; }
                 if (data) return data;
-
-                const { data: inserted, error: insErr } = await supabaseClient
-                    .from("profiles")
-                    .insert([{ email: email, account: account || email }])
-                    .select()
-                    .single();
+                const { data: inserted, error: insErr } = await supabaseClient.from("profiles")
+                    .insert([{ email: email, account: account || email }]).select().single();
                 if (insErr) { console.error("创建资料失败:", insErr); return null; }
                 return inserted;
-            } catch (e) {
-                console.error("ensureProfile 异常:", e);
-                return null;
-            }
-        }
-
-        async function loadProfile(email) {
-            if (!supabaseClient || !email) return null;
-            const { data, error } = await supabaseClient
-                .from("profiles").select("*").eq("email", email).maybeSingle();
-            if (error) { console.error("加载资料失败:", error); return null; }
-            return data;
+            } catch (e) { console.error("ensureProfile 异常:", e); return null; }
         }
 
         async function saveProfileToDB(email, account, gender, bio) {
             if (!supabaseClient || !email) return { ok: false, msg: "未登录" };
-            const { error } = await supabaseClient
-                .from("profiles")
-                .update({ account: account, gender: gender, bio: bio })
-                .eq("email", email);
+            const { error } = await supabaseClient.from("profiles")
+                .update({ account: account, gender: gender, bio: bio }).eq("email", email);
             if (error) return { ok: false, msg: error.message };
             return { ok: true };
         }
@@ -267,9 +242,7 @@
         async function isAccountTaken(account, excludeEmail) {
             if (!supabaseClient || !account) return false;
             let query = supabaseClient.from("profiles").select("uid, email").eq("account", account);
-            if (excludeEmail) {
-                query = query.neq("email", excludeEmail);
-            }
+            if (excludeEmail) query = query.neq("email", excludeEmail);
             const { data, error } = await query;
             if (error) { console.error("查重失败:", error); return false; }
             return data && data.length > 0;
@@ -296,32 +269,22 @@
             const msg = document.getElementById("regMsg");
             if (!email) { msg.textContent = "请先输入邮箱！"; msg.style.color = "#ef4444"; return; }
             const btn = document.getElementById("sendCodeBtn");
-            btn.disabled = true;
-            btn.textContent = "发送中...";
-            msg.textContent = "";
+            btn.disabled = true; btn.textContent = "发送中..."; msg.textContent = "";
             try {
-                const { error } = await supabaseClient.auth.signInWithOtp({
-                    email: email,
-                    options: { emailRedirectTo: window.location.origin }
-                });
+                const { error } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } });
                 if (error) {
-                    msg.textContent = "发送失败: " + error.message;
-                    msg.style.color = "#ef4444";
-                    btn.disabled = false;
-                    btn.textContent = "获取验证码";
+                    msg.textContent = "发送失败: " + error.message; msg.style.color = "#ef4444";
+                    btn.disabled = false; btn.textContent = "获取验证码";
                 } else {
                     pendingEmail = email;
-                    msg.textContent = "验证码已发送至邮箱，请查收！";
-                    msg.style.color = "#10b981";
+                    msg.textContent = "验证码已发送至邮箱，请查收！"; msg.style.color = "#10b981";
                     document.getElementById("regStep1").style.display = "none";
                     document.getElementById("regStep2").style.display = "block";
                     document.getElementById("regCode").focus();
                 }
             } catch (err) {
-                msg.textContent = "系统错误: " + err.message;
-                msg.style.color = "#ef4444";
-                btn.disabled = false;
-                btn.textContent = "获取验证码";
+                msg.textContent = "系统错误: " + err.message; msg.style.color = "#ef4444";
+                btn.disabled = false; btn.textContent = "获取验证码";
             }
         });
 
@@ -330,24 +293,20 @@
             const token = document.getElementById("regCode").value.trim();
             if (!token || token.length !== 6) { alert("请输入6位验证码！"); return; }
             const btn = document.getElementById("verifyCodeBtn");
-            btn.disabled = true;
-            btn.textContent = "验证中...";
+            btn.disabled = true; btn.textContent = "验证中...";
             try {
                 const { error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
                 if (error) {
                     alert("验证失败: " + error.message);
-                    btn.disabled = false;
-                    btn.textContent = "验证并注册";
+                    btn.disabled = false; btn.textContent = "验证并注册";
                 } else {
                     document.getElementById("regStep2").style.display = "none";
                     document.getElementById("regStep3").style.display = "block";
-                    btn.disabled = false;
-                    btn.textContent = "验证并注册";
+                    btn.disabled = false; btn.textContent = "验证并注册";
                 }
             } catch (err) {
                 alert("验证出错: " + err.message);
-                btn.disabled = false;
-                btn.textContent = "验证并注册";
+                btn.disabled = false; btn.textContent = "验证并注册";
             }
         });
 
@@ -357,39 +316,34 @@
             if (!account) { alert("请输入账号名！"); return; }
             if (!password || password.length < 6) { alert("密码长度至少6位！"); return; }
 
+            if (isReservedName(account, pendingEmail)) {
+                alert("该账号名为保留名称，仅限指定邮箱使用！");
+                return;
+            }
+
             const btn = document.getElementById("completeRegBtn");
-            btn.disabled = true;
-            btn.textContent = "注册中...";
+            btn.disabled = true; btn.textContent = "注册中...";
 
             try {
                 const taken = await isAccountTaken(account, null);
                 if (taken) {
                     alert("账号名已被占用，请换一个！");
-                    btn.disabled = false;
-                    btn.textContent = "完成注册";
+                    btn.disabled = false; btn.textContent = "完成注册";
                     return;
                 }
 
-                const { error } = await supabaseClient.auth.updateUser({
-                    password: password,
-                    data: { account: account }
-                });
+                const { error } = await supabaseClient.auth.updateUser({ password: password, data: { account: account } });
                 if (error) {
                     alert("注册失败: " + error.message);
-                    btn.disabled = false;
-                    btn.textContent = "完成注册";
+                    btn.disabled = false; btn.textContent = "完成注册";
                     return;
                 }
 
-                const { error: signInError } = await supabaseClient.auth.signInWithPassword({
-                    email: pendingEmail,
-                    password: password
-                });
+                const { error: signInError } = await supabaseClient.auth.signInWithPassword({ email: pendingEmail, password: password });
                 if (signInError) {
                     localStorage.setItem("email", pendingEmail);
                     alert("密码已设置成功！请重新登录。");
-                    btn.disabled = false;
-                    btn.textContent = "完成注册";
+                    btn.disabled = false; btn.textContent = "完成注册";
                     return;
                 }
 
@@ -404,8 +358,7 @@
                 window.location.href = "rjyz.html";
             } catch (err) {
                 alert("注册出错: " + err.message);
-                btn.disabled = false;
-                btn.textContent = "完成注册";
+                btn.disabled = false; btn.textContent = "完成注册";
             }
         });
 
@@ -413,27 +366,20 @@
             const email = document.getElementById("loginCodeEmail").value.trim();
             if (!email) { alert("请先输入邮箱！"); return; }
             const btn = document.getElementById("loginSendCodeBtn");
-            btn.disabled = true;
-            btn.textContent = "发送中...";
+            btn.disabled = true; btn.textContent = "发送中...";
             try {
-                const { error } = await supabaseClient.auth.signInWithOtp({
-                    email: email,
-                    options: { emailRedirectTo: window.location.origin }
-                });
+                const { error } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } });
                 if (error) {
                     alert("发送失败: " + error.message);
-                    btn.disabled = false;
-                    btn.textContent = "获取验证码";
+                    btn.disabled = false; btn.textContent = "获取验证码";
                 } else {
                     alert("验证码已发送至邮箱，请查收！");
-                    btn.disabled = false;
-                    btn.textContent = "重新发送";
+                    btn.disabled = false; btn.textContent = "重新发送";
                     document.getElementById("loginCode").focus();
                 }
             } catch (err) {
                 alert("系统错误: " + err.message);
-                btn.disabled = false;
-                btn.textContent = "获取验证码";
+                btn.disabled = false; btn.textContent = "获取验证码";
             }
         });
 
@@ -520,10 +466,7 @@
             document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
             document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
         }
-
-        function closeProfileModal() {
-            document.getElementById("profileModal").style.display = "none";
-        }
+        function closeProfileModal() { document.getElementById("profileModal").style.display = "none"; }
 
         async function saveProfile() {
             const account = document.getElementById("profileAccount").value.trim();
@@ -532,11 +475,14 @@
             if (!account) { alert("请输入账号名称！"); return; }
 
             const email = localStorage.getItem("email");
-            const taken = await isAccountTaken(account, email);
-            if (taken) {
-                alert("该账号名已被使用，请换一个！");
+
+            if (isReservedName(account, email)) {
+                alert("该账号名为保留名称，仅限指定邮箱使用！");
                 return;
             }
+
+            const taken = await isAccountTaken(account, email);
+            if (taken) { alert("该账号名已被使用，请换一个！"); return; }
 
             const res = await saveProfileToDB(email, account, gender, bio);
             if (!res.ok) { alert("保存失败: " + res.msg); return; }
