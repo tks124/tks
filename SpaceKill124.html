@@ -103,6 +103,8 @@
         }
         .btn-edit { background: #8b5cf6; }
         .btn-edit:hover { background: #7c3aed; }
+        .btn-friend { background: #06b6d4; }
+        .btn-friend:hover { background: #0891b2; }
         .btn-logout { background: #ef4444; }
         .btn-logout:hover { background: #dc2626; }
 
@@ -252,6 +254,8 @@
         const AUTH_KEY = "sk124_auth_token";
         const AUTH_PAGE_URL = "https://tks124.github.io/tks";
         const LANG_KEY = "sk124_lang";
+        const RESERVED_NAME = "太空杀124";
+        const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
 
         const WHITELIST_DOMAINS = [
             'bilibili.com', 'foxmail.com', 'tks124.github.io',
@@ -274,6 +278,7 @@
         footer: "© 太空杀124拥有最终解释权与所有权。",
         safetyAlert: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
         edit: "编辑资料",
+        friends: "好友",
         logout: "退出登录",
         accountPrefix: "账号: ",
         uidPrefix: "UID: ",
@@ -294,6 +299,7 @@
         footer: "© SpaceKill124 owns the final interpretation rights and all rights.",
         safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security.",
         edit: "Edit Profile",
+        friends: "Friends",
         logout: "Logout",
         accountPrefix: "Account: ",
         uidPrefix: "UID: ",
@@ -308,6 +314,14 @@
                 .replace(/&/g, "&amp;").replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
                 .replace(/'/g, "&#39;");
+        }
+
+        function isReservedName(account, email) {
+            if (!account) return false;
+            const a = account.trim();
+            if (a !== RESERVED_NAME) return false;
+            if (email && email === RESERVED_OWNER_EMAIL) return false;
+            return true;
         }
 
         function updateText() {
@@ -351,6 +365,15 @@
             } catch (e) { return { ok: false, msg: e.message }; }
         }
 
+        async function isAccountTaken(account, excludeEmail) {
+            if (!supabaseClient || !account) return false;
+            let query = supabaseClient.from("profiles").select("uid, email").eq("account", account);
+            if (excludeEmail) query = query.neq("email", excludeEmail);
+            const { data, error } = await query;
+            if (error) { console.error("查重失败:", error); return false; }
+            return data && data.length > 0;
+        }
+
         async function updateAccountDisplay() {
             const regBtn = document.getElementById("registerBtn");
             const accDisplay = document.getElementById("accountDisplay");
@@ -380,6 +403,7 @@
                     '<div class="uid-line">' + t.uidPrefix + escapeHtml(uid) + '</div>' +
                     '<div class="bio-line">' + t.bioPrefix + escapeHtml(bio || "—") + '</div>' +
                     '<div class="acc-buttons">' +
+                        '<button class="btn-friend" onclick="window.location.href=\'friends.html\'">' + t.friends + '</button>' +
                         '<button class="btn-edit" onclick="openProfileModal()">' + t.edit + '</button>' +
                         '<button class="btn-logout" onclick="doLogout()">' + t.logout + '</button>' +
                     '</div>';
@@ -418,8 +442,21 @@
                 return;
             }
 
+            if (isReservedName(account, email)) {
+                status.textContent = "该账号名为保留名称，仅限指定邮箱使用！";
+                status.style.color = "#ef4444";
+                return;
+            }
+
             status.textContent = "保存中...";
             status.style.color = "#9ca3af";
+
+            const taken = await isAccountTaken(account, email);
+            if (taken) {
+                status.textContent = "该账号名已被使用，请换一个！";
+                status.style.color = "#ef4444";
+                return;
+            }
 
             const res = await saveProfileToDB(email, account, gender, bio);
             if (!res.ok) {
