@@ -51,11 +51,7 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 .music-item .m-title{color:#f1f5f9;font-weight:bold;font-size:14px;}
 .music-item .m-artist{color:#94a3b8;font-size:12px;}
 .music-item audio{width:180px;height:32px;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
-.modal-content{background:#1e293b;padding:24px;border-radius:12px;width:90%;max-width:340px;color:white;}
-.modal-content h3{margin-top:0;color:#f1f5f9;text-align:center;}
-.modal-content p{margin:8px 0;font-size:14px;color:#cbd5e1;}
-.modal-content .close-btn{width:100%;padding:10px;border:none;border-radius:8px;background:#ef4444;color:#fff;cursor:pointer;margin-top:12px;}
+.status{font-size:12px;text-align:center;margin-top:6px;min-height:16px;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -75,7 +71,7 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
           <button onclick="searchUid()">搜索</button>
         </div>
         <div id="searchResult"></div>
-        <p style="font-size:12px;text-align:center;margin-top:6px;min-height:16px;" id="addStatus"></p>
+        <p class="status" id="addStatus"></p>
       </div>
       <div class="panel" style="margin-bottom:16px;">
         <h3>好友申请</h3>
@@ -106,16 +102,8 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
         <input type="text" id="chatInput" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendMsg()">
         <button onclick="sendMsg()">发送</button>
       </div>
-      <p style="font-size:12px;text-align:center;margin-top:6px;min-height:16px;" id="chatStatus"></p>
+      <p class="status" id="chatStatus"></p>
     </div>
-  </div>
-</div>
-
-<div id="userProfileModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal-content">
-    <h3>用户资料</h3>
-    <div id="userProfileModalBody"></div>
-    <button class="close-btn" onclick="document.getElementById('userProfileModal').style.display='none'">关闭</button>
   </div>
 </div>
 
@@ -126,6 +114,7 @@ let supabaseClient=null;
 if(window.supabase){supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}
 const AUTH_KEY="sk124_auth_token";
 const AUTH_PAGE_URL="https://tks124.github.io/tks";
+
 let myUid=null,myAccount="",myEmail="";
 let chatMode="public",currentFriend=null,chatTimer=null;
 let friendsCache=[];
@@ -138,6 +127,7 @@ async function init(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   if(!session){window.location.replace(AUTH_PAGE_URL);return;}
   myEmail=session.user.email;
+
   let {data:profile}=await supabaseClient.from("profiles").select("*").eq("email",myEmail).maybeSingle();
   if(!profile){
     const acc=(session.user.user_metadata&&session.user.user_metadata.account)||myEmail;
@@ -147,21 +137,18 @@ async function init(){
   if(!profile){document.body.innerHTML="<p style='text-align:center;padding:40px;'>无法获取资料</p>";return;}
   myUid=profile.uid;myAccount=profile.account||myEmail;
   document.getElementById("meInfo").textContent=myAccount+" (UID:"+myUid+")";
-  await loadRequests();await loadFriends();await loadMessages();
+
+  await loadRequests();
+  await loadFriends();
+  await loadMessages();
+
   if(!chatTimer){chatTimer=setInterval(function(){if(chatMode!=="music")loadMessages()},4000);}
+
+  if(location.hash==="#music") switchChat("music");
 }
 
-async function openUserProfile(uid){
-  const {data}=await supabaseClient.from("profiles").select("*").eq("uid",uid).maybeSingle();
-  if(!data){document.getElementById("userProfileModalBody").innerHTML="<p>未找到该用户</p>";}
-  else{
-    document.getElementById("userProfileModalBody").innerHTML=
-      "<p>账号: "+escapeHtml(data.account||"未知")+"</p>"+
-      "<p>UID: "+data.uid+"</p>"+
-      "<p>性别: "+escapeHtml(data.gender||"保密")+"</p>"+
-      "<p>个性签名: "+escapeHtml(data.bio||"未设置")+"</p>";
-  }
-  document.getElementById("userProfileModal").style.display="flex";
+function openUserProfile(uid){
+  window.location.href="profile.html?uid="+uid;
 }
 
 async function searchUid(){
@@ -173,8 +160,10 @@ async function searchUid(){
   if(!/^\d+$/.test(uidInput)){resultBox.innerHTML="";status.textContent="UID 必须是数字";status.style.color="#ef4444";return;}
   const targetUid=parseInt(uidInput,10);
   if(targetUid===myUid){resultBox.innerHTML="";status.textContent="不能加自己为好友";status.style.color="#ef4444";return;}
+
   const {data,error}=await supabaseClient.from("profiles").select("uid,account").eq("uid",targetUid).maybeSingle();
   if(error||!data){resultBox.innerHTML="";status.textContent="没有找到该 UID 的用户";status.style.color="#ef4444";return;}
+
   resultBox.innerHTML='<div class="friend-item"><div><span class="fname" onclick="openUserProfile('+data.uid+')">'+escapeHtml(data.account||"未命名")+'</span><span class="fuid">UID:'+data.uid+'</span></div><button onclick="sendRequest('+data.uid+')">加好友</button></div>';
   status.textContent="";
 }
@@ -238,15 +227,21 @@ function switchChat(mode){
   document.getElementById("tabPublic").classList.toggle("active",mode==="public");
   document.getElementById("tabPrivate").classList.toggle("active",mode==="private");
   document.getElementById("tabMusic").classList.toggle("active",mode==="music");
+
   const chatBox=document.getElementById("chatBox");
   const musicPanel=document.getElementById("musicPanel");
   const chatInputBox=document.getElementById("chatInputBox");
+
   if(mode==="music"){
-    chatBox.style.display="none";musicPanel.style.display="block";chatInputBox.style.display="none";
+    chatBox.style.display="none";
+    musicPanel.style.display="block";
+    chatInputBox.style.display="none";
     document.getElementById("chatHeader").textContent="点播台 · 所有人可上传和收听";
     loadMusic();
   }else{
-    chatBox.style.display="block";musicPanel.style.display="none";chatInputBox.style.display="flex";
+    chatBox.style.display="block";
+    musicPanel.style.display="none";
+    chatInputBox.style.display="flex";
     if(mode==="public")document.getElementById("chatHeader").textContent="公共频道 · 所有登录用户可见";
     else document.getElementById("chatHeader").textContent="与 "+currentFriend.account+" (UID:"+currentFriend.uid+") 私聊";
     loadMessages();
@@ -256,23 +251,27 @@ function switchChat(mode){
 function openPrivate(uid){
   const f=friendsCache.find(x=>x.uid===uid);
   if(!f){alert("找不到该好友");return;}
-  currentFriend=f;switchChat("private");
+  currentFriend=f;
+  switchChat("private");
 }
 
 async function loadMessages(){
   const box=document.getElementById("chatBox");
   let query=supabaseClient.from("chat_messages").select("*").order("created_at",{ascending:true}).limit(200);
-  if(chatMode==="public"){query=query.eq("channel","public");}
-  else{
+  if(chatMode==="public"){
+    query=query.eq("channel","public");
+  }else{
     if(!currentFriend){box.innerHTML='<div class="empty">请选择好友</div>';return;}
     query=query.eq("channel","private").or("and(sender_uid.eq."+myUid+",receiver_uid.eq."+currentFriend.uid+"),and(sender_uid.eq."+currentFriend.uid+",receiver_uid.eq."+myUid+")");
   }
   const {data,error}=await query;
   if(error){box.innerHTML='<div class="empty">加载失败: '+escapeHtml(error.message)+'</div>';return;}
   if(!data||data.length===0){box.innerHTML='<div class="empty">还没有消息</div>';return;}
+
   const uids=[...new Set(data.map(m=>m.sender_uid))];
   const {data:profiles}=await supabaseClient.from("profiles").select("uid,account").in("uid",uids);
   const map={};(profiles||[]).forEach(p=>{map[p.uid]=p.account||("UID"+p.uid);});
+
   box.innerHTML=data.map(m=>{
     const mine=m.sender_uid===myUid;
     const whoName=map[m.sender_uid]||("UID"+m.sender_uid);
@@ -287,10 +286,18 @@ async function sendMsg(){
   const content=input.value.trim();
   if(!content)return;
   if(chatMode==="private"&&!currentFriend){status.textContent="请先选好友";status.style.color="#ef4444";return;}
-  const record={sender_uid:myUid,receiver_uid:chatMode==="private"?currentFriend.uid:null,channel:chatMode,content:content};
+
+  const record={
+    sender_uid:myUid,
+    receiver_uid:chatMode==="private"?currentFriend.uid:null,
+    channel:chatMode,
+    content:content
+  };
   const {error}=await supabaseClient.from("chat_messages").insert([record]);
   if(error){status.textContent="发送失败: "+error.message;status.style.color="#ef4444";return;}
-  input.value="";status.textContent="";await loadMessages();
+  input.value="";
+  status.textContent="";
+  await loadMessages();
 }
 
 async function loadMusic(){
@@ -306,18 +313,23 @@ async function uploadMusic(){
   const titleInput=document.getElementById("musicTitle");
   const file=fileInput.files[0];
   if(!file){alert("请选择音乐文件");return;}
+
   const session=await supabaseClient.auth.getSession();
   const isLoggedIn=!!(session.data&&session.data.session);
+
   if(!isLoggedIn){
     const lastUpload=localStorage.getItem("last_music_upload");
     if(lastUpload&&Date.now()-parseInt(lastUpload,10)<24*60*60*1000){
-      alert("未登录用户一天只能上传一次");return;
+      alert("未登录用户一天只能上传一次");
+      return;
     }
   }
+
   const fileName=Date.now()+"_"+file.name;
   const up=await supabaseClient.storage.from("music").upload(fileName,file);
   if(up.error){alert("上传失败: "+up.error.message);return;}
   const pub=supabaseClient.storage.from("music").getPublicUrl(fileName);
+
   const {error}=await supabaseClient.from("music").insert([{
     uploader_uid:isLoggedIn?session.data.session.user.id:null,
     uploader_email:isLoggedIn?session.data.session.user.email:"匿名",
@@ -325,8 +337,10 @@ async function uploadMusic(){
     file_url:pub.data.publicUrl
   }]);
   if(error){alert("写入失败: "+error.message);return;}
+
   if(!isLoggedIn)localStorage.setItem("last_music_upload",Date.now().toString());
-  fileInput.value="";titleInput.value="";
+  fileInput.value="";
+  titleInput.value="";
   alert("上传成功");
   loadMusic();
 }
