@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceKill124 - 官网入口</title>
+    <script>
+    if (!window.fetch) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"><\/script>');
+    }
+    if (!window.AbortController) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/abortcontroller-polyfill@1.7.5/dist/abortcontroller-polyfill-only.js"><\/script>');
+    }
+    if (!window.Promise) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.3.0/dist/polyfill.min.js"><\/script>');
+    }
+    </script>
     <style>
         body { margin: 0; padding: 0; background: linear-gradient(180deg, #000000 0%, #111827 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; flex-direction: column; }
         .container { text-align: center; width: 100%; max-width: 400px; padding: 20px; }
@@ -18,7 +29,7 @@
         .btn-login { background: linear-gradient(to right, #f59e0b, #d97706); color: white; }
         .btn-friend { background: linear-gradient(to right, #06b6d4, #0891b2); color: white; }
         .footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #9ca3af; width: 100%; text-align: center; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #1f2937; padding: 40px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #374151; text-align: center; }
         .modal-content h2 { margin-top: 0; margin-bottom: 30px; font-size: 1.5rem; color: #f3f4f6; }
         .modal-input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #4b5563; border-radius: 6px; background: #111827; color: white; box-sizing: border-box; font-size: 1rem; }
@@ -38,10 +49,15 @@
         .code-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 15px; }
         .code-row .modal-input { margin-bottom: 0; text-align: center; letter-spacing: 2px; }
         .code-row .modal-btn { flex: 0 0 120px; white-space: nowrap; }
+        #musicBtn { position: fixed; left: 20px; bottom: 20px; padding: 12px 22px; border: none; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 18px rgba(139,92,246,0.5); transition: all 0.25s; z-index: 200; letter-spacing: 1px; }
+        #musicBtn:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(139,92,246,0.7); }
+        #musicBtn:active { transform: translateY(0); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <button id="musicBtn" onclick="goMusic()">🎵 点播</button>
+
     <div class="user-info" id="userInfo" style="display:none;">
         <div style="margin-bottom:8px;">已登录: <span id="userEmail"></span></div>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
@@ -174,6 +190,7 @@
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
         function goFriends() { window.location.href = "friends.html"; }
+        function goMusic() { window.location.href = "friends.html#music"; }
 
         function resetRegisterModal() {
             pendingEmail = "";
@@ -466,6 +483,7 @@
             document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
             document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
         }
+
         function closeProfileModal() { document.getElementById("profileModal").style.display = "none"; }
 
         async function saveProfile() {
