@@ -6,7 +6,19 @@
     <title>个人主页 - SpaceKill124</title>
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); font-family: 'Microsoft YaHei', sans-serif; min-height: 100vh; color: #e2e8f0; display: flex; justify-content: center; align-items: flex-start; padding: 40px 15px; }
+        body { margin: 0; padding: 0; background: #0f172a; font-family: 'Microsoft YaHei', sans-serif; min-height: 100vh; color: #e2e8f0; display: flex; justify-content: center; align-items: flex-start; padding: 40px 15px; transition: background 0.2s, color 0.2s; }
+        body.light { background: #f1f5f9; color: #0f172a; }
+        body.light .card { background: #ffffff; border-color: #e2e8f0; box-shadow: 0 20px 50px rgba(0,0,0,0.08); }
+        body.light .info-value, body.light .account-name { color: #0f172a; }
+        body.light .setting-item { background: rgba(0,0,0,0.03); color: #0f172a; }
+        body.light .setting-item:hover { background: rgba(0,0,0,0.06); }
+        body.light .bio-box, body.light .my-messages-box { background: rgba(0,0,0,0.03); color: #334155; }
+        body.light .my-message-item { background: rgba(0,0,0,0.03); color: #334155; }
+        body.light .modal-content { background: #ffffff; color: #0f172a; }
+        body.light .modal-content h3 { color: #0f172a; }
+        body.light .modal-content input, body.light .modal-content select, body.light .modal-content textarea { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
+        body.light .dtop { background: #f1f5f9; }
+        body.light .back { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; width: 100%; max-width: 560px; padding: 36px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
         .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #3b82f6); display: flex; justify-content: center; align-items: center; font-size: 38px; font-weight: bold; color: white; margin: 0 auto 18px auto; box-shadow: 0 8px 20px rgba(139,92,246,0.4); }
         .account-name { text-align: center; font-size: 24px; font-weight: bold; color: #ffffff; margin-bottom: 6px; }
@@ -30,7 +42,35 @@
         .btn-back { background: linear-gradient(to right, #3b82f6, #2563eb); }
         .btn-logout { background: linear-gradient(to right, #ef4444, #dc2626); }
         .btn-report { background: linear-gradient(to right, #ef4444, #dc2626); }
+        .btn-setting { background: linear-gradient(to right, #64748b, #475569); }
         .loading { text-align: center; color: #94a3b8; padding: 60px 0; font-size: 15px; }
+        .dtop { position: sticky; top: 0; z-index: 5; background: #0f172a; padding: 0 0 14px 0; }
+        body.light .dtop { background: #f1f5f9; }
+        .back { border: none; background: rgba(255,255,255,0.08); border-radius: 20px; padding: 9px 16px; font-size: 14px; color: #3b82f6; cursor: pointer; font-family: inherit; }
+        .view-title { font-size: 22px; font-weight: bold; text-align: center; margin: 8px 0 24px 0; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; font-size: 15px; cursor: pointer; transition: background 0.15s; color: #e2e8f0; }
+        .setting-item:hover { background: rgba(255,255,255,0.1); }
+        .setting-item .chev { color: #64748b; font-size: 18px; }
+        .setting-item.danger { color: #ef4444; }
+        .switch { width: 46px; height: 27px; border-radius: 14px; background: #475569; position: relative; transition: 0.2s; }
+        .switch::after { content: ''; position: absolute; width: 23px; height: 23px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: 0.2s; }
+        .switch.on { background: #8b5cf6; }
+        .switch.on::after { left: 21px; }
+        .security-block { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        body.light .security-block { background: rgba(0,0,0,0.03); }
+        .security-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        body.light .security-row { border-color: rgba(0,0,0,0.08); }
+        .security-row:last-child { border-bottom: none; }
+        .security-label { color: #94a3b8; font-size: 14px; }
+        .security-value { color: #f1f5f9; font-size: 14px; font-weight: 500; }
+        body.light .security-value { color: #0f172a; }
+        .security-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .security-actions button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-change { background: linear-gradient(to right, #3b82f6, #2563eb); }
+        .deactivate-wrap { text-align: center; padding: 30px 0; }
+        .deactivate-name { font-size: 26px; font-weight: bold; margin-bottom: 8px; }
+        .deactivate-uid { font-size: 15px; color: #94a3b8; margin-bottom: 40px; }
+        .deactivate-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(to right, #ef4444, #dc2626); color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #1e293b; border: 1px solid #334155; padding: 30px; border-radius: 14px; width: 90%; max-width: 360px; color: white; }
         .modal-content h3 { margin: 0 0 20px 0; color: #f1f5f9; text-align: center; }
@@ -40,25 +80,85 @@
         .modal-buttons button { flex: 1; padding: 11px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; color: white; font-weight: bold; }
         .btn-cancel { background: #64748b; }
         .btn-confirm { background: #10b981; }
+        .btn-code { background: #10b981; padding: 12px 16px; border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; white-space: nowrap; }
+        .btn-code:disabled { opacity: 0.5; cursor: not-allowed; }
+        .code-row { display: flex; gap: 8px; }
+        .code-row input { flex: 1; margin-bottom: 0; }
         .modal-status { font-size: 12px; text-align: center; margin-top: 8px; min-height: 16px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="card">
-        <div id="loadingBox" class="loading">加载中...</div>
-        <div id="profileBox" style="display:none;">
-            <div class="avatar" id="avatarBox">?</div>
-            <div class="account-name" id="nameBox">—</div>
-            <div class="uid-badge">UID: <span id="uidBox">—</span></div>
-            <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
-            <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
-            <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
-            <div class="my-messages-box" id="myMessagesBox">
-                <div class="bio-title">我的留言 <span id="msgCount">(0)</span></div>
-                <div id="myMessagesList" class="my-messages-list"><div class="no-msg">还没有发表过留言。</div></div>
+        <div id="viewProfile">
+            <div id="loadingBox" class="loading">加载中...</div>
+            <div id="profileBox" style="display:none;">
+                <div class="avatar" id="avatarBox">?</div>
+                <div class="account-name" id="nameBox">—</div>
+                <div class="uid-badge">UID: <span id="uidBox">—</span></div>
+                <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
+                <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
+                <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
+                <div class="my-messages-box" id="myMessagesBox">
+                    <div class="bio-title">我的留言 <span id="msgCount">(0)</span></div>
+                    <div id="myMessagesList" class="my-messages-list"><div class="no-msg">还没有发表过留言。</div></div>
+                </div>
+                <div class="actions" id="actionsBox"></div>
             </div>
-            <div class="actions" id="actionsBox"></div>
+        </div>
+
+        <div id="viewSettings" style="display:none;">
+            <div class="dtop"><button class="back" onclick="backToProfile()">← 返回</button></div>
+            <div class="view-title">设置</div>
+            <div class="setting-item" onclick="showSecurity()">
+                <span>账号安全</span><span class="chev">›</span>
+            </div>
+            <div class="setting-item" onclick="toggleDark()">
+                <span>夜间模式</span>
+                <span class="switch" id="darkSwitch"></span>
+            </div>
+            <div class="setting-item" onclick="contactSupport()">
+                <span>客服</span><span class="chev">›</span>
+            </div>
+            <div class="setting-item danger" onclick="showDeactivate()">
+                <span>注销账号</span><span class="chev">›</span>
+            </div>
+            <div class="setting-item danger" onclick="doLogout()">
+                <span>退出登录</span><span class="chev">›</span>
+            </div>
+        </div>
+
+        <div id="viewSecurity" style="display:none;">
+            <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
+            <div class="view-title">账号安全</div>
+            <div class="security-block">
+                <div class="security-row">
+                    <span class="security-label">当前绑定邮箱</span>
+                    <span class="security-value" id="secEmail">—</span>
+                </div>
+                <div class="security-row">
+                    <span class="security-label">当前密码</span>
+                    <span class="security-value">••••••••</span>
+                </div>
+            </div>
+            <div class="security-actions">
+                <button class="btn-change" onclick="openChangePassword()">修改密码</button>
+                <button class="btn-change" onclick="openChangeEmail()">修改邮箱</button>
+            </div>
+        </div>
+
+        <div id="viewDeactivate" style="display:none;">
+            <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
+            <div class="view-title">注销账号</div>
+            <div class="deactivate-wrap">
+                <div class="deactivate-name" id="deactName">—</div>
+                <div class="deactivate-uid" id="deactUid">UID: —</div>
+                <button class="deactivate-btn" onclick="confirmDeactivate()">确认注销</button>
+                <p style="color:#94a3b8;font-size:13px;margin-top:20px;line-height:1.6;">
+                    注销后三天内，只要你重新登录一次，注销会自动取消。<br>
+                    三天后账号将被永久删除，无法恢复。
+                </p>
+            </div>
         </div>
     </div>
 
@@ -92,6 +192,40 @@
         </div>
     </div>
 
+    <div id="changePwdModal" class="modal-overlay" onclick="if(event.target===this)closeChangePwd()">
+        <div class="modal-content">
+            <h3>修改密码</h3>
+            <p style="font-size:13px;color:#94a3b8;margin:0 0 12px 0;">验证码将发送至你当前绑定的邮箱</p>
+            <div class="code-row">
+                <input type="text" id="pwdCode" placeholder="6位验证码" maxlength="6">
+                <button class="btn-code" id="pwdCodeBtn" onclick="sendPwdCode()">获取验证码</button>
+            </div>
+            <input type="password" id="newPwd" placeholder="新密码（至少6位）" style="margin-top:12px;">
+            <input type="password" id="newPwd2" placeholder="确认新密码">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeChangePwd()">取消</button>
+                <button class="btn-confirm" onclick="submitChangePwd()">确认修改</button>
+            </div>
+            <p class="modal-status" id="pwdStatus"></p>
+        </div>
+    </div>
+
+    <div id="changeEmailModal" class="modal-overlay" onclick="if(event.target===this)closeChangeEmail()">
+        <div class="modal-content">
+            <h3>修改邮箱</h3>
+            <input type="email" id="newEmail" placeholder="新邮箱地址">
+            <div class="code-row">
+                <input type="text" id="emailCode" placeholder="6位验证码" maxlength="6">
+                <button class="btn-code" id="emailCodeBtn" onclick="sendEmailCode()">获取验证码</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeChangeEmail()">取消</button>
+                <button class="btn-confirm" onclick="submitChangeEmail()">确认修改</button>
+            </div>
+            <p class="modal-status" id="emailStatus"></p>
+        </div>
+    </div>
+
 <script>
     const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
@@ -103,7 +237,8 @@
     const RESERVED_NAME = "太空杀124";
     const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
 
-    let currentEmail = "", myEmail = "", myUid = null, targetProfile = null, isSelf = true;
+    let currentEmail = "", myEmail = "", myUid = null, myAccount = "", myUserId = "";
+    let targetProfile = null, isSelf = true;
 
     function escapeHtml(str) {
         return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -132,24 +267,60 @@
         return null;
     }
 
+    function applyTheme() {
+        const dark = localStorage.getItem("dark") === "1";
+        document.body.classList.toggle("light", !dark);
+        document.getElementById("darkSwitch").classList.toggle("on", dark);
+    }
+
+    function toggleDark() {
+        const dark = localStorage.getItem("dark") === "1";
+        localStorage.setItem("dark", dark ? "0" : "1");
+        applyTheme();
+    }
+
     async function loadProfile() {
         if (!supabaseClient) { document.getElementById("loadingBox").textContent = "Supabase 未加载"; return; }
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) { window.location.replace(AUTH_PAGE_URL); return; }
 
         myEmail = session.user.email;
+        myUserId = session.user.id;
+
         const { data: selfProfile } = await supabaseClient.from("profiles").select("*").eq("email", myEmail).maybeSingle();
         if (!selfProfile) { document.getElementById("loadingBox").textContent = "无法获取自己的资料"; return; }
+
+        if (selfProfile.pending_deactivation_at) {
+            const { error: clearErr } = await supabaseClient.from("profiles").update({ pending_deactivation_at: null }).eq("uid", selfProfile.uid);
+            if (!clearErr) {
+                try {
+                    await fetch(SUPABASE_URL + "/functions/v1/send-notification", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            type: "account_reactivated",
+                            to: myEmail,
+                            data: { account: selfProfile.account || myEmail, uid: selfProfile.uid }
+                        })
+                    });
+                } catch (e) { console.error(e); }
+            }
+        }
+
         myUid = selfProfile.uid;
+        myAccount = selfProfile.account || myEmail;
 
         const targetUid = getTargetUidFromUrl();
         if (targetUid && targetUid !== myUid) {
             isSelf = false;
             const { data: other } = await supabaseClient.from("profiles").select("*").eq("uid", targetUid).maybeSingle();
             if (!other) { document.getElementById("loadingBox").textContent = "未找到该用户"; return; }
-            targetProfile = other; currentEmail = other.email;
+            targetProfile = other;
+            currentEmail = other.email;
         } else {
-            isSelf = true; targetProfile = selfProfile; currentEmail = selfProfile.email;
+            isSelf = true;
+            targetProfile = selfProfile;
+            currentEmail = selfProfile.email;
         }
 
         document.getElementById("loadingBox").style.display = "none";
@@ -168,8 +339,10 @@
         document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
 
         if (isSelf) {
-            localStorage.setItem("account", account); localStorage.setItem("uid", uid);
-            localStorage.setItem("gender", gender); localStorage.setItem("bio", bio);
+            localStorage.setItem("account", account);
+            localStorage.setItem("uid", uid);
+            localStorage.setItem("gender", gender);
+            localStorage.setItem("bio", bio);
             localStorage.setItem("email", currentEmail);
             document.getElementById("myMessagesBox").style.display = "block";
             await loadMyMessages();
@@ -184,14 +357,204 @@
         document.getElementById("actionsBox").innerHTML =
             '<button class="btn-edit" onclick="openEdit()">编辑资料</button>' +
             '<button class="btn-friend" onclick="goFriends()">好友</button>' +
-            '<button class="btn-back" onclick="goBack()">返回首页</button>' +
-            '<button class="btn-logout" onclick="doLogout()">退出登录</button>';
+            '<button class="btn-setting" onclick="showSettings()">设置</button>' +
+            '<button class="btn-back" onclick="goBack()">返回首页</button>';
     }
 
     function renderOtherActions() {
         document.getElementById("actionsBox").innerHTML =
             '<button class="btn-report" onclick="openReport()">举报</button>' +
             '<button class="btn-back" onclick="goBack()">返回</button>';
+    }
+
+    function showView(id) {
+        ["viewProfile","viewSettings","viewSecurity","viewDeactivate"].forEach(v => {
+            document.getElementById(v).style.display = (v === id) ? "block" : "none";
+        });
+        window.scrollTo(0, 0);
+    }
+
+    function showSettings() { showView("viewSettings"); }
+    function backToProfile() { showView("viewProfile"); }
+    function backToSettings() { showView("viewSettings"); }
+
+    function showSecurity() {
+        document.getElementById("secEmail").textContent = myEmail || "—";
+        showView("viewSecurity");
+    }
+
+    function showDeactivate() {
+        document.getElementById("deactName").textContent = myAccount || "—";
+        document.getElementById("deactUid").textContent = "UID: " + (myUid || "—");
+        showView("viewDeactivate");
+    }
+
+    function contactSupport() {
+        const subject = encodeURIComponent("账号问题咨询 - SpaceKill124");
+        const body = encodeURIComponent("我的账号名: " + myAccount + "\n我的UID: " + myUid + "\n\n问题描述:\n");
+        window.location.href = "mailto:linjiayuan@spacekill124.cn?subject=" + subject + "&body=" + body;
+    }
+
+    async function confirmDeactivate() {
+        const ok = confirm("确定要注销账号吗？三天内重新登录可取消。");
+        if (!ok) return;
+        const nowIso = new Date().toISOString();
+        const { error } = await supabaseClient.from("profiles").update({ pending_deactivation_at: nowIso }).eq("uid", myUid);
+        if (error) { alert("注销失败: " + error.message); return; }
+
+        try {
+            await fetch(SUPABASE_URL + "/functions/v1/send-notification", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: "account_deactivating",
+                    to: myEmail,
+                    data: {
+                        account: myAccount,
+                        uid: myUid,
+                        time: new Date().toLocaleString("zh-CN")
+                    }
+                })
+            });
+        } catch (e) { console.error(e); }
+
+        alert("已开始注销，三日后完成注销。你已被自动退出登录。\n重新登录可取消注销。");
+
+        await supabaseClient.auth.signOut();
+        ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(k => localStorage.removeItem(k));
+        window.location.replace(AUTH_PAGE_URL);
+    }
+
+    function openChangePassword() {
+        document.getElementById("changePwdModal").style.display = "flex";
+        document.getElementById("pwdCode").value = "";
+        document.getElementById("newPwd").value = "";
+        document.getElementById("newPwd2").value = "";
+        document.getElementById("pwdStatus").textContent = "";
+        document.getElementById("pwdCodeBtn").disabled = false;
+        document.getElementById("pwdCodeBtn").textContent = "获取验证码";
+    }
+    function closeChangePwd() { document.getElementById("changePwdModal").style.display = "none"; }
+
+    async function sendPwdCode() {
+        const btn = document.getElementById("pwdCodeBtn");
+        const status = document.getElementById("pwdStatus");
+        btn.disabled = true; btn.textContent = "发送中...";
+        const { error } = await supabaseClient.auth.signInWithOtp({ email: myEmail });
+        if (error) {
+            status.textContent = "发送失败: " + error.message;
+            status.style.color = "#ef4444";
+            btn.disabled = false; btn.textContent = "获取验证码";
+        } else {
+            status.textContent = "验证码已发送至当前邮箱";
+            status.style.color = "#10b981";
+            btn.textContent = "重新发送";
+            let cd = 60;
+            const timer = setInterval(() => {
+                cd--;
+                if (cd <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = "重新发送"; }
+                else { btn.textContent = cd + "s"; }
+            }, 1000);
+        }
+    }
+
+    async function submitChangePwd() {
+        const code = document.getElementById("pwdCode").value.trim();
+        const p1 = document.getElementById("newPwd").value;
+        const p2 = document.getElementById("newPwd2").value;
+        const status = document.getElementById("pwdStatus");
+        if (!code || code.length !== 6) { status.textContent = "请输入6位验证码"; status.style.color = "#ef4444"; return; }
+        if (!p1 || p1.length < 6) { status.textContent = "新密码至少6位"; status.style.color = "#ef4444"; return; }
+        if (p1 !== p2) { status.textContent = "两次密码不一致"; status.style.color = "#ef4444"; return; }
+        status.textContent = "验证中..."; status.style.color = "#94a3b8";
+
+        const { error: vErr } = await supabaseClient.auth.verifyOtp({ email: myEmail, token: code, type: "email" });
+        if (vErr) { status.textContent = "验证失败: " + vErr.message; status.style.color = "#ef4444"; return; }
+
+        const { error: uErr } = await supabaseClient.auth.updateUser({ password: p1 });
+        if (uErr) { status.textContent = "修改失败: " + uErr.message; status.style.color = "#ef4444"; return; }
+
+        status.textContent = "密码修改成功！"; status.style.color = "#10b981";
+        setTimeout(closeChangePwd, 1200);
+    }
+
+    let pendingNewEmail = "";
+
+    function openChangeEmail() {
+        document.getElementById("changeEmailModal").style.display = "flex";
+        document.getElementById("newEmail").value = "";
+        document.getElementById("emailCode").value = "";
+        document.getElementById("emailStatus").textContent = "";
+        document.getElementById("emailCodeBtn").disabled = false;
+        document.getElementById("emailCodeBtn").textContent = "获取验证码";
+        pendingNewEmail = "";
+    }
+    function closeChangeEmail() { document.getElementById("changeEmailModal").style.display = "none"; }
+
+    async function sendEmailCode() {
+        const newEmail = document.getElementById("newEmail").value.trim();
+        const btn = document.getElementById("emailCodeBtn");
+        const status = document.getElementById("emailStatus");
+        if (!newEmail) { status.textContent = "请先输入新邮箱"; status.style.color = "#ef4444"; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { status.textContent = "邮箱格式不正确"; status.style.color = "#ef4444"; return; }
+        if (newEmail === myEmail) { status.textContent = "新邮箱与当前邮箱相同"; status.style.color = "#ef4444"; return; }
+
+        btn.disabled = true; btn.textContent = "发送中...";
+        const { error } = await supabaseClient.auth.signInWithOtp({ email: newEmail });
+        if (error) {
+            status.textContent = "发送失败: " + error.message;
+            status.style.color = "#ef4444";
+            btn.disabled = false; btn.textContent = "获取验证码";
+        } else {
+            pendingNewEmail = newEmail;
+            status.textContent = "验证码已发送至新邮箱";
+            status.style.color = "#10b981";
+            btn.textContent = "重新发送";
+            let cd = 60;
+            const timer = setInterval(() => {
+                cd--;
+                if (cd <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = "重新发送"; }
+                else { btn.textContent = cd + "s"; }
+            }, 1000);
+        }
+    }
+
+    async function submitChangeEmail() {
+        const newEmail = document.getElementById("newEmail").value.trim();
+        const code = document.getElementById("emailCode").value.trim();
+        const status = document.getElementById("emailStatus");
+        if (!newEmail) { status.textContent = "请输入新邮箱"; status.style.color = "#ef4444"; return; }
+        if (!code || code.length !== 6) { status.textContent = "请输入6位验证码"; status.style.color = "#ef4444"; return; }
+        if (pendingNewEmail !== newEmail) { status.textContent = "请先获取验证码"; status.style.color = "#ef4444"; return; }
+        status.textContent = "验证中..."; status.style.color = "#94a3b8";
+
+        const { error: vErr } = await supabaseClient.auth.verifyOtp({ email: newEmail, token: code, type: "email" });
+        if (vErr) { status.textContent = "验证失败: " + vErr.message; status.style.color = "#ef4444"; return; }
+
+        try {
+            const res = await fetch(SUPABASE_URL + "/functions/v1/update-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: myUserId, new_email: newEmail, old_email: myEmail })
+            });
+            if (!res.ok) {
+                const t = await res.text();
+                status.textContent = "修改失败: " + t;
+                status.style.color = "#ef4444";
+                return;
+            }
+        } catch (e) {
+            status.textContent = "修改失败: " + e.message;
+            status.style.color = "#ef4444";
+            return;
+        }
+
+        status.textContent = "邮箱修改成功！"; status.style.color = "#10b981";
+        myEmail = newEmail;
+        localStorage.setItem("email", newEmail);
+        document.getElementById("emailBox").textContent = newEmail;
+        document.getElementById("secEmail").textContent = newEmail;
+        setTimeout(closeChangeEmail, 1200);
     }
 
     async function loadMyMessages() {
@@ -230,11 +593,14 @@
         const { error } = await supabaseClient.from("profiles").update({ account: account, gender: gender, bio: bio }).eq("email", myEmail);
         if (error) { status.textContent = "保存失败: " + error.message; status.style.color = "#ef4444"; return; }
         status.textContent = "保存成功！"; status.style.color = "#10b981";
+        myAccount = account;
         document.getElementById("avatarBox").textContent = account.charAt(0).toUpperCase();
         document.getElementById("nameBox").textContent = account;
         document.getElementById("genderBox").textContent = gender;
         document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
-        localStorage.setItem("account", account); localStorage.setItem("gender", gender); localStorage.setItem("bio", bio);
+        localStorage.setItem("account", account);
+        localStorage.setItem("gender", gender);
+        localStorage.setItem("bio", bio);
         setTimeout(closeEdit, 500);
     }
 
@@ -268,7 +634,7 @@
     }
 
     function goFriends() { window.location.href = "friends.html"; }
-    function goBack() { window.location.href = isSelf ? "SpaceKill124_源代码.html" : "friends.html"; }
+    function goBack() { window.location.href = isSelf ? "SpaceKill124" : "friends.html"; }
 
     async function doLogout() {
         if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
@@ -278,8 +644,9 @@
 
     window.addEventListener("DOMContentLoaded", async function() {
         if (localStorage.getItem(AUTH_KEY) !== "true") { window.location.replace(AUTH_PAGE_URL); return; }
+        applyTheme();
         await loadProfile();
     });
 </script>
 </body>
-      </html>
+</html>
