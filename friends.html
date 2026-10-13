@@ -14,47 +14,48 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 .topbar .me span{color:#8b5cf6;font-weight:bold;}
 .topbar button{padding:8px 16px;border:none;border-radius:8px;background:#3b82f6;color:#fff;cursor:pointer;font-size:13px;}
 .topbar button:hover{background:#2563eb;}
-
 .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;}
 @media(max-width:760px){.grid{grid-template-columns:1fr;}}
-
 .panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;}
 .panel h3{margin:0 0 12px 0;font-size:14px;color:#c4b5fd;letter-spacing:1px;}
 .search-row{display:flex;gap:8px;margin-bottom:12px;}
 .search-row input{flex:1;padding:10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#fff;font-size:14px;}
 .search-row button{padding:10px 14px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;font-size:13px;}
-.search-row button:hover{background:#059669;}
-
 .friend-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;font-size:14px;}
-.friend-item .fname{color:#f1f5f9;font-weight:bold;}
+.friend-item .fname{color:#f1f5f9;font-weight:bold;cursor:pointer;}
+.friend-item .fname:hover{color:#8b5cf6;}
 .friend-item .fuid{color:#94a3b8;font-size:12px;margin-left:6px;}
 .friend-item button{padding:5px 10px;border:none;border-radius:6px;font-size:12px;cursor:pointer;color:#fff;background:#3b82f6;}
 .friend-item button.accept{background:#10b981;}
 .friend-item button.reject{background:#ef4444;}
 .friend-item button.chat{background:#8b5cf6;}
-.friend-item button:hover{opacity:0.85;}
-
 .empty{color:#64748b;font-size:13px;text-align:center;padding:16px 0;}
-
 .tabs{display:flex;gap:8px;margin-bottom:12px;}
 .tab{flex:1;padding:10px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:#94a3b8;cursor:pointer;font-size:13px;}
 .tab.active{background:linear-gradient(to right,#8b5cf6,#7c3aed);color:#fff;border-color:transparent;}
-
 .chat-box{height:360px;overflow-y:auto;background:#0a0f1c;border-radius:8px;padding:12px;margin-bottom:10px;}
 .chat-msg{margin-bottom:10px;font-size:14px;line-height:1.5;}
-.chat-msg .who{color:#8b5cf6;font-weight:bold;font-size:12px;margin-right:6px;}
+.chat-msg .who{color:#8b5cf6;font-weight:bold;font-size:12px;margin-right:6px;cursor:pointer;}
+.chat-msg .who:hover{text-decoration:underline;}
 .chat-msg .who.other{color:#3b82f6;}
 .chat-msg .time{color:#64748b;font-size:11px;margin-left:6px;}
 .chat-msg .text{color:#e2e8f0;display:block;margin-top:2px;word-break:break-word;white-space:pre-wrap;}
 .chat-msg.mine .who{color:#10b981;}
-
 .chat-input{display:flex;gap:8px;}
 .chat-input input{flex:1;padding:10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#fff;font-size:14px;}
 .chat-input button{padding:10px 18px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;font-size:13px;}
-.chat-input button:hover{background:#059669;}
 .chat-header{font-size:13px;color:#94a3b8;margin-bottom:8px;}
-
-.status{font-size:12px;text-align:center;margin-top:6px;min-height:16px;}
+.music-list{max-height:360px;overflow-y:auto;}
+.music-item{padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.music-item .m-info{flex:1;}
+.music-item .m-title{color:#f1f5f9;font-weight:bold;font-size:14px;}
+.music-item .m-artist{color:#94a3b8;font-size:12px;}
+.music-item audio{width:180px;height:32px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
+.modal-content{background:#1e293b;padding:24px;border-radius:12px;width:90%;max-width:340px;color:white;}
+.modal-content h3{margin-top:0;color:#f1f5f9;text-align:center;}
+.modal-content p{margin:8px 0;font-size:14px;color:#cbd5e1;}
+.modal-content .close-btn{width:100%;padding:10px;border:none;border-radius:8px;background:#ef4444;color:#fff;cursor:pointer;margin-top:12px;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -65,7 +66,6 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
     <div class="me">我: <span id="meInfo">—</span></div>
     <button onclick="goBack()">返回首页</button>
   </div>
-
   <div class="grid">
     <div>
       <div class="panel" style="margin-bottom:16px;">
@@ -75,33 +75,47 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
           <button onclick="searchUid()">搜索</button>
         </div>
         <div id="searchResult"></div>
-        <p class="status" id="addStatus"></p>
+        <p style="font-size:12px;text-align:center;margin-top:6px;min-height:16px;" id="addStatus"></p>
       </div>
-
       <div class="panel" style="margin-bottom:16px;">
         <h3>好友申请</h3>
         <div id="requestList"><div class="empty">加载中...</div></div>
       </div>
-
       <div class="panel">
         <h3>我的好友</h3>
         <div id="friendList"><div class="empty">加载中...</div></div>
       </div>
     </div>
-
     <div class="panel">
       <div class="tabs">
         <button class="tab active" id="tabPublic" onclick="switchChat('public')">公共频道</button>
         <button class="tab" id="tabPrivate" onclick="switchChat('private')">私聊</button>
+        <button class="tab" id="tabMusic" onclick="switchChat('music')">点播</button>
       </div>
-      <div class="chat-header" id="chatHeader">公共频道 · 所有登录用户可见</div>
+      <div id="chatHeader" class="chat-header">公共频道 · 所有登录用户可见</div>
       <div class="chat-box" id="chatBox"></div>
-      <div class="chat-input">
+      <div id="musicPanel" style="display:none;">
+        <div class="music-list" id="musicList"></div>
+        <div class="chat-input" style="margin-top:10px;">
+          <input type="file" id="musicFile" accept="audio/*" style="flex:1;font-size:12px;">
+          <input type="text" id="musicTitle" placeholder="歌名" style="width:100px;">
+          <button onclick="uploadMusic()">上传</button>
+        </div>
+      </div>
+      <div class="chat-input" id="chatInputBox">
         <input type="text" id="chatInput" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendMsg()">
         <button onclick="sendMsg()">发送</button>
       </div>
-      <p class="status" id="chatStatus"></p>
+      <p style="font-size:12px;text-align:center;margin-top:6px;min-height:16px;" id="chatStatus"></p>
     </div>
+  </div>
+</div>
+
+<div id="userProfileModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-content">
+    <h3>用户资料</h3>
+    <div id="userProfileModalBody"></div>
+    <button class="close-btn" onclick="document.getElementById('userProfileModal').style.display='none'">关闭</button>
   </div>
 </div>
 
@@ -112,20 +126,18 @@ let supabaseClient=null;
 if(window.supabase){supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}
 const AUTH_KEY="sk124_auth_token";
 const AUTH_PAGE_URL="https://tks124.github.io/tks";
-
 let myUid=null,myAccount="",myEmail="";
 let chatMode="public",currentFriend=null,chatTimer=null;
 let friendsCache=[];
 
 function escapeHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
-function fmtTime(t){if(!t)return"";const d=new Date(t);return d.toLocaleString("zh-CN");}
+function fmtTime(t){if(!t)return"";return new Date(t).toLocaleString("zh-CN");}
 
 async function init(){
   if(!supabaseClient){document.body.innerHTML="<p style='text-align:center;padding:40px;'>Supabase 未加载</p>";return;}
   const {data:{session}}=await supabaseClient.auth.getSession();
   if(!session){window.location.replace(AUTH_PAGE_URL);return;}
   myEmail=session.user.email;
-
   let {data:profile}=await supabaseClient.from("profiles").select("*").eq("email",myEmail).maybeSingle();
   if(!profile){
     const acc=(session.user.user_metadata&&session.user.user_metadata.account)||myEmail;
@@ -135,11 +147,21 @@ async function init(){
   if(!profile){document.body.innerHTML="<p style='text-align:center;padding:40px;'>无法获取资料</p>";return;}
   myUid=profile.uid;myAccount=profile.account||myEmail;
   document.getElementById("meInfo").textContent=myAccount+" (UID:"+myUid+")";
+  await loadRequests();await loadFriends();await loadMessages();
+  if(!chatTimer){chatTimer=setInterval(function(){if(chatMode!=="music")loadMessages()},4000);}
+}
 
-  await loadRequests();
-  await loadFriends();
-  await loadMessages();
-  if(!chatTimer){chatTimer=setInterval(loadMessages,4000);}
+async function openUserProfile(uid){
+  const {data}=await supabaseClient.from("profiles").select("*").eq("uid",uid).maybeSingle();
+  if(!data){document.getElementById("userProfileModalBody").innerHTML="<p>未找到该用户</p>";}
+  else{
+    document.getElementById("userProfileModalBody").innerHTML=
+      "<p>账号: "+escapeHtml(data.account||"未知")+"</p>"+
+      "<p>UID: "+data.uid+"</p>"+
+      "<p>性别: "+escapeHtml(data.gender||"保密")+"</p>"+
+      "<p>个性签名: "+escapeHtml(data.bio||"未设置")+"</p>";
+  }
+  document.getElementById("userProfileModal").style.display="flex";
 }
 
 async function searchUid(){
@@ -151,11 +173,9 @@ async function searchUid(){
   if(!/^\d+$/.test(uidInput)){resultBox.innerHTML="";status.textContent="UID 必须是数字";status.style.color="#ef4444";return;}
   const targetUid=parseInt(uidInput,10);
   if(targetUid===myUid){resultBox.innerHTML="";status.textContent="不能加自己为好友";status.style.color="#ef4444";return;}
-
   const {data,error}=await supabaseClient.from("profiles").select("uid,account").eq("uid",targetUid).maybeSingle();
   if(error||!data){resultBox.innerHTML="";status.textContent="没有找到该 UID 的用户";status.style.color="#ef4444";return;}
-
-  resultBox.innerHTML='<div class="friend-item"><div><span class="fname">'+escapeHtml(data.account||"未命名")+'</span><span class="fuid">UID:'+data.uid+'</span></div><button onclick="sendRequest('+data.uid+')">加好友</button></div>';
+  resultBox.innerHTML='<div class="friend-item"><div><span class="fname" onclick="openUserProfile('+data.uid+')">'+escapeHtml(data.account||"未命名")+'</span><span class="fuid">UID:'+data.uid+'</span></div><button onclick="sendRequest('+data.uid+')">加好友</button></div>';
   status.textContent="";
 }
 
@@ -185,9 +205,8 @@ async function loadRequests(){
   if(!data||data.length===0){box.innerHTML='<div class="empty">暂无好友申请</div>';return;}
   const uids=data.map(r=>r.requester_uid);
   const {data:profiles}=await supabaseClient.from("profiles").select("uid,account").in("uid",uids);
-  const map={};
-  (profiles||[]).forEach(p=>{map[p.uid]=p.account||"未命名";});
-  box.innerHTML=data.map(r=>'<div class="friend-item"><div><span class="fname">'+escapeHtml(map[r.requester_uid]||"未知")+'</span><span class="fuid">UID:'+r.requester_uid+'</span></div><div><button class="accept" onclick="acceptReq('+r.id+')">接受</button> <button class="reject" onclick="rejectReq('+r.id+')">拒绝</button></div></div>').join("");
+  const map={};(profiles||[]).forEach(p=>{map[p.uid]=p.account||"未命名";});
+  box.innerHTML=data.map(r=>'<div class="friend-item"><div><span class="fname" onclick="openUserProfile('+r.requester_uid+')">'+escapeHtml(map[r.requester_uid]||"未知")+'</span><span class="fuid">UID:'+r.requester_uid+'</span></div><div><button class="accept" onclick="acceptReq('+r.id+')">接受</button> <button class="reject" onclick="rejectReq('+r.id+')">拒绝</button></div></div>').join("");
 }
 
 async function acceptReq(id){
@@ -208,10 +227,9 @@ async function loadFriends(){
   if(!data||data.length===0){box.innerHTML='<div class="empty">还没有好友</div>';friendsCache=[];return;}
   const otherUids=data.map(r=>r.requester_uid===myUid?r.receiver_uid:r.requester_uid);
   const {data:profiles}=await supabaseClient.from("profiles").select("uid,account").in("uid",otherUids);
-  const map={};
-  (profiles||[]).forEach(p=>{map[p.uid]=p.account||"未命名";});
+  const map={};(profiles||[]).forEach(p=>{map[p.uid]=p.account||"未命名";});
   friendsCache=otherUids.map(uid=>({uid:uid,account:map[uid]||"未命名"}));
-  box.innerHTML=friendsCache.map(f=>'<div class="friend-item"><div><span class="fname">'+escapeHtml(f.account)+'</span><span class="fuid">UID:'+f.uid+'</span></div><button class="chat" onclick="openPrivate('+f.uid+')">聊天</button></div>').join("");
+  box.innerHTML=friendsCache.map(f=>'<div class="friend-item"><div><span class="fname" onclick="openUserProfile('+f.uid+')">'+escapeHtml(f.account)+'</span><span class="fuid">UID:'+f.uid+'</span></div><button class="chat" onclick="openPrivate('+f.uid+')">聊天</button></div>').join("");
 }
 
 function switchChat(mode){
@@ -219,43 +237,46 @@ function switchChat(mode){
   chatMode=mode;
   document.getElementById("tabPublic").classList.toggle("active",mode==="public");
   document.getElementById("tabPrivate").classList.toggle("active",mode==="private");
-  document.getElementById("chatHeader").textContent=mode==="public"?"公共频道 · 所有登录用户可见":("与 "+currentFriend.account+" (UID:"+currentFriend.uid+") 私聊");
-  loadMessages();
+  document.getElementById("tabMusic").classList.toggle("active",mode==="music");
+  const chatBox=document.getElementById("chatBox");
+  const musicPanel=document.getElementById("musicPanel");
+  const chatInputBox=document.getElementById("chatInputBox");
+  if(mode==="music"){
+    chatBox.style.display="none";musicPanel.style.display="block";chatInputBox.style.display="none";
+    document.getElementById("chatHeader").textContent="点播台 · 所有人可上传和收听";
+    loadMusic();
+  }else{
+    chatBox.style.display="block";musicPanel.style.display="none";chatInputBox.style.display="flex";
+    if(mode==="public")document.getElementById("chatHeader").textContent="公共频道 · 所有登录用户可见";
+    else document.getElementById("chatHeader").textContent="与 "+currentFriend.account+" (UID:"+currentFriend.uid+") 私聊";
+    loadMessages();
+  }
 }
 
 function openPrivate(uid){
   const f=friendsCache.find(x=>x.uid===uid);
   if(!f){alert("找不到该好友");return;}
-  currentFriend=f;
-  chatMode="private";
-  document.getElementById("tabPublic").classList.remove("active");
-  document.getElementById("tabPrivate").classList.add("active");
-  document.getElementById("chatHeader").textContent="与 "+f.account+" (UID:"+f.uid+") 私聊";
-  loadMessages();
+  currentFriend=f;switchChat("private");
 }
 
 async function loadMessages(){
   const box=document.getElementById("chatBox");
   let query=supabaseClient.from("chat_messages").select("*").order("created_at",{ascending:true}).limit(200);
-  if(chatMode==="public"){
-    query=query.eq("channel","public");
-  }else{
+  if(chatMode==="public"){query=query.eq("channel","public");}
+  else{
     if(!currentFriend){box.innerHTML='<div class="empty">请选择好友</div>';return;}
     query=query.eq("channel","private").or("and(sender_uid.eq."+myUid+",receiver_uid.eq."+currentFriend.uid+"),and(sender_uid.eq."+currentFriend.uid+",receiver_uid.eq."+myUid+")");
   }
   const {data,error}=await query;
   if(error){box.innerHTML='<div class="empty">加载失败: '+escapeHtml(error.message)+'</div>';return;}
-  if(!data||data.length===0){box.innerHTML='<div class="empty">还没有消息，来说第一句吧</div>';return;}
-
+  if(!data||data.length===0){box.innerHTML='<div class="empty">还没有消息</div>';return;}
   const uids=[...new Set(data.map(m=>m.sender_uid))];
   const {data:profiles}=await supabaseClient.from("profiles").select("uid,account").in("uid",uids);
-  const map={};
-  (profiles||[]).forEach(p=>{map[p.uid]=p.account||("UID"+p.uid);});
-
+  const map={};(profiles||[]).forEach(p=>{map[p.uid]=p.account||("UID"+p.uid);});
   box.innerHTML=data.map(m=>{
     const mine=m.sender_uid===myUid;
     const whoName=map[m.sender_uid]||("UID"+m.sender_uid);
-    return '<div class="chat-msg'+(mine?' mine':'')+'"><span class="who'+(mine?'':' other')+'">'+escapeHtml(whoName)+'</span><span class="time">'+escapeHtml(fmtTime(m.created_at))+'</span><span class="text">'+escapeHtml(m.content)+'</span></div>';
+    return '<div class="chat-msg'+(mine?' mine':'')+'"><span class="who'+(mine?'':' other')+'" onclick="openUserProfile('+m.sender_uid+')">'+escapeHtml(whoName)+'</span><span class="time">'+escapeHtml(fmtTime(m.created_at))+'</span><span class="text">'+escapeHtml(m.content)+'</span></div>';
   }).join("");
   box.scrollTop=box.scrollHeight;
 }
@@ -266,22 +287,51 @@ async function sendMsg(){
   const content=input.value.trim();
   if(!content)return;
   if(chatMode==="private"&&!currentFriend){status.textContent="请先选好友";status.style.color="#ef4444";return;}
-
-  const record={
-    sender_uid:myUid,
-    receiver_uid:chatMode==="private"?currentFriend.uid:null,
-    channel:chatMode,
-    content:content
-  };
+  const record={sender_uid:myUid,receiver_uid:chatMode==="private"?currentFriend.uid:null,channel:chatMode,content:content};
   const {error}=await supabaseClient.from("chat_messages").insert([record]);
   if(error){status.textContent="发送失败: "+error.message;status.style.color="#ef4444";return;}
-  input.value="";
-  status.textContent="";
-  await loadMessages();
+  input.value="";status.textContent="";await loadMessages();
+}
+
+async function loadMusic(){
+  const box=document.getElementById("musicList");
+  const {data,error}=await supabaseClient.from("music").select("*").order("created_at",{ascending:false}).limit(50);
+  if(error){box.innerHTML='<div class="empty">加载失败</div>';return;}
+  if(!data||data.length===0){box.innerHTML='<div class="empty">还没有人点播音乐，来抢首播吧</div>';return;}
+  box.innerHTML=data.map(m=>'<div class="music-item"><div class="m-info"><div class="m-title">'+escapeHtml(m.title||"未命名")+'</div><div class="m-artist">上传者: '+escapeHtml(m.uploader_email||"匿名")+'</div></div><audio controls src="'+escapeHtml(m.file_url)+'"></audio></div>').join("");
+}
+
+async function uploadMusic(){
+  const fileInput=document.getElementById("musicFile");
+  const titleInput=document.getElementById("musicTitle");
+  const file=fileInput.files[0];
+  if(!file){alert("请选择音乐文件");return;}
+  const session=await supabaseClient.auth.getSession();
+  const isLoggedIn=!!(session.data&&session.data.session);
+  if(!isLoggedIn){
+    const lastUpload=localStorage.getItem("last_music_upload");
+    if(lastUpload&&Date.now()-parseInt(lastUpload,10)<24*60*60*1000){
+      alert("未登录用户一天只能上传一次");return;
+    }
+  }
+  const fileName=Date.now()+"_"+file.name;
+  const up=await supabaseClient.storage.from("music").upload(fileName,file);
+  if(up.error){alert("上传失败: "+up.error.message);return;}
+  const pub=supabaseClient.storage.from("music").getPublicUrl(fileName);
+  const {error}=await supabaseClient.from("music").insert([{
+    uploader_uid:isLoggedIn?session.data.session.user.id:null,
+    uploader_email:isLoggedIn?session.data.session.user.email:"匿名",
+    title:titleInput.value.trim()||file.name,
+    file_url:pub.data.publicUrl
+  }]);
+  if(error){alert("写入失败: "+error.message);return;}
+  if(!isLoggedIn)localStorage.setItem("last_music_upload",Date.now().toString());
+  fileInput.value="";titleInput.value="";
+  alert("上传成功");
+  loadMusic();
 }
 
 function goBack(){window.location.href="SpaceKill124";}
-
 window.addEventListener("DOMContentLoaded",init);
 </script>
 </body>
