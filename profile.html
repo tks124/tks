@@ -1,652 +1,429 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人主页 - SpaceKill124</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background: #0f172a; font-family: 'Microsoft YaHei', sans-serif; min-height: 100vh; color: #e2e8f0; display: flex; justify-content: center; align-items: flex-start; padding: 40px 15px; transition: background 0.2s, color 0.2s; }
-        body.light { background: #f1f5f9; color: #0f172a; }
-        body.light .card { background: #ffffff; border-color: #e2e8f0; box-shadow: 0 20px 50px rgba(0,0,0,0.08); }
-        body.light .info-value, body.light .account-name { color: #0f172a; }
-        body.light .setting-item { background: rgba(0,0,0,0.03); color: #0f172a; }
-        body.light .setting-item:hover { background: rgba(0,0,0,0.06); }
-        body.light .bio-box, body.light .my-messages-box { background: rgba(0,0,0,0.03); color: #334155; }
-        body.light .my-message-item { background: rgba(0,0,0,0.03); color: #334155; }
-        body.light .modal-content { background: #ffffff; color: #0f172a; }
-        body.light .modal-content h3 { color: #0f172a; }
-        body.light .modal-content input, body.light .modal-content select, body.light .modal-content textarea { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
-        body.light .dtop { background: #f1f5f9; }
-        body.light .back { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; width: 100%; max-width: 560px; padding: 36px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-        .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #3b82f6); display: flex; justify-content: center; align-items: center; font-size: 38px; font-weight: bold; color: white; margin: 0 auto 18px auto; box-shadow: 0 8px 20px rgba(139,92,246,0.4); }
-        .account-name { text-align: center; font-size: 24px; font-weight: bold; color: #ffffff; margin-bottom: 6px; }
-        .uid-badge { display: block; text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 25px; }
-        .uid-badge span { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.5); padding: 3px 12px; border-radius: 20px; color: #c4b5fd; font-weight: bold; }
-        .info-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 15px; }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { color: #94a3b8; }
-        .info-value { color: #f1f5f9; font-weight: 500; text-align: right; max-width: 65%; word-break: break-all; }
-        .bio-box { margin-top: 18px; background: rgba(255,255,255,0.04); border-left: 3px solid #8b5cf6; border-radius: 8px; padding: 14px 16px; font-size: 14px; color: #cbd5e1; line-height: 1.6; min-height: 50px; word-break: break-word; }
-        .bio-title { font-size: 12px; color: #94a3b8; margin-bottom: 6px; letter-spacing: 1px; }
-        .my-messages-box { margin-top: 18px; background: rgba(255,255,255,0.04); border-left: 3px solid #3b82f6; border-radius: 8px; padding: 14px 16px; }
-        .my-messages-list { max-height: 260px; overflow-y: auto; margin-top: 8px; }
-        .my-message-item { background: rgba(255,255,255,0.03); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; color: #cbd5e1; line-height: 1.5; word-break: break-word; }
-        .my-message-item .msg-time { font-size: 11px; color: #64748b; margin-top: 4px; }
-        .no-msg { font-size: 13px; color: #64748b; text-align: center; padding: 12px 0; }
-        .actions { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
-        .actions button { flex: 1; min-width: 110px; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.25s; color: white; }
-        .btn-edit { background: linear-gradient(to right, #8b5cf6, #7c3aed); }
-        .btn-friend { background: linear-gradient(to right, #06b6d4, #0891b2); }
-        .btn-back { background: linear-gradient(to right, #3b82f6, #2563eb); }
-        .btn-logout { background: linear-gradient(to right, #ef4444, #dc2626); }
-        .btn-report { background: linear-gradient(to right, #ef4444, #dc2626); }
-        .btn-setting { background: linear-gradient(to right, #64748b, #475569); }
-        .loading { text-align: center; color: #94a3b8; padding: 60px 0; font-size: 15px; }
-        .dtop { position: sticky; top: 0; z-index: 5; background: #0f172a; padding: 0 0 14px 0; }
-        body.light .dtop { background: #f1f5f9; }
-        .back { border: none; background: rgba(255,255,255,0.08); border-radius: 20px; padding: 9px 16px; font-size: 14px; color: #3b82f6; cursor: pointer; font-family: inherit; }
-        .view-title { font-size: 22px; font-weight: bold; text-align: center; margin: 8px 0 24px 0; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; font-size: 15px; cursor: pointer; transition: background 0.15s; color: #e2e8f0; }
-        .setting-item:hover { background: rgba(255,255,255,0.1); }
-        .setting-item .chev { color: #64748b; font-size: 18px; }
-        .setting-item.danger { color: #ef4444; }
-        .switch { width: 46px; height: 27px; border-radius: 14px; background: #475569; position: relative; transition: 0.2s; }
-        .switch::after { content: ''; position: absolute; width: 23px; height: 23px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: 0.2s; }
-        .switch.on { background: #8b5cf6; }
-        .switch.on::after { left: 21px; }
-        .security-block { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-        body.light .security-block { background: rgba(0,0,0,0.03); }
-        .security-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        body.light .security-row { border-color: rgba(0,0,0,0.08); }
-        .security-row:last-child { border-bottom: none; }
-        .security-label { color: #94a3b8; font-size: 14px; }
-        .security-value { color: #f1f5f9; font-size: 14px; font-weight: 500; }
-        body.light .security-value { color: #0f172a; }
-        .security-actions { display: flex; gap: 10px; margin-top: 16px; }
-        .security-actions button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
-        .btn-change { background: linear-gradient(to right, #3b82f6, #2563eb); }
-        .deactivate-wrap { text-align: center; padding: 30px 0; }
-        .deactivate-name { font-size: 26px; font-weight: bold; margin-bottom: 8px; }
-        .deactivate-uid { font-size: 15px; color: #94a3b8; margin-bottom: 40px; }
-        .deactivate-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(to right, #ef4444, #dc2626); color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; border: 1px solid #334155; padding: 30px; border-radius: 14px; width: 90%; max-width: 360px; color: white; }
-        .modal-content h3 { margin: 0 0 20px 0; color: #f1f5f9; text-align: center; }
-        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #475569; border-radius: 8px; background: #0f172a; color: white; font-size: 14px; box-sizing: border-box; font-family: inherit; }
-        .modal-content textarea { min-height: 100px; resize: vertical; }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
-        .modal-buttons button { flex: 1; padding: 11px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-cancel { background: #64748b; }
-        .btn-confirm { background: #10b981; }
-        .btn-code { background: #10b981; padding: 12px 16px; border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; white-space: nowrap; }
-        .btn-code:disabled { opacity: 0.5; cursor: not-allowed; }
-        .code-row { display: flex; gap: 8px; }
-        .code-row input { flex: 1; margin-bottom: 0; }
-        .modal-status { font-size: 12px; text-align: center; margin-top: 8px; min-height: 16px; }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人主页 - SpaceKill124</title>
+<style>
+*{box-sizing:border-box;}
+body{margin:0;padding:0;background:linear-gradient(180deg,#0f172a 0%,#1e293b 100%);font-family:'Microsoft YaHei',sans-serif;min-height:100vh;color:#e2e8f0;display:flex;justify-content:center;align-items:flex-start;padding:40px 15px;}
+body.light{background:linear-gradient(180deg,#f1f5f9 0%,#e2e8f0 100%);color:#0f172a;}
+.card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:18px;width:100%;max-width:560px;padding:36px 30px;box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+body.light .card{background:#fff;border-color:#e2e8f0;}
+.avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;justify-content:center;align-items:center;font-size:38px;font-weight:bold;color:white;margin:0 auto 18px auto;box-shadow:0 8px 20px rgba(139,92,246,0.4);overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.account-name{text-align:center;font-size:24px;font-weight:bold;margin-bottom:6px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;}
+.uid-badge{display:block;text-align:center;font-size:13px;color:#94a3b8;margin-bottom:25px;}
+.uid-badge span{background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.5);padding:3px 12px;border-radius:20px;color:#c4b5fd;font-weight:bold;}
+.stats-row{display:flex;justify-content:center;gap:30px;margin-bottom:20px;}
+.stat{text-align:center;cursor:pointer;padding:6px 14px;border-radius:10px;transition:background .2s;}
+.stat:hover{background:rgba(255,255,255,0.06);}
+body.light .stat:hover{background:rgba(0,0,0,0.04);}
+.stat-num{font-size:20px;font-weight:bold;color:#8b5cf6;}
+.stat-label{font-size:12px;color:#94a3b8;margin-top:2px;}
+.info-row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:15px;}
+body.light .info-row{border-color:rgba(0,0,0,0.06);}
+.info-row:last-child{border-bottom:none;}
+.info-label{color:#94a3b8;}
+.info-value{color:#f1f5f9;font-weight:500;text-align:right;max-width:65%;word-break:break-all;}
+body.light .info-value{color:#0f172a;}
+.bio-box{margin-top:18px;background:rgba(255,255,255,0.04);border-left:3px solid #8b5cf6;border-radius:8px;padding:14px 16px;font-size:14px;color:#cbd5e1;line-height:1.6;min-height:50px;word-break:break-word;}
+body.light .bio-box{background:rgba(0,0,0,0.03);color:#334155;}
+.bio-title{font-size:12px;color:#94a3b8;margin-bottom:6px;letter-spacing:1px;}
+.actions{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap;}
+.actions button{flex:1;min-width:100px;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;color:white;}
+.btn-edit{background:linear-gradient(to right,#8b5cf6,#7c3aed);}
+.btn-friend{background:linear-gradient(to right,#06b6d4,#0891b2);}
+.btn-back{background:linear-gradient(to right,#3b82f6,#2563eb);}
+.btn-logout{background:linear-gradient(to right,#ef4444,#dc2626);}
+.btn-report{background:linear-gradient(to right,#ef4444,#dc2626);}
+.btn-setting{background:linear-gradient(to right,#64748b,#475569);}
+.btn-verify{background:linear-gradient(to right,#f59e0b,#d97706);}
+.btn-follow{background:linear-gradient(to right,#8b5cf6,#7c3aed);}
+.btn-follow.followed{background:#475569;}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:700;color:#fff;line-height:1;}
+.badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}
+.badge-z{background:#2196f3;}
+.badge-s{background:#ffc107;}
+.badge-a{background:#e53935;}
+.badge-text{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#f0f7ff;color:#2196f3;margin-left:4px;}
+.badge-text-author{background:#fff3e0;color:#e65100;}
+.loading{text-align:center;color:#94a3b8;padding:60px 0;font-size:15px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-content{background:#1e293b;border:1px solid #334155;padding:30px;border-radius:14px;width:100%;max-width:400px;color:white;max-height:80vh;overflow-y:auto;}
+body.light .modal-content{background:#fff;color:#0f172a;border-color:#e2e8f0;}
+.modal-content h3{margin:0 0 20px 0;text-align:center;}
+.modal-content input,.modal-content select,.modal-content textarea{width:100%;padding:12px;margin-bottom:12px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:white;font-size:14px;box-sizing:border-box;font-family:inherit;}
+body.light .modal-content input,body.light .modal-content select,body.light .modal-content textarea{background:#f1f5f9;color:#0f172a;border-color:#cbd5e1;}
+.modal-content textarea{min-height:100px;resize:vertical;}
+.modal-buttons{display:flex;gap:10px;margin-top:10px;}
+.modal-buttons button{flex:1;padding:11px;border:none;border-radius:8px;font-size:14px;cursor:pointer;color:white;font-weight:bold;}
+.btn-cancel{background:#64748b;}
+.btn-confirm{background:#10b981;}
+.modal-status{font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
+.verify-item{background:rgba(255,255,255,0.05);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+body.light .verify-item{background:rgba(0,0,0,0.03);}
+.verify-item.locked{opacity:0.45;}
+.verify-item-title{font-size:14px;font-weight:bold;}
+.verify-item-desc{font-size:12px;color:#94a3b8;margin-top:4px;}
+.verify-item button{padding:8px 14px;border:none;border-radius:8px;background:linear-gradient(to right,#f59e0b,#d97706);color:#fff;font-size:12px;font-weight:bold;cursor:pointer;flex-shrink:0;}
+.verify-item button:disabled{background:#475569;cursor:not-allowed;}
+.user-list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;}
+body.light .user-list-item{background:rgba(0,0,0,0.03);}
+.user-list-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:14px;flex-shrink:0;overflow:hidden;}
+.user-list-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-list-name{flex:1;font-size:14px;}
+.toast-fixed{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:9999;max-width:80vw;text-align:center;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="card">
-        <div id="viewProfile">
-            <div id="loadingBox" class="loading">加载中...</div>
-            <div id="profileBox" style="display:none;">
-                <div class="avatar" id="avatarBox">?</div>
-                <div class="account-name" id="nameBox">—</div>
-                <div class="uid-badge">UID: <span id="uidBox">—</span></div>
-                <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
-                <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
-                <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
-                <div class="my-messages-box" id="myMessagesBox">
-                    <div class="bio-title">我的留言 <span id="msgCount">(0)</span></div>
-                    <div id="myMessagesList" class="my-messages-list"><div class="no-msg">还没有发表过留言。</div></div>
-                </div>
-                <div class="actions" id="actionsBox"></div>
-            </div>
-        </div>
-
-        <div id="viewSettings" style="display:none;">
-            <div class="dtop"><button class="back" onclick="backToProfile()">← 返回</button></div>
-            <div class="view-title">设置</div>
-            <div class="setting-item" onclick="showSecurity()">
-                <span>账号安全</span><span class="chev">›</span>
-            </div>
-            <div class="setting-item" onclick="toggleDark()">
-                <span>夜间模式</span>
-                <span class="switch" id="darkSwitch"></span>
-            </div>
-            <div class="setting-item" onclick="contactSupport()">
-                <span>客服</span><span class="chev">›</span>
-            </div>
-            <div class="setting-item danger" onclick="showDeactivate()">
-                <span>注销账号</span><span class="chev">›</span>
-            </div>
-            <div class="setting-item danger" onclick="doLogout()">
-                <span>退出登录</span><span class="chev">›</span>
-            </div>
-        </div>
-
-        <div id="viewSecurity" style="display:none;">
-            <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
-            <div class="view-title">账号安全</div>
-            <div class="security-block">
-                <div class="security-row">
-                    <span class="security-label">当前绑定邮箱</span>
-                    <span class="security-value" id="secEmail">—</span>
-                </div>
-                <div class="security-row">
-                    <span class="security-label">当前密码</span>
-                    <span class="security-value">••••••••</span>
-                </div>
-            </div>
-            <div class="security-actions">
-                <button class="btn-change" onclick="openChangePassword()">修改密码</button>
-                <button class="btn-change" onclick="openChangeEmail()">修改邮箱</button>
-            </div>
-        </div>
-
-        <div id="viewDeactivate" style="display:none;">
-            <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
-            <div class="view-title">注销账号</div>
-            <div class="deactivate-wrap">
-                <div class="deactivate-name" id="deactName">—</div>
-                <div class="deactivate-uid" id="deactUid">UID: —</div>
-                <button class="deactivate-btn" onclick="confirmDeactivate()">确认注销</button>
-                <p style="color:#94a3b8;font-size:13px;margin-top:20px;line-height:1.6;">
-                    注销后三天内，只要你重新登录一次，注销会自动取消。<br>
-                    三天后账号将被永久删除，无法恢复。
-                </p>
-            </div>
-        </div>
+<div class="card">
+  <div id="loadingBox" class="loading">加载中...</div>
+  <div id="profileBox" style="display:none;">
+    <div class="avatar" id="avatarBox">?</div>
+    <div class="account-name" id="nameBox">—</div>
+    <div class="uid-badge">UID: <span id="uidBox">—</span></div>
+    <div class="stats-row">
+      <div class="stat" onclick="openFollowingList()">
+        <div class="stat-num" id="followingCount">0</div>
+        <div class="stat-label">关注</div>
+      </div>
+      <div class="stat" onclick="openFollowersList()">
+        <div class="stat-num" id="followersCount">0</div>
+        <div class="stat-label">粉丝</div>
+      </div>
     </div>
+    <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
+    <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
+    <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
+    <div class="actions" id="actionsBox"></div>
+  </div>
+</div>
 
-    <div id="editModal" class="modal-overlay" onclick="if(event.target===this)closeEdit()">
-        <div class="modal-content">
-            <h3>编辑资料</h3>
-            <input type="text" id="editAccount" placeholder="账号名称">
-            <select id="editGender">
-                <option value="男">男</option>
-                <option value="女">女</option>
-                <option value="保密">保密</option>
-            </select>
-            <input type="text" id="editBio" placeholder="个性签名">
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeEdit()">取消</button>
-                <button class="btn-confirm" onclick="saveEdit()">保存</button>
-            </div>
-            <p class="modal-status" id="editStatus"></p>
-        </div>
+<div id="editModal" class="modal-overlay" onclick="if(event.target===this)closeModal('editModal')">
+  <div class="modal-content">
+    <h3>编辑资料</h3>
+    <input type="text" id="editAccount" placeholder="账号名称">
+    <select id="editGender"><option value="男">男</option><option value="女">女</option><option value="保密">保密</option></select>
+    <input type="text" id="editBio" placeholder="个性签名">
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('editModal')">取消</button>
+      <button class="btn-confirm" onclick="saveEdit()">保存</button>
     </div>
+    <p class="modal-status" id="editStatus"></p>
+  </div>
+</div>
 
-    <div id="reportModal" class="modal-overlay" onclick="if(event.target===this)closeReport()">
-        <div class="modal-content">
-            <h3>举报用户</h3>
-            <textarea id="reportReason" placeholder="请填写举报理由..."></textarea>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeReport()">取消</button>
-                <button class="btn-confirm" onclick="submitReport()">提交举报</button>
-            </div>
-            <p class="modal-status" id="reportStatus"></p>
-        </div>
+<div id="reportModal" class="modal-overlay" onclick="if(event.target===this)closeModal('reportModal')">
+  <div class="modal-content">
+    <h3>举报用户</h3>
+    <textarea id="reportReason" placeholder="请填写举报理由..."></textarea>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('reportModal')">取消</button>
+      <button class="btn-confirm" onclick="submitReport()">提交举报</button>
     </div>
+    <p class="modal-status" id="reportStatus"></p>
+  </div>
+</div>
 
-    <div id="changePwdModal" class="modal-overlay" onclick="if(event.target===this)closeChangePwd()">
-        <div class="modal-content">
-            <h3>修改密码</h3>
-            <p style="font-size:13px;color:#94a3b8;margin:0 0 12px 0;">验证码将发送至你当前绑定的邮箱</p>
-            <div class="code-row">
-                <input type="text" id="pwdCode" placeholder="6位验证码" maxlength="6">
-                <button class="btn-code" id="pwdCodeBtn" onclick="sendPwdCode()">获取验证码</button>
-            </div>
-            <input type="password" id="newPwd" placeholder="新密码（至少6位）" style="margin-top:12px;">
-            <input type="password" id="newPwd2" placeholder="确认新密码">
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeChangePwd()">取消</button>
-                <button class="btn-confirm" onclick="submitChangePwd()">确认修改</button>
-            </div>
-            <p class="modal-status" id="pwdStatus"></p>
-        </div>
+<div id="verifyModal" class="modal-overlay" onclick="if(event.target===this)closeModal('verifyModal')">
+  <div class="modal-content">
+    <h3>认证中心</h3>
+    <div id="verifyList"></div>
+    <p class="modal-status" id="verifyStatus"></p>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('verifyModal')">关闭</button>
     </div>
+  </div>
+</div>
 
-    <div id="changeEmailModal" class="modal-overlay" onclick="if(event.target===this)closeChangeEmail()">
-        <div class="modal-content">
-            <h3>修改邮箱</h3>
-            <input type="email" id="newEmail" placeholder="新邮箱地址">
-            <div class="code-row">
-                <input type="text" id="emailCode" placeholder="6位验证码" maxlength="6">
-                <button class="btn-code" id="emailCodeBtn" onclick="sendEmailCode()">获取验证码</button>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeChangeEmail()">取消</button>
-                <button class="btn-confirm" onclick="submitChangeEmail()">确认修改</button>
-            </div>
-            <p class="modal-status" id="emailStatus"></p>
-        </div>
+<div id="listModal" class="modal-overlay" onclick="if(event.target===this)closeModal('listModal')">
+  <div class="modal-content">
+    <h3 id="listTitle">列表</h3>
+    <div id="listBody"></div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('listModal')">关闭</button>
     </div>
+  </div>
+</div>
 
 <script>
-    const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
-    let supabaseClient = null;
-    if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
+let supabaseClient=null;
+if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-    const AUTH_KEY = "sk124_auth_token";
-    const AUTH_PAGE_URL = "https://tks124.github.io/tks";
-    const RESERVED_NAME = "太空杀124";
-    const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
+const AUTH_KEY="sk124_auth_token";
+const AUTH_PAGE_URL="https://tks124.github.io/tks";
+const RESERVED_NAME="太空杀124";
+const RESERVED_OWNER_EMAIL="qwe18965540810@qq.com";
 
-    let currentEmail = "", myEmail = "", myUid = null, myAccount = "", myUserId = "";
-    let targetProfile = null, isSelf = true;
+let currentEmail="",myEmail="",myUid=null,myAccount="",targetProfile=null,isSelf=true;
 
-    function escapeHtml(str) {
-        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-    }
+function $(id){return document.getElementById(id);}
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(msg){
+  var el=document.createElement("div");
+  el.className="toast-fixed";
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){document.body.removeChild(el);},2200);
+}
+function openModal(id){$(id).classList.add("show");}
+function closeModal(id){$(id).classList.remove("show");}
+function maskEmail(e){
+  if(!e)return"—";
+  var at=e.indexOf("@");
+  if(at<0)return e;
+  var pre=e.substring(0,at),suf=e.substring(at);
+  if(pre.length<=4)return pre+"***"+suf;
+  return pre.substring(0,4)+"***"+suf;
+}
+function isReservedName(account,email){
+  if(!account)return false;
+  if(account.trim()!==RESERVED_NAME)return false;
+  if(email&&email===RESERVED_OWNER_EMAIL)return false;
+  return true;
+}
+function getTargetUidFromUrl(){
+  var params=new URLSearchParams(window.location.search);
+  var uid=params.get("uid");
+  if(uid&&/^\d+$/.test(uid))return parseInt(uid,10);
+  return null;
+}
+function badgeHTML(badge,badgeText){
+  if(!badge)return "";
+  var letter = badge==="author"?"V":badge==="z"?"Z":badge==="s"?"S":badge==="a"?"A":"";
+  var textMap={author:"官方",z:"10万粉认证",s:"百万粉认证",a:"企业认证"};
+  return '<span class="badge badge-'+badge+'">'+letter+'</span><span class="badge-text badge-text-'+badge+'">'+escapeHtml(textMap[badge]||"")+'</span>';
+}
 
-    function isReservedName(account, email) {
-        if (!account) return false;
-        if (account.trim() !== RESERVED_NAME) return false;
-        if (email && email === RESERVED_OWNER_EMAIL) return false;
-        return true;
-    }
+async function loadProfile(){
+  if(!supabaseClient){$("loadingBox").textContent="Supabase 未加载";return;}
+  var ses=await supabaseClient.auth.getSession();
+  var session=ses&&ses.data?ses.data.session:null;
+  if(!session){window.location.replace(AUTH_PAGE_URL);return;}
+  myEmail=session.user.email;
+  var spr=await supabaseClient.from("profiles").select("*").eq("email",myEmail).maybeSingle();
+  if(!spr.data){$("loadingBox").textContent="无法获取自己的资料";return;}
+  myUid=spr.data.uid;
+  myAccount=spr.data.account||myEmail;
 
-    async function isAccountTaken(account, excludeEmail) {
-        if (!supabaseClient || !account) return false;
-        let query = supabaseClient.from("profiles").select("uid, email").eq("account", account);
-        if (excludeEmail) query = query.neq("email", excludeEmail);
-        const { data, error } = await query;
-        if (error) return false;
-        return data && data.length > 0;
-    }
+  var targetUid=getTargetUidFromUrl();
+  if(targetUid&&targetUid!==myUid){
+    isSelf=false;
+    var opr=await supabaseClient.from("profiles").select("*").eq("uid",targetUid).maybeSingle();
+    if(!opr.data){$("loadingBox").textContent="未找到该用户";return;}
+    targetProfile=opr.data;currentEmail=opr.data.email;
+  }else{
+    isSelf=true;targetProfile=spr.data;currentEmail=spr.data.email;
+  }
 
-    function getTargetUidFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        const uid = params.get("uid");
-        if (uid && /^\d+$/.test(uid)) return parseInt(uid, 10);
-        return null;
-    }
+  $("loadingBox").style.display="none";
+  $("profileBox").style.display="block";
 
-    function applyTheme() {
-        const dark = localStorage.getItem("dark") === "1";
-        document.body.classList.toggle("light", !dark);
-        document.getElementById("darkSwitch").classList.toggle("on", dark);
-    }
+  var account=targetProfile.account||currentEmail;
+  var uid=targetProfile.uid||"-";
+  var gender=targetProfile.gender||"保密";
+  var bio=targetProfile.bio||"";
+  var avatar=targetProfile.avatar||"";
 
-    function toggleDark() {
-        const dark = localStorage.getItem("dark") === "1";
-        localStorage.setItem("dark", dark ? "0" : "1");
-        applyTheme();
-    }
+  var av=$("avatarBox");
+  if(avatar){av.innerHTML='<img src="'+escapeHtml(avatar)+'">';}
+  else{av.textContent=account.charAt(0).toUpperCase();}
 
-    async function loadProfile() {
-        if (!supabaseClient) { document.getElementById("loadingBox").textContent = "Supabase 未加载"; return; }
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.replace(AUTH_PAGE_URL); return; }
+  $("nameBox").innerHTML=escapeHtml(account)+badgeHTML(targetProfile.badge,targetProfile.badge_text);
+  $("uidBox").textContent=uid;
+  $("emailBox").textContent=isSelf?currentEmail:maskEmail(currentEmail);
+  $("genderBox").textContent=gender;
+  $("bioBox").textContent=bio||"这个人很懒，什么都没留下。";
 
-        myEmail = session.user.email;
-        myUserId = session.user.id;
+  var fr=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("target_email",currentEmail);
+  $("followersCount").textContent=(fr.count||0);
+  var fg=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("follower_email",currentEmail);
+  $("followingCount").textContent=(fg.count||0);
 
-        const { data: selfProfile } = await supabaseClient.from("profiles").select("*").eq("email", myEmail).maybeSingle();
-        if (!selfProfile) { document.getElementById("loadingBox").textContent = "无法获取自己的资料"; return; }
+  if(isSelf){
+    localStorage.setItem("account",account);
+    localStorage.setItem("uid",uid);
+    localStorage.setItem("email",currentEmail);
+    renderSelfActions();
+    await checkVerifyNotification();
+  }else{
+    renderOtherActions();
+  }
+}
 
-        if (selfProfile.pending_deactivation_at) {
-            const { error: clearErr } = await supabaseClient.from("profiles").update({ pending_deactivation_at: null }).eq("uid", selfProfile.uid);
-            if (!clearErr) {
-                try {
-                    await fetch(SUPABASE_URL + "/functions/v1/send-notification", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            type: "account_reactivated",
-                            to: myEmail,
-                            data: { account: selfProfile.account || myEmail, uid: selfProfile.uid }
-                        })
-                    });
-                } catch (e) { console.error(e); }
-            }
-        }
+function renderSelfActions(){
+  $("actionsBox").innerHTML=
+    '<button class="btn-edit" onclick="openEdit()">编辑资料</button>'+
+    '<button class="btn-verify" onclick="openVerify()">认证</button>'+
+    '<button class="btn-friend" onclick="location.href=\'friends.html\'">好友</button>'+
+    '<button class="btn-back" onclick="location.href=\'SpaceKill124_源代码.html\'">返回首页</button>';
+}
 
-        myUid = selfProfile.uid;
-        myAccount = selfProfile.account || myEmail;
+function renderOtherActions(){
+  var followed=localStorage.getItem("follow_"+currentEmail)==="1";
+  $("actionsBox").innerHTML=
+    '<button class="btn-follow'+(followed?' followed':'')+'" id="followBtn" onclick="toggleFollow()">'+(followed?'已关注':'关注')+'</button>'+
+    '<button class="btn-report" onclick="openModal(\'reportModal\')">举报</button>'+
+    '<button class="btn-back" onclick="history.back()">返回</button>';
+}
 
-        const targetUid = getTargetUidFromUrl();
-        if (targetUid && targetUid !== myUid) {
-            isSelf = false;
-            const { data: other } = await supabaseClient.from("profiles").select("*").eq("uid", targetUid).maybeSingle();
-            if (!other) { document.getElementById("loadingBox").textContent = "未找到该用户"; return; }
-            targetProfile = other;
-            currentEmail = other.email;
-        } else {
-            isSelf = true;
-            targetProfile = selfProfile;
-            currentEmail = selfProfile.email;
-        }
+async function toggleFollow(){
+  if(!myEmail){toast("请先登录");return;}
+  var followed=localStorage.getItem("follow_"+currentEmail)==="1";
+  var newFollowed=!followed;
+  if(newFollowed){
+    await supabaseClient.from("diy_follows").insert([{follower_email:myEmail,target_email:currentEmail}]);
+  }else{
+    await supabaseClient.from("diy_follows").delete().eq("follower_email",myEmail).eq("target_email",currentEmail);
+  }
+  localStorage.setItem("follow_"+currentEmail,newFollowed?"1":"0");
+  var btn=$("followBtn");
+  btn.textContent=newFollowed?"已关注":"关注";
+  btn.classList.toggle("followed",newFollowed);
+  var fr=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("target_email",currentEmail);
+  $("followersCount").textContent=(fr.count||0);
+}
 
-        document.getElementById("loadingBox").style.display = "none";
-        document.getElementById("profileBox").style.display = "block";
+async function openFollowersList(){
+  $("listTitle").textContent="粉丝";
+  $("listBody").innerHTML='<div class="loading" style="padding:20px;">加载中...</div>';
+  openModal("listModal");
+  var r=await supabaseClient.from("diy_follows").select("follower_email").eq("target_email",currentEmail);
+  if(!r.data||r.data.length===0){$("listBody").innerHTML='<div style="text-align:center;color:#94a3b8;padding:20px;">还没有粉丝</div>';return;}
+  var emails=r.data.map(function(x){return x.follower_email;});
+  var pr=await supabaseClient.from("profiles").select("email,account,avatar").in("email",emails);
+  var map={};(pr.data||[]).forEach(function(p){map[p.email]=p;});
+  $("listBody").innerHTML=emails.map(function(e){
+    var p=map[e]||{};
+    var name=p.account||maskEmail(e);
+    var av=p.avatar?'<img src="'+escapeHtml(p.avatar)+'">':escapeHtml(name.charAt(0).toUpperCase());
+    return '<div class="user-list-item"><div class="user-list-avatar">'+av+'</div><div class="user-list-name">'+escapeHtml(name)+'</div></div>';
+  }).join("");
+}
 
-        const account = targetProfile.account || currentEmail;
-        const uid = targetProfile.uid || "-";
-        const gender = targetProfile.gender || "保密";
-        const bio = targetProfile.bio || "";
+async function openFollowingList(){
+  $("listTitle").textContent="关注";
+  $("listBody").innerHTML='<div class="loading" style="padding:20px;">加载中...</div>';
+  openModal("listModal");
+  var r=await supabaseClient.from("diy_follows").select("target_email").eq("follower_email",currentEmail);
+  if(!r.data||r.data.length===0){$("listBody").innerHTML='<div style="text-align:center;color:#94a3b8;padding:20px;">还没有关注任何人</div>';return;}
+  var emails=r.data.map(function(x){return x.target_email;});
+  var pr=await supabaseClient.from("profiles").select("email,account,avatar").in("email",emails);
+  var map={};(pr.data||[]).forEach(function(p){map[p.email]=p;});
+  $("listBody").innerHTML=emails.map(function(e){
+    var p=map[e]||{};
+    var name=p.account||maskEmail(e);
+    var av=p.avatar?'<img src="'+escapeHtml(p.avatar)+'">':escapeHtml(name.charAt(0).toUpperCase());
+    return '<div class="user-list-item"><div class="user-list-avatar">'+av+'</div><div class="user-list-name">'+escapeHtml(name)+'</div></div>';
+  }).join("");
+}
 
-        document.getElementById("avatarBox").textContent = account.charAt(0).toUpperCase();
-        document.getElementById("nameBox").textContent = account;
-        document.getElementById("uidBox").textContent = uid;
-        document.getElementById("emailBox").textContent = currentEmail;
-        document.getElementById("genderBox").textContent = gender;
-        document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
+async function openVerify(){
+  openModal("verifyModal");
+  $("verifyStatus").textContent="";
+  $("verifyList").innerHTML='<div style="text-align:center;padding:20px;color:#94a3b8;">加载中...</div>';
+  var fr=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("target_email",myEmail);
+  var followers=fr.count||0;
+  var pend=await supabaseClient.from("verify_requests").select("badge").eq("user_email",myEmail).eq("status","pending");
+  var pendingBadges={};(pend.data||[]).forEach(function(x){pendingBadges[x.badge]=true;});
+  var items=[
+    {badge:"z",name:"10万粉认证",need:100000,desc:"需要粉丝数 ≥ 100,000"},
+    {badge:"s",name:"百万粉认证",need:1000000,desc:"需要粉丝数 ≥ 1,000,000"},
+    {badge:"a",name:"企业认证",need:1000,desc:"需要管理员审核，粉丝数 ≥ 1,000"}
+  ];
+  var html="";
+  items.forEach(function(it){
+    var unlocked=followers>=it.need;
+    var pending=!!pendingBadges[it.badge];
+    var btnText=pending?"审核中":(unlocked?"申请认证":"未达标");
+    var disabled=pending||!unlocked;
+    html+='<div class="verify-item'+(unlocked?'':' locked')+'"><div><div class="verify-item-title">'+escapeHtml(it.name)+'</div><div class="verify-item-desc">'+escapeHtml(it.desc)+'</div></div><button '+(disabled?'disabled':'')+' onclick="applyVerify(\''+it.badge+'\')">'+btnText+'</button></div>';
+  });
+  $("verifyList").innerHTML=html;
+  $("verifyStatus").textContent="当前粉丝数："+followers;
+}
 
-        if (isSelf) {
-            localStorage.setItem("account", account);
-            localStorage.setItem("uid", uid);
-            localStorage.setItem("gender", gender);
-            localStorage.setItem("bio", bio);
-            localStorage.setItem("email", currentEmail);
-            document.getElementById("myMessagesBox").style.display = "block";
-            await loadMyMessages();
-            renderSelfActions();
-        } else {
-            document.getElementById("myMessagesBox").style.display = "none";
-            renderOtherActions();
-        }
-    }
+async function applyVerify(badge){
+  var statusEl=$("verifyStatus");
+  statusEl.textContent="提交中...";
+  statusEl.style.color="#94a3b8";
+  var existing=await supabaseClient.from("verify_requests").select("id").eq("user_email",myEmail).eq("status","pending").maybeSingle();
+  if(existing.data){statusEl.textContent="你已有待审核的认证申请";statusEl.style.color="#f59e0b";return;}
+  var fr=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("target_email",myEmail);
+  var followers=fr.count||0;
+  var r=await supabaseClient.from("verify_requests").insert([{
+    user_email:myEmail,
+    user_uid:myUid,
+    user_account:myAccount,
+    badge:badge,
+    followers:followers,
+    status:"pending"
+  }]);
+  if(r.error){statusEl.textContent="提交失败: "+r.error.message;statusEl.style.color="#ef4444";return;}
+  statusEl.textContent="已提交申请，请等待审核";
+  statusEl.style.color="#10b981";
+  setTimeout(function(){closeModal("verifyModal");loadProfile();},1200);
+}
 
-    function renderSelfActions() {
-        document.getElementById("actionsBox").innerHTML =
-            '<button class="btn-edit" onclick="openEdit()">编辑资料</button>' +
-            '<button class="btn-friend" onclick="goFriends()">好友</button>' +
-            '<button class="btn-setting" onclick="showSettings()">设置</button>' +
-            '<button class="btn-back" onclick="goBack()">返回首页</button>';
-    }
+async function checkVerifyNotification(){
+  var r=await supabaseClient.from("verify_notifications").select("*").eq("user_email",myEmail).eq("read",false).order("created_at",{ascending:false}).limit(1);
+  if(!r.data||r.data.length===0)return;
+  var n=r.data[0];
+  var msg=n.status==="approved"?"你的认证申请已通过！":"你的认证申请未通过。理由："+(n.reason||"无");
+  setTimeout(function(){toast(msg);},800);
+  await supabaseClient.from("verify_notifications").update({read:true}).eq("id",n.id);
+}
 
-    function renderOtherActions() {
-        document.getElementById("actionsBox").innerHTML =
-            '<button class="btn-report" onclick="openReport()">举报</button>' +
-            '<button class="btn-back" onclick="goBack()">返回</button>';
-    }
+function openEdit(){
+  openModal("editModal");
+  $("editAccount").value=localStorage.getItem("account")||"";
+  $("editGender").value=localStorage.getItem("gender")||"保密";
+  $("editBio").value=localStorage.getItem("bio")||"";
+  $("editStatus").textContent="";
+}
 
-    function showView(id) {
-        ["viewProfile","viewSettings","viewSecurity","viewDeactivate"].forEach(v => {
-            document.getElementById(v).style.display = (v === id) ? "block" : "none";
-        });
-        window.scrollTo(0, 0);
-    }
+async function saveEdit(){
+  var account=$("editAccount").value.trim();
+  var gender=$("editGender").value;
+  var bio=$("editBio").value.trim();
+  if(!account){$("editStatus").textContent="账号名不能为空";$("editStatus").style.color="#ef4444";return;}
+  if(isReservedName(account,myEmail)){$("editStatus").textContent="保留名称";$("editStatus").style.color="#ef4444";return;}
+  var ck=await supabaseClient.from("profiles").select("uid").eq("account",account).neq("email",myEmail);
+  if(ck.data&&ck.data.length>0){$("editStatus").textContent="该账号名已被使用";$("editStatus").style.color="#ef4444";return;}
+  $("editStatus").textContent="保存中...";
+  var r=await supabaseClient.from("profiles").update({account:account,gender:gender,bio:bio}).eq("email",myEmail);
+  if(r.error){$("editStatus").textContent="保存失败: "+r.error.message;$("editStatus").style.color="#ef4444";return;}
+  localStorage.setItem("account",account);
+  localStorage.setItem("gender",gender);
+  localStorage.setItem("bio",bio);
+  $("editStatus").textContent="保存成功！";
+  $("editStatus").style.color="#10b981";
+  setTimeout(function(){closeModal("editModal");location.reload();},600);
+}
 
-    function showSettings() { showView("viewSettings"); }
-    function backToProfile() { showView("viewProfile"); }
-    function backToSettings() { showView("viewSettings"); }
+async function submitReport(){
+  var reason=$("reportReason").value.trim();
+  if(!reason){$("reportStatus").textContent="请填写举报理由";$("reportStatus").style.color="#ef4444";return;}
+  $("reportStatus").textContent="提交中...";
+  var r=await supabaseClient.from("reports").insert([{reporter_uid:myUid,reporter_email:myEmail,target_uid:targetProfile.uid,target_email:targetProfile.email,reason:reason}]).select().single();
+  if(r.error){$("reportStatus").textContent="提交失败: "+r.error.message;$("reportStatus").style.color="#ef4444";return;}
+  try{
+    await fetch(SUPABASE_URL+"/functions/v1/report_handler",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({report_id:r.data.id,target_uid:targetProfile.uid})});
+  }catch(e){}
+  $("reportStatus").textContent="举报已提交";
+  $("reportStatus").style.color="#10b981";
+  setTimeout(function(){closeModal("reportModal");},1000);
+}
 
-    function showSecurity() {
-        document.getElementById("secEmail").textContent = myEmail || "—";
-        showView("viewSecurity");
-    }
-
-    function showDeactivate() {
-        document.getElementById("deactName").textContent = myAccount || "—";
-        document.getElementById("deactUid").textContent = "UID: " + (myUid || "—");
-        showView("viewDeactivate");
-    }
-
-    function contactSupport() {
-        const subject = encodeURIComponent("账号问题咨询 - SpaceKill124");
-        const body = encodeURIComponent("我的账号名: " + myAccount + "\n我的UID: " + myUid + "\n\n问题描述:\n");
-        window.location.href = "mailto:linjiayuan@spacekill124.cn?subject=" + subject + "&body=" + body;
-    }
-
-    async function confirmDeactivate() {
-        const ok = confirm("确定要注销账号吗？三天内重新登录可取消。");
-        if (!ok) return;
-        const nowIso = new Date().toISOString();
-        const { error } = await supabaseClient.from("profiles").update({ pending_deactivation_at: nowIso }).eq("uid", myUid);
-        if (error) { alert("注销失败: " + error.message); return; }
-
-        try {
-            await fetch(SUPABASE_URL + "/functions/v1/send-notification", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    type: "account_deactivating",
-                    to: myEmail,
-                    data: {
-                        account: myAccount,
-                        uid: myUid,
-                        time: new Date().toLocaleString("zh-CN")
-                    }
-                })
-            });
-        } catch (e) { console.error(e); }
-
-        alert("已开始注销，三日后完成注销。你已被自动退出登录。\n重新登录可取消注销。");
-
-        await supabaseClient.auth.signOut();
-        ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(k => localStorage.removeItem(k));
-        window.location.replace(AUTH_PAGE_URL);
-    }
-
-    function openChangePassword() {
-        document.getElementById("changePwdModal").style.display = "flex";
-        document.getElementById("pwdCode").value = "";
-        document.getElementById("newPwd").value = "";
-        document.getElementById("newPwd2").value = "";
-        document.getElementById("pwdStatus").textContent = "";
-        document.getElementById("pwdCodeBtn").disabled = false;
-        document.getElementById("pwdCodeBtn").textContent = "获取验证码";
-    }
-    function closeChangePwd() { document.getElementById("changePwdModal").style.display = "none"; }
-
-    async function sendPwdCode() {
-        const btn = document.getElementById("pwdCodeBtn");
-        const status = document.getElementById("pwdStatus");
-        btn.disabled = true; btn.textContent = "发送中...";
-        const { error } = await supabaseClient.auth.signInWithOtp({ email: myEmail });
-        if (error) {
-            status.textContent = "发送失败: " + error.message;
-            status.style.color = "#ef4444";
-            btn.disabled = false; btn.textContent = "获取验证码";
-        } else {
-            status.textContent = "验证码已发送至当前邮箱";
-            status.style.color = "#10b981";
-            btn.textContent = "重新发送";
-            let cd = 60;
-            const timer = setInterval(() => {
-                cd--;
-                if (cd <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = "重新发送"; }
-                else { btn.textContent = cd + "s"; }
-            }, 1000);
-        }
-    }
-
-    async function submitChangePwd() {
-        const code = document.getElementById("pwdCode").value.trim();
-        const p1 = document.getElementById("newPwd").value;
-        const p2 = document.getElementById("newPwd2").value;
-        const status = document.getElementById("pwdStatus");
-        if (!code || code.length !== 6) { status.textContent = "请输入6位验证码"; status.style.color = "#ef4444"; return; }
-        if (!p1 || p1.length < 6) { status.textContent = "新密码至少6位"; status.style.color = "#ef4444"; return; }
-        if (p1 !== p2) { status.textContent = "两次密码不一致"; status.style.color = "#ef4444"; return; }
-        status.textContent = "验证中..."; status.style.color = "#94a3b8";
-
-        const { error: vErr } = await supabaseClient.auth.verifyOtp({ email: myEmail, token: code, type: "email" });
-        if (vErr) { status.textContent = "验证失败: " + vErr.message; status.style.color = "#ef4444"; return; }
-
-        const { error: uErr } = await supabaseClient.auth.updateUser({ password: p1 });
-        if (uErr) { status.textContent = "修改失败: " + uErr.message; status.style.color = "#ef4444"; return; }
-
-        status.textContent = "密码修改成功！"; status.style.color = "#10b981";
-        setTimeout(closeChangePwd, 1200);
-    }
-
-    let pendingNewEmail = "";
-
-    function openChangeEmail() {
-        document.getElementById("changeEmailModal").style.display = "flex";
-        document.getElementById("newEmail").value = "";
-        document.getElementById("emailCode").value = "";
-        document.getElementById("emailStatus").textContent = "";
-        document.getElementById("emailCodeBtn").disabled = false;
-        document.getElementById("emailCodeBtn").textContent = "获取验证码";
-        pendingNewEmail = "";
-    }
-    function closeChangeEmail() { document.getElementById("changeEmailModal").style.display = "none"; }
-
-    async function sendEmailCode() {
-        const newEmail = document.getElementById("newEmail").value.trim();
-        const btn = document.getElementById("emailCodeBtn");
-        const status = document.getElementById("emailStatus");
-        if (!newEmail) { status.textContent = "请先输入新邮箱"; status.style.color = "#ef4444"; return; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { status.textContent = "邮箱格式不正确"; status.style.color = "#ef4444"; return; }
-        if (newEmail === myEmail) { status.textContent = "新邮箱与当前邮箱相同"; status.style.color = "#ef4444"; return; }
-
-        btn.disabled = true; btn.textContent = "发送中...";
-        const { error } = await supabaseClient.auth.signInWithOtp({ email: newEmail });
-        if (error) {
-            status.textContent = "发送失败: " + error.message;
-            status.style.color = "#ef4444";
-            btn.disabled = false; btn.textContent = "获取验证码";
-        } else {
-            pendingNewEmail = newEmail;
-            status.textContent = "验证码已发送至新邮箱";
-            status.style.color = "#10b981";
-            btn.textContent = "重新发送";
-            let cd = 60;
-            const timer = setInterval(() => {
-                cd--;
-                if (cd <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = "重新发送"; }
-                else { btn.textContent = cd + "s"; }
-            }, 1000);
-        }
-    }
-
-    async function submitChangeEmail() {
-        const newEmail = document.getElementById("newEmail").value.trim();
-        const code = document.getElementById("emailCode").value.trim();
-        const status = document.getElementById("emailStatus");
-        if (!newEmail) { status.textContent = "请输入新邮箱"; status.style.color = "#ef4444"; return; }
-        if (!code || code.length !== 6) { status.textContent = "请输入6位验证码"; status.style.color = "#ef4444"; return; }
-        if (pendingNewEmail !== newEmail) { status.textContent = "请先获取验证码"; status.style.color = "#ef4444"; return; }
-        status.textContent = "验证中..."; status.style.color = "#94a3b8";
-
-        const { error: vErr } = await supabaseClient.auth.verifyOtp({ email: newEmail, token: code, type: "email" });
-        if (vErr) { status.textContent = "验证失败: " + vErr.message; status.style.color = "#ef4444"; return; }
-
-        try {
-            const res = await fetch(SUPABASE_URL + "/functions/v1/update-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: myUserId, new_email: newEmail, old_email: myEmail })
-            });
-            if (!res.ok) {
-                const t = await res.text();
-                status.textContent = "修改失败: " + t;
-                status.style.color = "#ef4444";
-                return;
-            }
-        } catch (e) {
-            status.textContent = "修改失败: " + e.message;
-            status.style.color = "#ef4444";
-            return;
-        }
-
-        status.textContent = "邮箱修改成功！"; status.style.color = "#10b981";
-        myEmail = newEmail;
-        localStorage.setItem("email", newEmail);
-        document.getElementById("emailBox").textContent = newEmail;
-        document.getElementById("secEmail").textContent = newEmail;
-        setTimeout(closeChangeEmail, 1200);
-    }
-
-    async function loadMyMessages() {
-        const list = document.getElementById("myMessagesList");
-        const count = document.getElementById("msgCount");
-        const { data, error } = await supabaseClient.from("my_messages").select("*").eq("user_email", currentEmail);
-        if (error) { list.innerHTML = '<div class="no-msg">加载失败</div>'; count.textContent = "(0)"; return; }
-        if (!data || data.length === 0) { list.innerHTML = '<div class="no-msg">还没有发表过留言。</div>'; count.textContent = "(0)"; return; }
-        count.textContent = "(" + data.length + ")";
-        list.innerHTML = data.map(function(m) {
-            const content = escapeHtml(m.content || "");
-            const time = m.created_at ? new Date(m.created_at).toLocaleString("zh-CN") : "";
-            return '<div class="my-message-item"><div>' + content + '</div><div class="msg-time">' + escapeHtml(time) + '</div></div>';
-        }).join("");
-    }
-
-    function openEdit() {
-        document.getElementById("editModal").style.display = "flex";
-        document.getElementById("editAccount").value = localStorage.getItem("account") || "";
-        document.getElementById("editGender").value = localStorage.getItem("gender") || "保密";
-        document.getElementById("editBio").value = localStorage.getItem("bio") || "";
-        document.getElementById("editStatus").textContent = "";
-    }
-    function closeEdit() { document.getElementById("editModal").style.display = "none"; }
-
-    async function saveEdit() {
-        const account = document.getElementById("editAccount").value.trim();
-        const gender = document.getElementById("editGender").value;
-        const bio = document.getElementById("editBio").value.trim();
-        const status = document.getElementById("editStatus");
-        if (!account) { status.textContent = "账号名不能为空！"; status.style.color = "#ef4444"; return; }
-        if (isReservedName(account, myEmail)) { status.textContent = "保留名称，仅限指定邮箱使用"; status.style.color = "#ef4444"; return; }
-        status.textContent = "保存中..."; status.style.color = "#94a3b8";
-        const taken = await isAccountTaken(account, myEmail);
-        if (taken) { status.textContent = "该账号名已被使用"; status.style.color = "#ef4444"; return; }
-        const { error } = await supabaseClient.from("profiles").update({ account: account, gender: gender, bio: bio }).eq("email", myEmail);
-        if (error) { status.textContent = "保存失败: " + error.message; status.style.color = "#ef4444"; return; }
-        status.textContent = "保存成功！"; status.style.color = "#10b981";
-        myAccount = account;
-        document.getElementById("avatarBox").textContent = account.charAt(0).toUpperCase();
-        document.getElementById("nameBox").textContent = account;
-        document.getElementById("genderBox").textContent = gender;
-        document.getElementById("bioBox").textContent = bio || "这个人很懒，什么都没留下。";
-        localStorage.setItem("account", account);
-        localStorage.setItem("gender", gender);
-        localStorage.setItem("bio", bio);
-        setTimeout(closeEdit, 500);
-    }
-
-    function openReport() {
-        document.getElementById("reportModal").style.display = "flex";
-        document.getElementById("reportReason").value = "";
-        document.getElementById("reportStatus").textContent = "";
-    }
-    function closeReport() { document.getElementById("reportModal").style.display = "none"; }
-
-    async function submitReport() {
-        const reason = document.getElementById("reportReason").value.trim();
-        const status = document.getElementById("reportStatus");
-        if (!reason) { status.textContent = "请填写举报理由！"; status.style.color = "#ef4444"; return; }
-        if (!targetProfile) { status.textContent = "找不到被举报的用户"; status.style.color = "#ef4444"; return; }
-        if (targetProfile.uid === myUid) { status.textContent = "不能举报自己"; status.style.color = "#ef4444"; return; }
-        status.textContent = "提交中..."; status.style.color = "#94a3b8";
-        const { data: reportData, error } = await supabaseClient.from("reports").insert([{
-            reporter_uid: myUid, reporter_email: myEmail,
-            target_uid: targetProfile.uid, target_email: targetProfile.email, reason: reason
-        }]).select().single();
-        if (error) { status.textContent = "提交失败: " + error.message; status.style.color = "#ef4444"; return; }
-        try {
-            await fetch(SUPABASE_URL + "/functions/v1/report_handler", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ report_id: reportData.id, target_uid: targetProfile.uid })
-            });
-        } catch (e) { console.error(e); }
-        status.textContent = "举报已提交，正在审核中"; status.style.color = "#10b981";
-        setTimeout(closeReport, 1200);
-    }
-
-    function goFriends() { window.location.href = "friends.html"; }
-    function goBack() { window.location.href = isSelf ? "SpaceKill124" : "friends.html"; }
-
-    async function doLogout() {
-        if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
-        ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(k => localStorage.removeItem(k));
-        window.location.replace(AUTH_PAGE_URL);
-    }
-
-    window.addEventListener("DOMContentLoaded", async function() {
-        if (localStorage.getItem(AUTH_KEY) !== "true") { window.location.replace(AUTH_PAGE_URL); return; }
-        applyTheme();
-        await loadProfile();
-    });
+window.addEventListener("DOMContentLoaded",function(){
+  if(localStorage.getItem(AUTH_KEY)!=="true"){window.location.replace(AUTH_PAGE_URL);return;}
+  loadProfile();
+});
 </script>
 </body>
 </html>
