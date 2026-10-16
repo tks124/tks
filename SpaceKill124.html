@@ -1,535 +1,159 @@
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>太空杀124 - Main Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1e90ff;
-            font-family: 'Microsoft YaHei', sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: relative;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        h1 {
-            color: white;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-        }
-
-        .btn {
-            display: block;
-            width: 250px;
-            margin: 15px auto;
-            padding: 15px 0;
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            border: 2px solid white;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            background-color: transparent;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: white;
-            color: #1e90ff;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-primary {
-            background-color: #fff;
-            color: #1e90ff;
-        }
-        .btn-primary:hover {
-            background-color: #f0f0f0;
-            color: #0066cc;
-        }
-        
-        .btn-register {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        #accountDisplay {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            display: none;
-            background: rgba(255,255,255,0.2);
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 2px solid white;
-            text-align: right;
-            line-height: 1.5;
-        }
-        #accountDisplay .uid-line { font-size: 12px; opacity: 0.9; font-weight: normal; }
-        #accountDisplay .bio-line { font-size: 12px; opacity: 0.9; font-weight: normal; max-width: 200px; word-break: break-all; }
-        #accountDisplay .acc-buttons { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; }
-        #accountDisplay .acc-buttons button {
-            padding: 4px 10px;
-            font-size: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-        }
-        .btn-edit { background: #8b5cf6; }
-        .btn-edit:hover { background: #7c3aed; }
-        .btn-friend { background: #06b6d4; }
-        .btn-friend:hover { background: #0891b2; }
-        .btn-logout { background: #ef4444; }
-        .btn-logout:hover { background: #dc2626; }
-
-        .lang-switch {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 0;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .lang-switch:hover {
-            background-color: white;
-            color: #1e90ff;
-        }
-
-        footer {
-            background-color: #333333; 
-            color: #ffffff; 
-            text-align: center; 
-            padding: 15px 0; 
-            font-size: 14px; 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            font-family: 'Microsoft YaHei', sans-serif;
-        }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: #1f2937; padding: 30px; border-radius: 12px; width: 90%; max-width: 340px; text-align: center; color: white; }
-        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #f3f4f6; }
-        .modal-content input, .modal-content select {
-            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #4b5563; border-radius: 6px;
-            background: #111827; color: white; box-sizing: border-box; font-size: 14px;
-        }
-        .modal-content input::placeholder { color: #6b7280; }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
-        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: white; }
-        .btn-cancel { background: #ef4444; }
-        .btn-cancel:hover { background: #dc2626; }
-        .btn-confirm { background: #10b981; }
-        .btn-confirm:hover { background: #059669; }
-        .profile-status { font-size: 12px; margin-top: 6px; min-height: 16px; }
-
-        @media (max-width: 700px) {
-            .btn-register, .lang-switch, #accountDisplay {
-                position: relative;
-                top: 0;
-                right: 0;
-                left: 0;
-                margin: 0 auto 12px auto;
-                width: 200px;
-                text-align: center;
-            }
-            #accountDisplay .acc-buttons { justify-content: center; }
-            #accountDisplay .bio-line { max-width: none; }
-        }
-    </style>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-    (function() {
-        try {
-            var link = document.createElement('link');
-            link.rel = 'icon';
-            link.type = 'image/png';
-            link.href = 'tubiao.png';
-            document.head.appendChild(link);
-
-            var appleLink = document.createElement('link');
-            appleLink.rel = 'apple-touch-icon';
-            appleLink.href = 'tubiao.png';
-            document.head.appendChild(appleLink);
-        } catch(e) {
-            console.log('favicon 加载失败:', e);
-        }
-    })();
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>太空杀124 - Main Page</title>
+<style>
+body{margin:0;padding:0;background-color:#1e90ff;font-family:'Microsoft YaHei',sans-serif;height:100vh;display:flex;justify-content:center;align-items:center;position:relative;}
+.container{text-align:center;background:rgba(255,255,255,0.1);padding:40px;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,0.2);width:90%;max-width:500px;position:relative;}
+h1{color:white;margin-bottom:30px;text-shadow:1px 1px 3px rgba(0,0,0,0.2);}
+.btn{display:block;width:250px;margin:15px auto;padding:15px 0;text-decoration:none;color:white;font-size:18px;font-weight:bold;border:2px solid white;border-radius:8px;transition:all 0.3s ease;background-color:transparent;cursor:pointer;}
+.btn:hover{background-color:white;color:#1e90ff;transform:translateY(-3px);}
+.btn-primary{background-color:#fff;color:#1e90ff;}
+.btn-primary:hover{background-color:#f0f0f0;color:#0066cc;}
+.btn-register{position:absolute;top:20px;right:20px;width:auto;padding:10px 20px;font-size:16px;margin:0;}
+#accountDisplay{position:absolute;top:20px;right:20px;color:white;font-weight:bold;font-size:14px;display:none;background:rgba(255,255,255,0.2);padding:10px 16px;border-radius:8px;border:2px solid white;text-align:right;line-height:1.5;}
+#accountDisplay .uid-line{font-size:12px;opacity:.9;font-weight:normal;}
+#accountDisplay .bio-line{font-size:12px;opacity:.9;font-weight:normal;max-width:200px;word-break:break-all;}
+#accountDisplay .acc-buttons{margin-top:8px;display:flex;gap:6px;justify-content:flex-end;}
+#accountDisplay .acc-buttons button{padding:4px 10px;font-size:12px;border:none;border-radius:5px;cursor:pointer;color:white;}
+.btn-edit{background:#8b5cf6;}.btn-friend{background:#06b6d4;}.btn-logout{background:#ef4444;}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:700;color:#fff;line-height:1;margin-left:4px;}
+.badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}
+.badge-z{background:#2196f3;}.badge-s{background:#ffc107;}.badge-a{background:#e53935;}
+.lang-switch{position:absolute;top:20px;left:20px;width:auto;padding:10px 20px;font-size:16px;margin:0;background-color:rgba(255,255,255,0.2);border:2px solid white;color:white;border-radius:8px;cursor:pointer;}
+footer{background-color:#333;color:#fff;text-align:center;padding:15px 0;font-size:14px;position:fixed;bottom:0;width:100%;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;justify-content:center;align-items:center;}
+.modal-content{background:#1f2937;padding:30px;border-radius:12px;width:90%;max-width:340px;color:white;}
+.modal-content h3{margin:0 0 20px;text-align:center;}
+.modal-content input,.modal-content select{width:100%;padding:12px;margin-bottom:12px;border:1px solid #4b5563;border-radius:6px;background:#111827;color:white;box-sizing:border-box;font-size:14px;}
+.modal-buttons{display:flex;gap:10px;}
+.modal-buttons button{flex:1;padding:10px;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:white;}
+.btn-cancel{background:#ef4444;}.btn-confirm{background:#10b981;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div class="container">
+  <button class="lang-switch" id="langBtn">English</button>
+  <a href="http://tks124.github.io/tks/zc" id="registerBtn" class="btn btn-register" data-lang="register">注册</a>
+  <div id="accountDisplay"></div>
 
-    <div class="container">
-    <button class="lang-switch" id="langBtn">English</button>
-    <a href="http://tks124.github.io/tks/zc" id="registerBtn" class="btn btn-register" data-lang="register">注册</a>
-    <div id="accountDisplay"></div>
-
-    <h1 data-lang="title">Space Kill124</h1>
-
-    <a href="https://tks124.ithub.io/tks/jianyujianzhushi" class="btn btn-primary" data-lang="modSite">改版官网</a>
-
-    <a href="https://app-d8gm4nxuj1fl.appmiaoda.com/" class="btn btn-primary" data-lang="landlord">斗地主</a>
-
-    <a href="https://m.bilibili.com/space/482735934?plat_id=1&share_from=space&share_medium=android&share_plat=android&share_session_id=a0b32709-0716-446b-941f-539de858dc73&share_source=COPY&share_tag=s_i&timestamp=1784629471&unique_k=A4FGJGl" class="btn" data-lang="adminProfile">管理员个人主页</a>
-
-    <a href="https://github.com/tks124/tks124-apk/releases/download/v1.0.1/SpaceKill124_v1.0.1.APK" class="btn" data-lang="officialApp">官网软件版/v1.0.1</a>
-
-    <a href="https://github.com/tks124/pvz2-apk/releases/download/v3.2.8/pvz2_v3.2.8.APK" class="btn" data-lang="pvzCreator">pvz2高级创作软件版/v3.2.8</a>
-
-    <a href="https://tks124.github.io/tks/2wm" class="btn" data-lang="qrcodeGen">二维码生成</a>
-
-    <a href="mailto:linjiayuan@spacekill124.cn" class="btn" data-lang="feedback">意见反馈</a>
-
-    <a href="https://tks124.github.io/tks/gelenzhuyei" class="btn" data-lang="personalHome">个人主页</a>
-
-    <a href="https://tks124.github.io/tks/diy" class="btn" data-lang="diy">DIY合集</a>
-
-    <a href="https://tks124.github.io/tks/rymd" class="btn" data-lang="credits">制作人员名单</a>
+  <h1 data-lang="title">Space Kill124</h1>
+  <a href="https://tks124.ithub.io/tks/jianyujianzhushi" class="btn btn-primary" data-lang="modSite">改版官网</a>
+  <a href="https://app-d8gm4nxuj1fl.appmiaoda.com/" class="btn btn-primary" data-lang="landlord">斗地主</a>
+  <a href="https://m.bilibili.com/space/482735934" class="btn" data-lang="adminProfile">管理员个人主页</a>
+  <a href="https://github.com/tks124/tks124-apk/releases/download/v1.0.1/SpaceKill124_v1.0.1.APK" class="btn" data-lang="officialApp">官网软件版/v1.0.1</a>
+  <a href="https://github.com/tks124/pvz2-apk/releases/download/v3.2.8/pvz2_v3.2.8.APK" class="btn" data-lang="pvzCreator">pvz2高级创作软件版/v3.2.8</a>
+  <a href="https://tks124.github.io/tks/2wm" class="btn" data-lang="qrcodeGen">二维码生成</a>
+  <a href="mailto:linjiayuan@spacekill124.cn" class="btn" data-lang="feedback">意见反馈</a>
+  <a href="profile.html" class="btn" data-lang="personalHome">个人主页</a>
+  <a href="https://tks124.github.io/tks/diy" class="btn" data-lang="diy">DIY合集</a>
+  <a href="friends.html" class="btn" data-lang="friendsPage">好友</a>
+  <a href="https://tks124.github.io/tks/rymd" class="btn" data-lang="credits">制作人员名单</a>
 </div>
-    
-    <footer data-lang="footer">
-        © 太空杀124拥有最终解释权与所有权。
-    </footer>
+<footer data-lang="footer">© 太空杀124拥有最终解释权与所有权。</footer>
 
-    <div id="profileModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>编辑资料</h3>
-            <input type="text" id="profileAccount" placeholder="账号名称">
-            <select id="profileGender">
-                <option value="男">男</option>
-                <option value="女">女</option>
-                <option value="保密">保密</option>
-            </select>
-            <input type="text" id="profileBio" placeholder="个性签名">
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeProfileModal()">取消</button>
-                <button class="btn-confirm" onclick="saveProfile()">保存</button>
-            </div>
-            <p class="profile-status" id="profileStatus"></p>
-        </div>
+<div id="profileModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>编辑资料</h3>
+    <input type="text" id="profileAccount" placeholder="账号名称">
+    <select id="profileGender"><option value="男">男</option><option value="女">女</option><option value="保密">保密</option></select>
+    <input type="text" id="profileBio" placeholder="个性签名">
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeProfileModal()">取消</button>
+      <button class="btn-confirm" onclick="saveProfile()">保存</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        const SUPABASE_URL = "https://xryfrqxelzetzkgsaycl.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
-        let supabaseClient = null;
-        if (window.supabase) {
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch (e) { console.error("Supabase 初始化失败:", e); }
-        }
+<script>
+const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
+let supabaseClient=null;
+if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-        const AUTH_KEY = "sk124_auth_token";
-        const AUTH_PAGE_URL = "https://tks124.github.io/tks";
-        const LANG_KEY = "sk124_lang";
-        const RESERVED_NAME = "太空杀124";
-        const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
+const AUTH_KEY="sk124_auth_token";
+const AUTH_PAGE_URL="https://tks124.github.io/tks";
+const LANG_KEY="sk124_lang";
+const RESERVED_NAME="太空杀124";
+const RESERVED_OWNER_EMAIL="qwe18965540810@qq.com";
 
-        const WHITELIST_DOMAINS = [
-            'bilibili.com', 'foxmail.com', 'tks124.github.io',
-            'spacekill124.cn', 'www.spacekill124.cn', 'tks124444.github.io'
-        ];
-
-        const translations = {
-    zh: {
-        register: "注册",
-        title: "Space Kill124",
-        modSite: "改版官网",
-        landlord: "斗地主",
-        adminProfile: "管理员个人主页",
-        officialApp: "官网软件版/v1.0.1",
-        pvzCreator: "pvz2高级创作软件版/v3.2.7",
-        qrcodeGen: "二维码生成",
-        feedback: "意见反馈",
-        personalHome: "个人主页",
-        diy: "DIY合集",
-        credits: "制作人员名单",
-        footer: "© 太空杀124拥有最终解释权与所有权。",
-        safetyAlert: "当前前往的网站并非SpaceKill124名下，注意隐私安全。",
-        edit: "编辑资料",
-        friends: "好友",
-        logout: "退出登录",
-        accountPrefix: "账号: ",
-        uidPrefix: "UID: ",
-        bioPrefix: "签名: "
-    },
-    en: {
-        register: "Register",
-        title: "Space Kill124",
-        modSite: "Redesigned Website",
-        landlord: "Landlord Game",
-        adminProfile: "Admin's Profile",
-        officialApp: "Official App / v1.0.1",
-        pvzCreator: "PVZ2 Advanced Creator / v3.2.7",
-        qrcodeGen: "QR Code Generator",
-        feedback: "Feedback",
-        personalHome: "Personal Homepage",
-        diy: "DIY Collection",
-        credits: "Credits",
-        footer: "© SpaceKill124 owns the final interpretation rights and all rights.",
-        safetyAlert: "The site you are about to visit is not owned by SpaceKill124. Please pay attention to your privacy and security.",
-        edit: "Edit Profile",
-        friends: "Friends",
-        logout: "Logout",
-        accountPrefix: "Account: ",
-        uidPrefix: "UID: ",
-        bioPrefix: "Bio: "
-    }
+const translations={
+  zh:{register:"注册",title:"Space Kill124",modSite:"改版官网",landlord:"斗地主",adminProfile:"管理员个人主页",officialApp:"官网软件版/v1.0.1",pvzCreator:"pvz2高级创作软件版/v3.2.8",qrcodeGen:"二维码生成",feedback:"意见反馈",personalHome:"个人主页",diy:"DIY合集",friendsPage:"好友",credits:"制作人员名单",footer:"© 太空杀124拥有最终解释权与所有权。",edit:"编辑资料",friends:"好友",logout:"退出登录",accountPrefix:"账号: ",uidPrefix:"UID: ",bioPrefix:"签名: "},
+  en:{register:"Register",title:"Space Kill124",modSite:"Redesigned",landlord:"Landlord",adminProfile:"Admin's Profile",officialApp:"Official App",pvzCreator:"PVZ2 Creator",qrcodeGen:"QR Code",feedback:"Feedback",personalHome:"Profile",diy:"DIY",friendsPage:"Friends",credits:"Credits",footer:"© SpaceKill124 owns all rights.",edit:"Edit",friends:"Friends",logout:"Logout",accountPrefix:"Account: ",uidPrefix:"UID: ",bioPrefix:"Bio: "}
 };
+let currentLang=localStorage.getItem(LANG_KEY)||"zh";
 
-        let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+function $(id){return document.getElementById(id);}
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function isReservedName(a,e){if(!a)return false;if(a.trim()!==RESERVED_NAME)return false;if(e&&e===RESERVED_OWNER_EMAIL)return false;return true;}
+function badgeHTML(badge){
+  if(!badge)return "";
+  var letter=badge==="author"?"V":badge==="z"?"Z":badge==="s"?"S":badge==="a"?"A":"";
+  return '<span class="badge badge-'+badge+'">'+letter+'</span>';
+}
 
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
+function applyLang(){
+  var t=translations[currentLang];
+  document.querySelectorAll("[data-lang]").forEach(function(el){
+    var k=el.getAttribute("data-lang");
+    if(t[k])el.textContent=t[k];
+  });
+  $("langBtn").textContent=currentLang==="zh"?"English":"中文";
+  updateAccountDisplay();
+}
 
-        function isReservedName(account, email) {
-            if (!account) return false;
-            const a = account.trim();
-            if (a !== RESERVED_NAME) return false;
-            if (email && email === RESERVED_OWNER_EMAIL) return false;
-            return true;
-        }
+function toggleLang(){
+  currentLang=currentLang==="zh"?"en":"zh";
+  localStorage.setItem(LANG_KEY,currentLang);
+  applyLang();
+}
 
-        function updateText() {
-            const t = translations[currentLang];
-            document.querySelectorAll('[data-lang]').forEach(el => {
-                const key = el.getAttribute('data-lang');
-                if (t[key]) {
-                    if (el.tagName === 'A') el.textContent = t[key];
-                    else el.innerText = t[key];
-                }
-            });
-            document.getElementById('langBtn').textContent = currentLang === 'zh' ? 'English' : '中文';
-            updateAccountDisplay();
-        }
+async function updateAccountDisplay(){
+  var regBtn=$("registerBtn");
+  var accDisplay=$("accountDisplay");
+  var email=localStorage.getItem("email");
+  var t=translations[currentLang];
+  if(!email){regBtn.style.display="";accDisplay.style.display="none";return;}
+  var pr=await supabaseClient.from("profiles").select("*").eq("email",email).maybeSingle();
+  var account=(pr.data&&pr.data.account)||localStorage.getItem("account")||email;
+  var uid=(pr.data&&pr.data.uid)||localStorage.getItem("uid")||"-";
+  var bio=(pr.data&&pr.data.bio)||localStorage.getItem("bio")||"";
+  var badge=pr.data?pr.data.badge:"";
+  localStorage.setItem("account",account);
+  localStorage.setItem("uid",uid);
+  localStorage.setItem("bio",bio);
+  regBtn.style.display="none";
+  accDisplay.innerHTML=
+    '<div>'+t.accountPrefix+escapeHtml(account)+badgeHTML(badge)+'</div>'+
+    '<div class="uid-line">'+t.uidPrefix+escapeHtml(uid)+'</div>'+
+    '<div class="bio-line">'+t.bioPrefix+escapeHtml(bio||"—")+'</div>'+
+    '<div class="acc-buttons">'+
+      '<button class="btn-friend" onclick="location.href=\'friends.html\'">'+t.friends+'</button>'+
+      '<button class="btn-edit" onclick="location.href=\'profile.html\'">'+t.edit+'</button>'+
+      '<button class="btn-logout" onclick="doLogout()">'+t.logout+'</button>'+
+    '</div>';
+  accDisplay.style.display="block";
+}
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            localStorage.setItem(LANG_KEY, currentLang);
-            updateText();
-        }
+async function doLogout(){
+  if(supabaseClient){try{await supabaseClient.auth.signOut();}catch(e){}}
+  ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(function(k){localStorage.removeItem(k);});
+  window.location.replace(AUTH_PAGE_URL);
+}
 
-        async function loadProfileFromDB(email) {
-            if (!supabaseClient || !email) return null;
-            try {
-                const { data, error } = await supabaseClient
-                    .from("profiles").select("*").eq("email", email).maybeSingle();
-                if (error) { console.error("加载资料失败:", error); return null; }
-                return data;
-            } catch (e) { console.error(e); return null; }
-        }
+function openProfileModal(){}
+function closeProfileModal(){$("profileModal").classList.remove("show");}
+async function saveProfile(){closeProfileModal();location.reload();}
 
-        async function saveProfileToDB(email, account, gender, bio) {
-            if (!supabaseClient || !email) return { ok: false, msg: "未登录" };
-            try {
-                const { error } = await supabaseClient
-                    .from("profiles")
-                    .update({ account: account, gender: gender, bio: bio })
-                    .eq("email", email);
-                if (error) return { ok: false, msg: error.message };
-                return { ok: true };
-            } catch (e) { return { ok: false, msg: e.message }; }
-        }
+$("langBtn").addEventListener("click",toggleLang);
 
-        async function isAccountTaken(account, excludeEmail) {
-            if (!supabaseClient || !account) return false;
-            let query = supabaseClient.from("profiles").select("uid, email").eq("account", account);
-            if (excludeEmail) query = query.neq("email", excludeEmail);
-            const { data, error } = await query;
-            if (error) { console.error("查重失败:", error); return false; }
-            return data && data.length > 0;
-        }
-
-        async function updateAccountDisplay() {
-            const regBtn = document.getElementById("registerBtn");
-            const accDisplay = document.getElementById("accountDisplay");
-            const email = localStorage.getItem("email");
-            const t = translations[currentLang];
-
-            if (!email) {
-                if (regBtn) regBtn.style.display = "";
-                if (accDisplay) accDisplay.style.display = "none";
-                return;
-            }
-
-            let profile = await loadProfileFromDB(email);
-            let account = (profile && profile.account) || localStorage.getItem("account") || email;
-            let uid = (profile && profile.uid) ? profile.uid : (localStorage.getItem("uid") || "-");
-            let bio = (profile && profile.bio) ? profile.bio : (localStorage.getItem("bio") || "");
-
-            localStorage.setItem("account", account);
-            localStorage.setItem("uid", uid);
-            localStorage.setItem("bio", bio);
-            if (profile && profile.gender) localStorage.setItem("gender", profile.gender);
-
-            if (regBtn) regBtn.style.display = "none";
-            if (accDisplay) {
-                accDisplay.innerHTML =
-                    '<div>' + t.accountPrefix + escapeHtml(account) + '</div>' +
-                    '<div class="uid-line">' + t.uidPrefix + escapeHtml(uid) + '</div>' +
-                    '<div class="bio-line">' + t.bioPrefix + escapeHtml(bio || "—") + '</div>' +
-                    '<div class="acc-buttons">' +
-                        '<button class="btn-friend" onclick="window.location.href=\'friends.html\'">' + t.friends + '</button>' +
-                        '<button class="btn-edit" onclick="openProfileModal()">' + t.edit + '</button>' +
-                        '<button class="btn-logout" onclick="doLogout()">' + t.logout + '</button>' +
-                    '</div>';
-                accDisplay.style.display = "block";
-            }
-        }
-
-        function openProfileModal() {
-            document.getElementById("profileModal").style.display = "flex";
-            document.getElementById("profileAccount").value = localStorage.getItem("account") || "";
-            document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
-            document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
-            document.getElementById("profileStatus").textContent = "";
-        }
-
-        function closeProfileModal() {
-            document.getElementById("profileModal").style.display = "none";
-        }
-
-        async function saveProfile() {
-            const account = document.getElementById("profileAccount").value.trim();
-            const gender = document.getElementById("profileGender").value;
-            const bio = document.getElementById("profileBio").value.trim();
-            const status = document.getElementById("profileStatus");
-
-            if (!account) {
-                status.textContent = "请输入账号名称！";
-                status.style.color = "#ef4444";
-                return;
-            }
-
-            const email = localStorage.getItem("email");
-            if (!email) {
-                status.textContent = "未登录，无法保存。";
-                status.style.color = "#ef4444";
-                return;
-            }
-
-            if (isReservedName(account, email)) {
-                status.textContent = "该账号名为保留名称，仅限指定邮箱使用！";
-                status.style.color = "#ef4444";
-                return;
-            }
-
-            status.textContent = "保存中...";
-            status.style.color = "#9ca3af";
-
-            const taken = await isAccountTaken(account, email);
-            if (taken) {
-                status.textContent = "该账号名已被使用，请换一个！";
-                status.style.color = "#ef4444";
-                return;
-            }
-
-            const res = await saveProfileToDB(email, account, gender, bio);
-            if (!res.ok) {
-                status.textContent = "保存失败: " + res.msg;
-                status.style.color = "#ef4444";
-                return;
-            }
-
-            localStorage.setItem("account", account);
-            localStorage.setItem("gender", gender);
-            localStorage.setItem("bio", bio);
-
-            status.textContent = "保存成功！";
-            status.style.color = "#10b981";
-            await updateAccountDisplay();
-            setTimeout(closeProfileModal, 500);
-        }
-
-        async function doLogout() {
-            if (supabaseClient) {
-                try { await supabaseClient.auth.signOut(); } catch (e) {}
-            }
-            localStorage.removeItem("account");
-            localStorage.removeItem("email");
-            localStorage.removeItem("password");
-            localStorage.removeItem("uid");
-            localStorage.removeItem("gender");
-            localStorage.removeItem("bio");
-            localStorage.removeItem("sk124_auth_token");
-            window.location.replace(AUTH_PAGE_URL);
-        }
-
-        function isWhitelisted(url) {
-            if (url.startsWith('mailto:')) return true;
-            try {
-                const urlObj = new URL(url);
-                return WHITELIST_DOMAINS.some(domain => urlObj.hostname.includes(domain));
-            } catch (e) { return false; }
-        }
-
-        function navigateWithSafetyCheck(url) {
-            if (!url || url === '#') return;
-            if (url.includes('github.com/tks124')) { window.location.href = url; return; }
-            if (isWhitelisted(url)) { window.location.href = url; return; }
-            if (url.includes('github.com/tks124444')) { window.location.href = url; return; }
-            if (url.startsWith("https://tks124.github.io/")) { window.location.replace(url); return; }
-            const isConfirmed = confirm(translations[currentLang].safetyAlert);
-            if (isConfirmed) window.location.href = url;
-        }
-
-        document.getElementById('langBtn').addEventListener('click', toggleLanguage);
-
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetUrl = this.getAttribute('href');
-                navigateWithSafetyCheck(targetUrl);
-            });
-        });
-
-        window.onload = function() {
-            updateText();
-            if (localStorage.getItem(AUTH_KEY) !== "true") {
-                window.location.replace(AUTH_PAGE_URL);
-                return;
-            }
-            updateAccountDisplay();
-        };
-    </script>
-
+window.addEventListener("load",function(){
+  applyLang();
+  if(localStorage.getItem(AUTH_KEY)!=="true"){window.location.replace(AUTH_PAGE_URL);return;}
+  updateAccountDisplay();
+});
+</script>
 </body>
-    </html>
+</html>
