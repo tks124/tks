@@ -16,18 +16,26 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 @media(max-width:760px){.grid{grid-template-columns:1fr;}}
 .panel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;}
 .panel h3{margin:0 0 12px 0;font-size:14px;color:#c4b5fd;}
+.search-row{display:flex;gap:8px;margin-bottom:12px;}
+.search-row input{flex:1;padding:10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#fff;font-size:14px;}
+.search-row button{padding:10px 14px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;font-size:13px;}
 .friend-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;font-size:14px;cursor:pointer;position:relative;}
 .friend-item:hover{background:rgba(255,255,255,0.08);}
 .friend-item .fname{color:#f1f5f9;font-weight:bold;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
 .friend-item .fuid{color:#94a3b8;font-size:12px;margin-left:6px;}
-.dot-badge{position:absolute;left:2px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#3b82f6;}
-.dot-badge.official{background:#e53935;width:10px;height:10px;box-shadow:0 0 8px #e53935;}
-.friend-item.has-dot{padding-left:20px;}
-.friend-item.has-dot.official{padding-left:24px;}
+.friend-item.has-dot{padding-left:22px;}
+.friend-item.has-dot.official{padding-left:26px;}
+.dot-badge{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#3b82f6;}
+.dot-badge.official{background:#e53935;width:11px;height:11px;box-shadow:0 0 8px #e53935;}
 .empty{color:#64748b;font-size:13px;text-align:center;padding:16px 0;}
+.status{font-size:12px;text-align:center;margin-top:6px;min-height:16px;}
+.tabs{display:flex;gap:8px;margin-bottom:12px;}
+.tab{flex:1;padding:10px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:transparent;color:#94a3b8;cursor:pointer;font-size:13px;}
+.tab.active{background:linear-gradient(to right,#8b5cf6,#7c3aed);color:#fff;border-color:transparent;}
+.chat-header{font-size:13px;color:#94a3b8;margin-bottom:8px;}
 .chat-box{height:400px;overflow-y:auto;background:#0a0f1c;border-radius:8px;padding:12px;margin-bottom:10px;}
-.chat-msg{margin-bottom:12px;font-size:14px;line-height:1.5;}
-.chat-msg .who{color:#8b5cf6;font-weight:bold;font-size:12px;cursor:pointer;}
+.chat-msg{margin-bottom:10px;font-size:14px;line-height:1.5;}
+.chat-msg .who{color:#8b5cf6;font-weight:bold;font-size:12px;margin-right:6px;cursor:pointer;}
 .chat-msg .who.other{color:#3b82f6;}
 .chat-msg .who.mine{color:#10b981;}
 .chat-msg .time{color:#64748b;font-size:11px;margin-left:6px;}
@@ -35,12 +43,12 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 .chat-input{display:flex;gap:8px;}
 .chat-input input{flex:1;padding:10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#fff;font-size:14px;}
 .chat-input button{padding:10px 18px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;font-size:13px;}
-.official-card{background:linear-gradient(135deg,#7c2d12,#991b1b);border:1px solid #fbbf24;border-radius:10px;padding:14px;margin-bottom:10px;color:#fff;}
-.official-card .oc-title{font-size:16px;font-weight:bold;margin-bottom:6px;}
+.official-card{background:linear-gradient(135deg,#7c2d12,#991b1b);border:1px solid #fbbf24;border-radius:10px;padding:14px;margin-bottom:12px;color:#fff;}
+.official-card .oc-title{font-size:15px;font-weight:bold;margin-bottom:6px;}
 .official-card .oc-body{font-size:13px;line-height:1.6;margin-bottom:8px;word-break:break-word;}
-.official-card .oc-body img{max-width:100%;border-radius:8px;margin-top:6px;}
+.official-card .oc-body img{max-width:100%;border-radius:8px;margin-top:6px;display:block;}
 .official-card .oc-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.2);}
-.official-card .oc-download{display:inline-block;margin-top:6px;padding:6px 12px;background:#fbbf24;color:#7c2d12;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;}
+.official-card .oc-download{display:inline-block;margin-top:8px;padding:6px 12px;background:#fbbf24;color:#7c2d12;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;}
 .badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:700;color:#fff;line-height:1;}
 .badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}
 .badge-z{background:#2196f3;}.badge-s{background:#ffc107;}.badge-a{background:#e53935;}
@@ -50,27 +58,42 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 <body>
 <div class="wrap">
   <div class="topbar">
-    <h2>好友</h2>
+    <h2>好友与聊天</h2>
     <div class="me" id="meInfo">—</div>
-    <button onclick="location.href='SpaceKill124'">返回首页</button>
+    <button onclick="location.href='SpaceKill124.html'">返回首页</button>
   </div>
   <div class="grid">
     <div>
+      <div class="panel" style="margin-bottom:16px;">
+        <h3>搜索 UID 加好友</h3>
+        <div class="search-row">
+          <input type="text" id="searchUid" placeholder="输入对方 UID">
+          <button onclick="searchUid()">搜索</button>
+        </div>
+        <div id="searchResult"></div>
+        <p class="status" id="addStatus"></p>
+      </div>
       <div class="panel">
         <h3>好友列表</h3>
         <div id="friendList"><div class="empty">加载中...</div></div>
       </div>
     </div>
     <div class="panel">
-      <h3 id="chatTitle">选择一个好友开始聊天</h3>
+      <div class="tabs">
+        <button class="tab active" id="tabPublic" onclick="switchChat('public')">公共频道</button>
+        <button class="tab" id="tabPrivate" onclick="switchChat('private')">私聊</button>
+      </div>
+      <div class="chat-header" id="chatTitle">公共频道 · 所有登录用户可见</div>
       <div class="chat-box" id="chatBox"></div>
-      <div class="chat-input">
+      <div class="chat-input" id="chatInputBox">
         <input type="text" id="chatInput" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendMsg()">
         <button onclick="sendMsg()">发送</button>
       </div>
+      <p class="status" id="chatStatus"></p>
     </div>
   </div>
 </div>
+
 <script>
 const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
@@ -81,6 +104,7 @@ if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPA
 let myEmail="",myUid=null,myAccount="";
 let friendsCache=[];
 let currentFriend=null;
+let chatMode="public";
 let chatTimer=null;
 let officialLastSeen=parseInt(localStorage.getItem("official_last_seen")||"0",10);
 
@@ -97,107 +121,179 @@ async function init(){
   if(!supabaseClient){document.body.innerHTML="<p style='text-align:center;padding:40px;'>Supabase 未加载</p>";return;}
   var ses=await supabaseClient.auth.getSession();
   var session=ses&&ses.data?ses.data.session:null;
-  if(!session){window.location.href="SpaceKill124";return;}
+  if(!session){location.href="SpaceKill124.html";return;}
   myEmail=session.user.email;
   var pr=await supabaseClient.from("profiles").select("*").eq("email",myEmail).maybeSingle();
   if(pr.data){myUid=pr.data.uid;myAccount=pr.data.account||myEmail;}
   $("meInfo").textContent=myAccount+" (UID:"+myUid+")";
   await ensureOfficialFriend();
   await loadFriends();
+  await loadMessages();
   if(!chatTimer)chatTimer=setInterval(function(){
     loadFriends();
-    if(currentFriend)loadMessages();
+    if(chatMode!=="official")loadMessages();
   },5000);
 }
 
 async function ensureOfficialFriend(){
-  var r=await supabaseClient.from("friends").select("id").or("and(requester_uid.eq."+myUid+",receiver_email.eq."+OFFICIAL_EMAIL+"),and(receiver_uid.eq."+myUid+",requester_email.eq."+OFFICIAL_EMAIL+")").maybeSingle();
-  if(r.data)return;
-  await supabaseClient.from("friends").insert([{requester_uid:myUid,requester_email:myEmail,receiver_email:OFFICIAL_EMAIL,status:"accepted",auto_official:true}]);
+  var pr=await supabaseClient.from("profiles").select("uid").eq("email",OFFICIAL_EMAIL).maybeSingle();
+  if(!pr.data)return;
+  var officialUid=pr.data.uid;
+  var chk=await supabaseClient.from("friends").select("id").or("and(requester_uid.eq."+myUid+",receiver_uid.eq."+officialUid+"),and(requester_uid.eq."+officialUid+",receiver_uid.eq."+myUid+")").maybeSingle();
+  if(chk.data)return;
+  await supabaseClient.from("friends").insert([{requester_uid:myUid,requester_email:myEmail,receiver_uid:officialUid,receiver_email:OFFICIAL_EMAIL,status:"accepted",auto_official:true}]);
+}
+
+async function searchUid(){
+  var v=$("searchUid").value.trim();
+  var resultBox=$("searchResult");
+  var status=$("addStatus");
+  status.textContent="";
+  if(!v){resultBox.innerHTML="";status.textContent="请输入 UID";status.style.color="#ef4444";return;}
+  if(!/^\d+$/.test(v)){resultBox.innerHTML="";status.textContent="UID 必须是数字";status.style.color="#ef4444";return;}
+  var targetUid=parseInt(v,10);
+  if(targetUid===myUid){resultBox.innerHTML="";status.textContent="不能加自己";status.style.color="#ef4444";return;}
+  var r=await supabaseClient.from("profiles").select("uid,account").eq("uid",targetUid).maybeSingle();
+  if(r.error||!r.data){resultBox.innerHTML="";status.textContent="没有找到该 UID 的用户";status.style.color="#ef4444";return;}
+  resultBox.innerHTML='<div class="friend-item"><div><span class="fname">'+escapeHtml(r.data.account||"未命名")+'</span><span class="fuid">UID:'+r.data.uid+'</span></div><button onclick="sendRequest('+r.data.uid+')">加好友</button></div>';
+}
+
+async function sendRequest(targetUid){
+  var status=$("addStatus");
+  var e1=await supabaseClient.from("friends").select("id,status").eq("requester_uid",myUid).eq("receiver_uid",targetUid).maybeSingle();
+  if(e1.data){status.textContent=e1.data.status==="accepted"?"已经是好友了":"已发送过申请";status.style.color="#f59e0b";return;}
+  var e2=await supabaseClient.from("friends").select("id,status").eq("requester_uid",targetUid).eq("receiver_uid",myUid).maybeSingle();
+  if(e2.data){
+    if(e2.data.status==="accepted"){status.textContent="已经是好友了";status.style.color="#f59e0b";}
+    else{
+      await supabaseClient.from("friends").update({status:"accepted"}).eq("id",e2.data.id);
+      status.textContent="已互相成为好友";status.style.color="#10b981";
+      await loadFriends();
+    }
+    return;
+  }
+  var r=await supabaseClient.from("friends").insert([{requester_uid:myUid,requester_email:myEmail,receiver_uid:targetUid,status:"pending"}]);
+  if(r.error){status.textContent="发送失败: "+r.error.message;status.style.color="#ef4444";}
+  else{status.textContent="好友申请已发送";status.style.color="#10b981";}
 }
 
 async function loadFriends(){
-  var r=await supabaseClient.from("friends").select("*").or("requester_email.eq."+myEmail+",receiver_email.eq."+myEmail).eq("status","accepted");
+  var r=await supabaseClient.from("friends").select("*").or("requester_uid.eq."+myUid+",receiver_uid.eq."+myUid).eq("status","accepted");
   var data=r.data||[];
   if(data.length===0){$("friendList").innerHTML='<div class="empty">暂无好友</div>';return;}
-  var otherEmails=data.map(function(x){return x.requester_email===myEmail?x.receiver_email:x.requester_email;});
-  var pr=await supabaseClient.from("profiles").select("email,uid,account,avatar,badge").in("email",otherEmails);
-  var map={};(pr.data||[]).forEach(function(p){map[p.email]=p;});
-  friendsCache=otherEmails.map(function(e){return Object.assign({email:e},map[e]||{});});
+  var otherUids=data.map(function(x){return x.requester_uid===myUid?x.receiver_uid:x.requester_uid;});
+  var pr=await supabaseClient.from("profiles").select("uid,email,account,avatar,badge").in("uid",otherUids);
+  var map={};(pr.data||[]).forEach(function(p){map[p.uid]=p;});
+  friendsCache=otherUids.map(function(u){return Object.assign({uid:u},map[u]||{});});
   var html="";
   for(var i=0;i<friendsCache.length;i++){
     var f=friendsCache[i];
     var isOfficial=f.email===OFFICIAL_EMAIL;
     var hasDot=false;
     if(isOfficial){
-      var lastPost=await supabaseClient.from("official_posts").select("created_at").order("created_at",{ascending:false}).limit(1).maybeSingle();
-      if(lastPost.data){
-        var t=new Date(lastPost.data.created_at).getTime();
-        hasDot=t>officialLastSeen;
-      }
+      var lp=await supabaseClient.from("official_posts").select("created_at").order("created_at",{ascending:false}).limit(1).maybeSingle();
+      if(lp.data){hasDot=new Date(lp.data.created_at).getTime()>officialLastSeen;}
     }
-    var cls="friend-item";
-    if(hasDot)cls+=" has-dot"+(isOfficial?" official":"");
-    html+='<div class="'+cls+'" onclick="openFriend(\''+escapeHtml(f.email)+'\')">';
+    var cls="friend-item"+(hasDot?" has-dot"+(isOfficial?" official":""):"");
+    html+='<div class="'+cls+'" onclick="openFriend('+f.uid+')">';
     if(hasDot)html+='<span class="dot-badge'+(isOfficial?' official':'')+'"></span>';
-    html+='<div><div class="fname">'+escapeHtml(f.account||f.email)+badgeHTML(f.badge)+'</div><div class="fuid">'+(isOfficial?"官方账号":"UID: "+(f.uid||"—"))+'</div></div>';
-    html+='</div>';
+    html+='<div><div class="fname">'+escapeHtml(f.account||("UID"+f.uid))+badgeHTML(f.badge)+'</div>';
+    html+='<div class="fuid">'+(isOfficial?"官方账号":"UID: "+f.uid)+'</div></div></div>';
   }
   $("friendList").innerHTML=html;
 }
 
-async function openFriend(email){
-  var f=friendsCache.find(function(x){return x.email===email;});
+async function openFriend(uid){
+  var f=friendsCache.find(function(x){return x.uid===uid;});
   if(!f)return;
-  currentFriend=f;
-  if(email===OFFICIAL_EMAIL){
+  if(f.email===OFFICIAL_EMAIL){
+    currentFriend=f;
+    chatMode="official";
     officialLastSeen=Date.now();
     localStorage.setItem("official_last_seen",String(officialLastSeen));
+    updateTabs();
     $("chatTitle").textContent="官方账号";
     await loadOfficialPosts();
     await loadFriends();
   }else{
-    $("chatTitle").textContent="与 "+(f.account||f.email)+" 聊天";
+    currentFriend=f;
+    chatMode="private";
+    updateTabs();
+    $("chatTitle").textContent="与 "+(f.account||("UID"+f.uid))+" 私聊";
     await loadMessages();
   }
 }
 
-async function loadOfficialPosts(){
-  var r=await supabaseClient.from("official_posts").select("*").order("created_at",{ascending:false}).limit(50);
+function switchChat(mode){
+  if(mode==="private"&&!currentFriend){alert("请先在好友列表点一个好友");return;}
+  chatMode=mode;
+  updateTabs();
+  if(mode==="public")$("chatTitle").textContent="公共频道 · 所有登录用户可见";
+  else if(mode==="private")$("chatTitle").textContent="与 "+(currentFriend.account||("UID"+currentFriend.uid))+" 私聊";
+  loadMessages();
+}
+
+function updateTabs(){
+  $("tabPublic").classList.toggle("active",chatMode==="public");
+  $("tabPrivate").classList.toggle("active",chatMode==="private"||chatMode==="official");
+}
+
+async function loadMessages(){
+  if(chatMode==="official"){await loadOfficialPosts();return;}
   var box=$("chatBox");
+  var r;
+  if(chatMode==="public"){
+    r=await supabaseClient.from("chat_messages").select("*").eq("channel","public").order("created_at",{ascending:true}).limit(200);
+  }else{
+    if(!currentFriend){box.innerHTML='<div class="empty">请选择好友</div>';return;}
+    r=await supabaseClient.from("chat_messages").select("*").eq("channel","private").or("and(sender_uid.eq."+myUid+",receiver_uid.eq."+currentFriend.uid+"),and(sender_uid.eq."+currentFriend.uid+",receiver_uid.eq."+myUid+")").order("created_at",{ascending:true}).limit(200);
+  }
+  if(r.error){box.innerHTML='<div class="empty">加载失败: '+escapeHtml(r.error.message)+'</div>';return;}
+  if(!r.data||r.data.length===0){box.innerHTML='<div class="empty">还没有消息</div>';return;}
+  var uids=[];
+  r.data.forEach(function(m){if(uids.indexOf(m.sender_uid)<0)uids.push(m.sender_uid);});
+  var pr=await supabaseClient.from("profiles").select("uid,account,badge").in("uid",uids);
+  var map={};(pr.data||[]).forEach(function(p){map[p.uid]=p;});
+  box.innerHTML=r.data.map(function(m){
+    var mine=m.sender_uid===myUid;
+    var who=map[m.sender_uid]||{account:"UID"+m.sender_uid};
+    return '<div class="chat-msg"><span class="who'+(mine?" mine":" other")+'">'+escapeHtml(who.account)+badgeHTML(who.badge)+'</span><span class="time">'+fmtTime(m.created_at)+'</span><span class="text">'+escapeHtml(m.content)+'</span></div>';
+  }).join("");
+  box.scrollTop=box.scrollHeight;
+}
+
+async function loadOfficialPosts(){
+  var box=$("chatBox");
+  var r=await supabaseClient.from("official_posts").select("*").order("created_at",{ascending:false}).limit(50);
+  if(r.error){box.innerHTML='<div class="empty">加载失败</div>';return;}
   if(!r.data||r.data.length===0){box.innerHTML='<div class="empty">官方还没有发布内容</div>';return;}
   box.innerHTML=r.data.map(function(p){
     var body="";
     if(p.text_content)body+=escapeHtml(p.text_content);
     if(p.image_url)body+='<img src="'+escapeHtml(p.image_url)+'">';
-    var download="";
-    if(p.file_url)download='<br><a class="oc-download" href="'+escapeHtml(p.file_url)+'" download>下载 '+escapeHtml(p.file_name||"文件")+'</a>';
-    var type="官方动态";
-    if(p.content_type==="image")type="官方图片";
-    if(p.content_type==="file")type="官方文件";
-    return '<div class="official-card"><div class="oc-title">'+escapeHtml(type)+'</div><div class="oc-body">'+(body||"（仅文件）")+download+'</div><div class="oc-tag">'+fmtTime(p.created_at)+'</div></div>';
+    var dl="";
+    if(p.file_url)dl='<br><a class="oc-download" href="'+escapeHtml(p.file_url)+'" download>下载 '+escapeHtml(p.file_name||"文件")+'</a>';
+    var type=p.content_type==="image"?"官方图片":(p.content_type==="file"?"官方文件":"官方动态");
+    return '<div class="official-card"><div class="oc-title">'+escapeHtml(type)+'</div><div class="oc-body">'+(body||"（仅文件）")+dl+'</div><div class="oc-tag">'+fmtTime(p.created_at)+'</div></div>';
   }).join("");
-}
-
-async function loadMessages(){
-  if(!currentFriend||currentFriend.email===OFFICIAL_EMAIL)return;
-  var r=await supabaseClient.from("chat_messages").select("*").eq("channel","private").or("and(sender_email.eq."+myEmail+",receiver_email.eq."+currentFriend.email+"),and(sender_email.eq."+currentFriend.email+",receiver_email.eq."+myEmail+")").order("created_at",{ascending:true});
-  var box=$("chatBox");
-  if(!r.data||r.data.length===0){box.innerHTML='<div class="empty">还没有消息</div>';return;}
-  box.innerHTML=r.data.map(function(m){
-    var mine=m.sender_email===myEmail;
-    var whoName=mine?myAccount:(currentFriend.account||currentFriend.email);
-    return '<div class="chat-msg"><span class="who'+(mine?" mine":" other")+'">'+escapeHtml(whoName)+'</span><span class="time">'+fmtTime(m.created_at)+'</span><span class="text">'+escapeHtml(m.content)+'</span></div>';
-  }).join("");
-  box.scrollTop=box.scrollHeight;
+  box.scrollTop=0;
 }
 
 async function sendMsg(){
-  if(!currentFriend){alert("请先选择好友");return;}
-  if(currentFriend.email===OFFICIAL_EMAIL){alert("官方账号为单向通知，不能回复");return;}
+  if(chatMode==="official"){alert("官方账号为单向通知，不能回复");return;}
   var content=$("chatInput").value.trim();
   if(!content)return;
-  await supabaseClient.from("chat_messages").insert([{sender_email:myEmail,sender_uid:myUid,receiver_email:currentFriend.email,channel:"private",content:content}]);
+  if(chatMode==="private"&&!currentFriend){alert("请先选好友");return;}
+  var rec={
+    sender_uid:myUid,
+    sender_email:myEmail,
+    receiver_uid:chatMode==="private"?currentFriend.uid:null,
+    receiver_email:chatMode==="private"?(currentFriend.email||null):null,
+    channel:chatMode,
+    content:content
+  };
+  var r=await supabaseClient.from("chat_messages").insert([rec]);
+  if(r.error){$("chatStatus").textContent="发送失败: "+r.error.message;$("chatStatus").style.color="#ef4444";return;}
   $("chatInput").value="";
   await loadMessages();
 }
