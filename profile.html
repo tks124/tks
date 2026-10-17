@@ -43,11 +43,8 @@ body.light .bio-box{background:rgba(0,0,0,0.03);color:#334155;}
 .btn-follow.followed{background:#475569;}
 .badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:700;color:#fff;line-height:1;}
 .badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}
-.badge-z{background:#2196f3;}
-.badge-s{background:#ffc107;}
-.badge-a{background:#e53935;}
+.badge-z{background:#2196f3;}.badge-s{background:#ffc107;}.badge-a{background:#e53935;}
 .badge-text{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#f0f7ff;color:#2196f3;margin-left:4px;}
-.badge-text-author{background:#fff3e0;color:#e65100;}
 .loading{text-align:center;color:#94a3b8;padding:60px 0;font-size:15px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;padding:20px;}
 .modal-overlay.show{display:flex;}
@@ -59,8 +56,7 @@ body.light .modal-content input,body.light .modal-content select,body.light .mod
 .modal-content textarea{min-height:100px;resize:vertical;}
 .modal-buttons{display:flex;gap:10px;margin-top:10px;}
 .modal-buttons button{flex:1;padding:11px;border:none;border-radius:8px;font-size:14px;cursor:pointer;color:white;font-weight:bold;}
-.btn-cancel{background:#64748b;}
-.btn-confirm{background:#10b981;}
+.btn-cancel{background:#64748b;}.btn-confirm{background:#10b981;}
 .modal-status{font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
 .verify-item{background:rgba(255,255,255,0.05);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 body.light .verify-item{background:rgba(0,0,0,0.03);}
@@ -75,30 +71,100 @@ body.light .user-list-item{background:rgba(0,0,0,0.03);}
 .user-list-avatar img{width:100%;height:100%;object-fit:cover;}
 .user-list-name{flex:1;font-size:14px;}
 .toast-fixed{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:9999;max-width:80vw;text-align:center;}
+.dtop{padding:0 0 14px 0;}
+.back{border:none;background:rgba(255,255,255,0.08);border-radius:20px;padding:9px 16px;font-size:14px;color:#3b82f6;cursor:pointer;font-family:inherit;}
+body.light .back{background:rgba(0,0,0,0.05);}
+.view-title{font-size:22px;font-weight:bold;text-align:center;margin:8px 0 24px 0;}
+.setting-item{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:rgba(255,255,255,0.05);border-radius:10px;margin-bottom:10px;font-size:15px;cursor:pointer;transition:background .15s;color:#e2e8f0;}
+body.light .setting-item{background:rgba(0,0,0,0.03);color:#0f172a;}
+.setting-item:hover{background:rgba(255,255,255,0.1);}
+.setting-item .chev{color:#64748b;font-size:18px;}
+.setting-item.danger{color:#ef4444;}
+.switch{width:46px;height:27px;border-radius:14px;background:#475569;position:relative;transition:.2s;}
+.switch::after{content:'';position:absolute;width:23px;height:23px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;}
+.switch.on{background:#8b5cf6;}
+.switch.on::after{left:21px;}
+.security-block{background:rgba(255,255,255,0.05);border-radius:12px;padding:20px;margin-bottom:16px;}
+body.light .security-block{background:rgba(0,0,0,0.03);}
+.security-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+body.light .security-row{border-color:rgba(0,0,0,0.08);}
+.security-row:last-child{border-bottom:none;}
+.security-label{color:#94a3b8;font-size:14px;}
+.security-value{color:#f1f5f9;font-size:14px;font-weight:500;}
+body.light .security-value{color:#0f172a;}
+.security-actions{display:flex;gap:10px;margin-top:16px;}
+.security-actions button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;color:white;}
+.btn-change{background:linear-gradient(to right,#3b82f6,#2563eb);}
+.btn-2fa{background:linear-gradient(to right,#10b981,#059669);}
+.btn-2fa.dis{background:#ef4444;}
+.qr-box{background:#fff;padding:14px;border-radius:12px;display:flex;justify-content:center;margin-bottom:12px;}
+.qr-box canvas{display:block;}
+.secret-line{text-align:center;font-family:monospace;font-size:13px;color:#94a3b8;word-break:break-all;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:12px;}
+body.light .secret-line{background:rgba(0,0,0,0.04);}
+.deactivate-wrap{text-align:center;padding:30px 0;}
+.deactivate-name{font-size:26px;font-weight:bold;margin-bottom:8px;}
+.deactivate-uid{font-size:15px;color:#94a3b8;margin-bottom:40px;}
+.deactivate-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(to right,#ef4444,#dc2626);color:white;font-size:16px;font-weight:bold;cursor:pointer;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 <div class="card">
-  <div id="loadingBox" class="loading">加载中...</div>
-  <div id="profileBox" style="display:none;">
-    <div class="avatar" id="avatarBox">?</div>
-    <div class="account-name" id="nameBox">—</div>
-    <div class="uid-badge">UID: <span id="uidBox">—</span></div>
-    <div class="stats-row">
-      <div class="stat" onclick="openFollowingList()">
-        <div class="stat-num" id="followingCount">0</div>
-        <div class="stat-label">关注</div>
+  <div id="viewProfile">
+    <div id="loadingBox" class="loading">加载中...</div>
+    <div id="profileBox" style="display:none;">
+      <div class="avatar" id="avatarBox">?</div>
+      <div class="account-name" id="nameBox">—</div>
+      <div class="uid-badge">UID: <span id="uidBox">—</span></div>
+      <div class="stats-row">
+        <div class="stat" onclick="openFollowingList()"><div class="stat-num" id="followingCount">0</div><div class="stat-label">关注</div></div>
+        <div class="stat" onclick="openFollowersList()"><div class="stat-num" id="followersCount">0</div><div class="stat-label">粉丝</div></div>
       </div>
-      <div class="stat" onclick="openFollowersList()">
-        <div class="stat-num" id="followersCount">0</div>
-        <div class="stat-label">粉丝</div>
-      </div>
+      <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
+      <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
+      <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
+      <div class="actions" id="actionsBox"></div>
     </div>
-    <div class="info-row"><span class="info-label">邮箱</span><span class="info-value" id="emailBox">—</span></div>
-    <div class="info-row"><span class="info-label">性别</span><span class="info-value" id="genderBox">—</span></div>
-    <div class="bio-box"><div class="bio-title">个性签名</div><div id="bioBox">这个人很懒，什么都没留下。</div></div>
-    <div class="actions" id="actionsBox"></div>
+  </div>
+
+  <div id="viewSettings" style="display:none;">
+    <div class="dtop"><button class="back" onclick="backToProfile()">← 返回</button></div>
+    <div class="view-title">设置</div>
+    <div class="setting-item" onclick="showSecurity()"><span>账号安全</span><span class="chev">›</span></div>
+    <div class="setting-item" onclick="toggleDark()"><span>夜间模式</span><span class="switch" id="darkSwitch"></span></div>
+    <div class="setting-item" onclick="contactSupport()"><span>客服</span><span class="chev">›</span></div>
+    <div class="setting-item danger" onclick="showDeactivate()"><span>注销账号</span><span class="chev">›</span></div>
+    <div class="setting-item danger" onclick="doLogout()"><span>退出登录</span><span class="chev">›</span></div>
+  </div>
+
+  <div id="viewSecurity" style="display:none;">
+    <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
+    <div class="view-title">账号安全</div>
+    <div class="security-block">
+      <div class="security-row"><span class="security-label">当前绑定邮箱</span><span class="security-value" id="secEmail">—</span></div>
+      <div class="security-row"><span class="security-label">当前密码</span><span class="security-value">••••••••</span></div>
+      <div class="security-row"><span class="security-label">双因素认证</span><span class="security-value" id="sec2FAState">未开启</span></div>
+    </div>
+    <div class="security-actions">
+      <button class="btn-change" onclick="openChangePassword()">修改密码</button>
+      <button class="btn-change" onclick="openChangeEmail()">修改邮箱</button>
+    </div>
+    <div class="security-actions">
+      <button class="btn-2fa" id="btn2FAToggle" onclick="toggle2FA()">开启双因素认证</button>
+    </div>
+  </div>
+
+  <div id="viewDeactivate" style="display:none;">
+    <div class="dtop"><button class="back" onclick="backToSettings()">← 返回</button></div>
+    <div class="view-title">注销账号</div>
+    <div class="deactivate-wrap">
+      <div class="deactivate-name" id="deactName">—</div>
+      <div class="deactivate-uid" id="deactUid">UID: —</div>
+      <button class="deactivate-btn" onclick="confirmDeactivate()">确认注销</button>
+      <p style="color:#94a3b8;font-size:13px;margin-top:20px;line-height:1.6;">注销后三天内，只要你重新登录一次，注销会自动取消。<br>三天后账号将被永久删除，无法恢复。</p>
+    </div>
   </div>
 </div>
 
@@ -133,9 +199,7 @@ body.light .user-list-item{background:rgba(0,0,0,0.03);}
     <h3>认证中心</h3>
     <div id="verifyList"></div>
     <p class="modal-status" id="verifyStatus"></p>
-    <div class="modal-buttons">
-      <button class="btn-cancel" onclick="closeModal('verifyModal')">关闭</button>
-    </div>
+    <div class="modal-buttons"><button class="btn-cancel" onclick="closeModal('verifyModal')">关闭</button></div>
   </div>
 </div>
 
@@ -143,8 +207,48 @@ body.light .user-list-item{background:rgba(0,0,0,0.03);}
   <div class="modal-content">
     <h3 id="listTitle">列表</h3>
     <div id="listBody"></div>
+    <div class="modal-buttons"><button class="btn-cancel" onclick="closeModal('listModal')">关闭</button></div>
+  </div>
+</div>
+
+<div id="changePwdModal" class="modal-overlay" onclick="if(event.target===this)closeModal('changePwdModal')">
+  <div class="modal-content">
+    <h3>修改密码</h3>
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 12px 0;">验证码将发送至你当前绑定的邮箱</p>
+    <input type="text" id="pwdCode" placeholder="6位验证码" maxlength="6">
+    <button class="btn-confirm" style="width:100%;" id="pwdCodeBtn" onclick="sendPwdCode()">获取验证码</button>
+    <input type="password" id="newPwd" placeholder="新密码（至少6位）" style="margin-top:12px;">
+    <input type="password" id="newPwd2" placeholder="确认新密码">
     <div class="modal-buttons">
-      <button class="btn-cancel" onclick="closeModal('listModal')">关闭</button>
+      <button class="btn-cancel" onclick="closeModal('changePwdModal')">取消</button>
+      <button class="btn-confirm" onclick="submitChangePwd()">确认修改</button>
+    </div>
+    <p class="modal-status" id="pwdStatus"></p>
+  </div>
+</div>
+
+<div id="changeEmailModal" class="modal-overlay" onclick="if(event.target===this)closeModal('changeEmailModal')">
+  <div class="modal-content">
+    <h3>修改邮箱</h3>
+    <input type="email" id="newEmail" placeholder="新邮箱地址">
+    <input type="text" id="emailCode" placeholder="6位验证码" maxlength="6">
+    <button class="btn-confirm" style="width:100%;" id="emailCodeBtn" onclick="sendEmailCode()">获取验证码</button>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('changeEmailModal')">取消</button>
+      <button class="btn-confirm" onclick="submitChangeEmail()">确认修改</button>
+    </div>
+    <p class="modal-status" id="emailStatus"></p>
+  </div>
+</div>
+
+<div id="twoFAModal" class="modal-overlay" onclick="if(event.target===this)closeModal('twoFAModal')">
+  <div class="modal-content">
+    <h3 id="twoFATitle">开启双因素认证</h3>
+    <div id="twoFABody"></div>
+    <p class="modal-status" id="twoFAStatus"></p>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="cancel2FA()">取消</button>
+      <button class="btn-confirm" id="twoFAConfirmBtn" onclick="confirm2FA()">确认</button>
     </div>
   </div>
 </div>
@@ -161,13 +265,14 @@ const RESERVED_NAME="太空杀124";
 const RESERVED_OWNER_EMAIL="qwe18965540810@qq.com";
 
 let currentEmail="",myEmail="",myUid=null,myAccount="",targetProfile=null,isSelf=true;
+let myTwoFactorSecret="";
+let twoFAFlow={mode:"",secret:""};
 
 function $(id){return document.getElementById(id);}
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function toast(msg){
   var el=document.createElement("div");
-  el.className="toast-fixed";
-  el.textContent=msg;
+  el.className="toast-fixed";el.textContent=msg;
   document.body.appendChild(el);
   setTimeout(function(){document.body.removeChild(el);},2200);
 }
@@ -175,8 +280,7 @@ function openModal(id){$(id).classList.add("show");}
 function closeModal(id){$(id).classList.remove("show");}
 function maskEmail(e){
   if(!e)return"—";
-  var at=e.indexOf("@");
-  if(at<0)return e;
+  var at=e.indexOf("@");if(at<0)return e;
   var pre=e.substring(0,at),suf=e.substring(at);
   if(pre.length<=4)return pre+"***"+suf;
   return pre.substring(0,4)+"***"+suf;
@@ -193,11 +297,57 @@ function getTargetUidFromUrl(){
   if(uid&&/^\d+$/.test(uid))return parseInt(uid,10);
   return null;
 }
-function badgeHTML(badge,badgeText){
+function badgeHTML(badge){
   if(!badge)return "";
-  var letter = badge==="author"?"V":badge==="z"?"Z":badge==="s"?"S":badge==="a"?"A":"";
+  var letter=badge==="author"?"V":badge==="z"?"Z":badge==="s"?"S":badge==="a"?"A":"";
   var textMap={author:"官方",z:"10万粉认证",s:"百万粉认证",a:"企业认证"};
   return '<span class="badge badge-'+badge+'">'+letter+'</span><span class="badge-text badge-text-'+badge+'">'+escapeHtml(textMap[badge]||"")+'</span>';
+}
+
+function genBase32(len){
+  var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  var s="";
+  for(var i=0;i<len;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return s;
+}
+function base32Decode(str){
+  var alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  var bits="";
+  str=String(str||"").replace(/=+$/,"").toUpperCase();
+  for(var i=0;i<str.length;i++){
+    var v=alphabet.indexOf(str.charAt(i));
+    if(v<0)continue;
+    bits+=v.toString(2).padStart(5,"0");
+  }
+  var bytes=[];
+  for(var j=0;j+8<=bits.length;j+=8){
+    bytes.push(parseInt(bits.substring(j,j+8),2));
+  }
+  return bytes;
+}
+function genTOTP(secret,timeSec){
+  var t0=timeSec!==undefined?timeSec:Math.floor(Date.now()/1000);
+  var keyBytes=base32Decode(secret);
+  var counter=Math.floor(t0/30);
+  var high=Math.floor(counter/0x100000000);
+  var low=counter-high*0x100000000;
+  var msgBytes=[(high>>>24)&255,(high>>>16)&255,(high>>>8)&255,high&255,(low>>>24)&255,(low>>>16)&255,(low>>>8)&255,low&255];
+  var keyHex=keyBytes.map(function(b){return("0"+b.toString(16)).slice(-2);}).join("");
+  var msgHex=msgBytes.map(function(b){return("0"+b.toString(16)).slice(-2);}).join("");
+  var hmac=CryptoJS.HmacSHA1(CryptoJS.enc.Hex.parse(msgHex),CryptoJS.enc.Hex.parse(keyHex));
+  var hmacArray=Array.from(CryptoJS.enc.Hex.parse(hmac.toString()).words).reduce(function(acc,w){
+    return acc.concat([(w>>>24)&255,(w>>>16)&255,(w>>>8)&255,w&255]);
+  },[]);
+  var offset=hmacArray[hmacArray.length-1]&15;
+  var code=((hmacArray[offset]&127)<<24)|((hmacArray[offset+1]&255)<<16)|((hmacArray[offset+2]&255)<<8)|(hmacArray[offset+3]&255);
+  return String(code%1000000).padStart(6,"0");
+}
+function verifyTOTP(secret,code){
+  var now=Math.floor(Date.now()/1000);
+  for(var i=-1;i<=1;i++){
+    if(genTOTP(secret,now+i*30)===code)return true;
+  }
+  return false;
 }
 
 async function loadProfile(){
@@ -210,6 +360,7 @@ async function loadProfile(){
   if(!spr.data){$("loadingBox").textContent="无法获取自己的资料";return;}
   myUid=spr.data.uid;
   myAccount=spr.data.account||myEmail;
+  myTwoFactorSecret=spr.data.two_factor_secret||"";
 
   var targetUid=getTargetUidFromUrl();
   if(targetUid&&targetUid!==myUid){
@@ -234,7 +385,7 @@ async function loadProfile(){
   if(avatar){av.innerHTML='<img src="'+escapeHtml(avatar)+'">';}
   else{av.textContent=account.charAt(0).toUpperCase();}
 
-  $("nameBox").innerHTML=escapeHtml(account)+badgeHTML(targetProfile.badge,targetProfile.badge_text);
+  $("nameBox").innerHTML=escapeHtml(account)+badgeHTML(targetProfile.badge);
   $("uidBox").textContent=uid;
   $("emailBox").textContent=isSelf?currentEmail:maskEmail(currentEmail);
   $("genderBox").textContent=gender;
@@ -260,8 +411,9 @@ function renderSelfActions(){
   $("actionsBox").innerHTML=
     '<button class="btn-edit" onclick="openEdit()">编辑资料</button>'+
     '<button class="btn-verify" onclick="openVerify()">认证</button>'+
+    '<button class="btn-setting" onclick="showSettings()">设置</button>'+
     '<button class="btn-friend" onclick="location.href=\'friends.html\'">好友</button>'+
-    '<button class="btn-back" onclick="location.href=\'SpaceKill124_源代码.html\'">返回首页</button>';
+    '<button class="btn-back" onclick="location.href=\'SpaceKill124.html\'">返回首页</button>';
 }
 
 function renderOtherActions(){
@@ -272,15 +424,187 @@ function renderOtherActions(){
     '<button class="btn-back" onclick="history.back()">返回</button>';
 }
 
+function showView(id){
+  ["viewProfile","viewSettings","viewSecurity","viewDeactivate"].forEach(function(v){
+    $(v).style.display=(v===id)?"block":"none";
+  });
+  window.scrollTo(0,0);
+}
+function showSettings(){showView("viewSettings");}
+function backToProfile(){showView("viewProfile");}
+function backToSettings(){showView("viewSettings");}
+function showSecurity(){
+  $("secEmail").textContent=myEmail||"—";
+  $("sec2FAState").textContent=myTwoFactorSecret?"已开启":"未开启";
+  var btn=$("btn2FAToggle");
+  if(myTwoFactorSecret){btn.textContent="关闭双因素认证";btn.className="btn-2fa dis";}
+  else{btn.textContent="开启双因素认证";btn.className="btn-2fa";}
+  showView("viewSecurity");
+}
+function showDeactivate(){
+  $("deactName").textContent=myAccount||"—";
+  $("deactUid").textContent="UID: "+(myUid||"—");
+  showView("viewDeactivate");
+}
+function contactSupport(){
+  var subject=encodeURIComponent("账号问题咨询 - SpaceKill124");
+  var body=encodeURIComponent("我的账号名: "+myAccount+"\n我的UID: "+myUid+"\n\n问题描述:\n");
+  window.location.href="mailto:linjiayuan@spacekill124.cn?subject="+subject+"&body="+body;
+}
+function toggleDark(){
+  var light=!document.body.classList.contains("light");
+  document.body.classList.toggle("light",light);
+  localStorage.setItem("profile_light",light?"1":"0");
+  $("darkSwitch").classList.toggle("on",!light);
+}
+
+async function confirmDeactivate(){
+  if(!confirm("确定要注销账号吗？三天内重新登录可取消。"))return;
+  var nowIso=new Date().toISOString();
+  var r=await supabaseClient.from("profiles").update({pending_deactivation_at:nowIso}).eq("uid",myUid);
+  if(r.error){alert("注销失败: "+r.error.message);return;}
+  try{
+    await fetch(SUPABASE_URL+"/functions/v1/send-notification",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"account_deactivating",to:myEmail,data:{account:myAccount,uid:myUid,time:new Date().toLocaleString("zh-CN")}})});
+  }catch(e){}
+  alert("已开始注销，三日后完成注销。你已被自动退出登录。\n重新登录可取消注销。");
+  await supabaseClient.auth.signOut();
+  ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(function(k){localStorage.removeItem(k);});
+  window.location.replace(AUTH_PAGE_URL);
+}
+
+function openChangePassword(){
+  openModal("changePwdModal");
+  $("pwdCode").value="";$("newPwd").value="";$("newPwd2").value="";
+  $("pwdStatus").textContent="";
+  $("pwdCodeBtn").disabled=false;$("pwdCodeBtn").textContent="获取验证码";
+}
+async function sendPwdCode(){
+  var btn=$("pwdCodeBtn");var status=$("pwdStatus");
+  btn.disabled=true;btn.textContent="发送中...";
+  var r=await supabaseClient.auth.signInWithOtp({email:myEmail});
+  if(r.error){status.textContent="发送失败: "+r.error.message;status.style.color="#ef4444";btn.disabled=false;btn.textContent="获取验证码";return;}
+  status.textContent="验证码已发送至当前邮箱";status.style.color="#10b981";
+  btn.textContent="重新发送";
+  var cd=60;var timer=setInterval(function(){cd--;if(cd<=0){clearInterval(timer);btn.disabled=false;btn.textContent="重新发送";}else{btn.textContent=cd+"s";}},1000);
+}
+async function submitChangePwd(){
+  var code=$("pwdCode").value.trim();
+  var p1=$("newPwd").value,p2=$("newPwd2").value;
+  var status=$("pwdStatus");
+  if(!code||code.length!==6){status.textContent="请输入6位验证码";status.style.color="#ef4444";return;}
+  if(!p1||p1.length<6){status.textContent="新密码至少6位";status.style.color="#ef4444";return;}
+  if(p1!==p2){status.textContent="两次密码不一致";status.style.color="#ef4444";return;}
+  status.textContent="验证中...";
+  var v=await supabaseClient.auth.verifyOtp({email:myEmail,token:code,type:"email"});
+  if(v.error){status.textContent="验证失败: "+v.error.message;status.style.color="#ef4444";return;}
+  var u=await supabaseClient.auth.updateUser({password:p1});
+  if(u.error){status.textContent="修改失败: "+u.error.message;status.style.color="#ef4444";return;}
+  status.textContent="密码修改成功！";status.style.color="#10b981";
+  setTimeout(function(){closeModal("changePwdModal");},1200);
+}
+
+var pendingNewEmail="";
+function openChangeEmail(){
+  openModal("changeEmailModal");
+  $("newEmail").value="";$("emailCode").value="";
+  $("emailStatus").textContent="";
+  $("emailCodeBtn").disabled=false;$("emailCodeBtn").textContent="获取验证码";
+  pendingNewEmail="";
+}
+async function sendEmailCode(){
+  var newEmail=$("newEmail").value.trim();
+  var btn=$("emailCodeBtn"),status=$("emailStatus");
+  if(!newEmail){status.textContent="请先输入新邮箱";status.style.color="#ef4444";return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){status.textContent="邮箱格式不正确";status.style.color="#ef4444";return;}
+  if(newEmail===myEmail){status.textContent="新邮箱与当前邮箱相同";status.style.color="#ef4444";return;}
+  btn.disabled=true;btn.textContent="发送中...";
+  var r=await supabaseClient.auth.signInWithOtp({email:newEmail});
+  if(r.error){status.textContent="发送失败: "+r.error.message;status.style.color="#ef4444";btn.disabled=false;btn.textContent="获取验证码";return;}
+  pendingNewEmail=newEmail;
+  status.textContent="验证码已发送至新邮箱";status.style.color="#10b981";
+  btn.textContent="重新发送";
+  var cd=60;var timer=setInterval(function(){cd--;if(cd<=0){clearInterval(timer);btn.disabled=false;btn.textContent="重新发送";}else{btn.textContent=cd+"s";}},1000);
+}
+async function submitChangeEmail(){
+  var newEmail=$("newEmail").value.trim();
+  var code=$("emailCode").value.trim();
+  var status=$("emailStatus");
+  if(!newEmail){status.textContent="请输入新邮箱";status.style.color="#ef4444";return;}
+  if(!code||code.length!==6){status.textContent="请输入6位验证码";status.style.color="#ef4444";return;}
+  if(pendingNewEmail!==newEmail){status.textContent="请先获取验证码";status.style.color="#ef4444";return;}
+  status.textContent="验证中...";
+  var v=await supabaseClient.auth.verifyOtp({email:newEmail,token:code,type:"email"});
+  if(v.error){status.textContent="验证失败: "+v.error.message;status.style.color="#ef4444";return;}
+  try{
+    var res=await fetch(SUPABASE_URL+"/functions/v1/update-email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:"",new_email:newEmail,old_email:myEmail})});
+    if(!res.ok){var txt=await res.text();status.textContent="修改失败: "+txt;status.style.color="#ef4444";return;}
+  }catch(e){status.textContent="修改失败: "+e.message;status.style.color="#ef4444";return;}
+  status.textContent="邮箱修改成功！";status.style.color="#10b981";
+  myEmail=newEmail;
+  localStorage.setItem("email",newEmail);
+  $("emailBox").textContent=newEmail;
+  $("secEmail").textContent=newEmail;
+  setTimeout(function(){closeModal("changeEmailModal");},1200);
+}
+
+async function toggle2FA(){
+  if(myTwoFactorSecret){
+    openModal("twoFAModal");
+    $("twoFATitle").textContent="关闭双因素认证";
+    $("twoFABody").innerHTML='<p style="font-size:13px;color:#94a3b8;margin-bottom:12px;">请输入当前动态验证码以关闭</p><input type="text" id="twoFACode" placeholder="6位动态验证码" maxlength="6" style="text-align:center;letter-spacing:4px;font-size:18px;">';
+    $("twoFAStatus").textContent="";
+    twoFAFlow={mode:"disable",secret:myTwoFactorSecret};
+  }else{
+    var secret=genBase32(32);
+    twoFAFlow={mode:"enable",secret:secret};
+    var otpauth="otpauth://totp/SpaceKill124:"+encodeURIComponent(myEmail)+"?secret="+secret+"&issuer=SpaceKill124&algorithm=SHA1&digits=6&period=30";
+    var canvasId="qrCanvas2FA";
+    var html='<p style="font-size:13px;color:#94a3b8;margin-bottom:12px;">使用验证器 App（Google Authenticator、微软身份验证器、FreeOTP 等）扫描下方二维码，或手动输入密钥</p>'+
+      '<div class="qr-box"><canvas id="'+canvasId+'"></canvas></div>'+
+      '<div class="secret-line" id="secretText">'+secret+'</div>'+
+      '<p style="font-size:13px;color:#94a3b8;margin-bottom:8px;">输入 App 上显示的 6 位动态码</p>'+
+      '<input type="text" id="twoFACode" placeholder="6位动态验证码" maxlength="6" style="text-align:center;letter-spacing:4px;font-size:18px;">';
+    openModal("twoFAModal");
+    $("twoFATitle").textContent="开启双因素认证";
+    $("twoFABody").innerHTML=html;
+    $("twoFAStatus").textContent="";
+    if(window.QRCode&&window.QRCode.toCanvas){
+      setTimeout(function(){
+        window.QRCode.toCanvas($(canvasId),otpauth,{width:200,margin:1},function(err){if(err)console.error(err);});
+      },50);
+    }
+  }
+}
+
+async function confirm2FA(){
+  var code=$("twoFACode")?$("twoFACode").value.trim():"";
+  var status=$("twoFAStatus");
+  if(!code||code.length!==6){status.textContent="请输入6位动态验证码";status.style.color="#ef4444";return;}
+  if(!verifyTOTP(twoFAFlow.secret,code)){status.textContent="验证码错误，请重试";status.style.color="#ef4444";return;}
+  if(twoFAFlow.mode==="enable"){
+    var r=await supabaseClient.from("profiles").update({two_factor_secret:twoFAFlow.secret}).eq("email",myEmail);
+    if(r.error){status.textContent="保存失败: "+r.error.message;status.style.color="#ef4444";return;}
+    myTwoFactorSecret=twoFAFlow.secret;
+    status.textContent="开启成功！";status.style.color="#10b981";
+    toast("双因素认证已开启");
+  }else{
+    var r2=await supabaseClient.from("profiles").update({two_factor_secret:""}).eq("email",myEmail);
+    if(r2.error){status.textContent="关闭失败: "+r2.error.message;status.style.color="#ef4444";return;}
+    myTwoFactorSecret="";
+    status.textContent="已关闭";status.style.color="#10b981";
+    toast("双因素认证已关闭");
+  }
+  setTimeout(function(){closeModal("twoFAModal");showSecurity();},900);
+}
+
+function cancel2FA(){closeModal("twoFAModal");twoFAFlow={mode:"",secret:""};}
+
 async function toggleFollow(){
   if(!myEmail){toast("请先登录");return;}
   var followed=localStorage.getItem("follow_"+currentEmail)==="1";
   var newFollowed=!followed;
-  if(newFollowed){
-    await supabaseClient.from("diy_follows").insert([{follower_email:myEmail,target_email:currentEmail}]);
-  }else{
-    await supabaseClient.from("diy_follows").delete().eq("follower_email",myEmail).eq("target_email",currentEmail);
-  }
+  if(newFollowed)await supabaseClient.from("diy_follows").insert([{follower_email:myEmail,target_email:currentEmail}]);
+  else await supabaseClient.from("diy_follows").delete().eq("follower_email",myEmail).eq("target_email",currentEmail);
   localStorage.setItem("follow_"+currentEmail,newFollowed?"1":"0");
   var btn=$("followBtn");
   btn.textContent=newFollowed?"已关注":"关注";
@@ -305,7 +629,6 @@ async function openFollowersList(){
     return '<div class="user-list-item"><div class="user-list-avatar">'+av+'</div><div class="user-list-name">'+escapeHtml(name)+'</div></div>';
   }).join("");
 }
-
 async function openFollowingList(){
   $("listTitle").textContent="关注";
   $("listBody").innerHTML='<div class="loading" style="padding:20px;">加载中...</div>';
@@ -347,29 +670,17 @@ async function openVerify(){
   $("verifyList").innerHTML=html;
   $("verifyStatus").textContent="当前粉丝数："+followers;
 }
-
 async function applyVerify(badge){
-  var statusEl=$("verifyStatus");
-  statusEl.textContent="提交中...";
-  statusEl.style.color="#94a3b8";
+  var statusEl=$("verifyStatus");statusEl.textContent="提交中...";statusEl.style.color="#94a3b8";
   var existing=await supabaseClient.from("verify_requests").select("id").eq("user_email",myEmail).eq("status","pending").maybeSingle();
   if(existing.data){statusEl.textContent="你已有待审核的认证申请";statusEl.style.color="#f59e0b";return;}
   var fr=await supabaseClient.from("diy_follows").select("*",{count:"exact",head:true}).eq("target_email",myEmail);
   var followers=fr.count||0;
-  var r=await supabaseClient.from("verify_requests").insert([{
-    user_email:myEmail,
-    user_uid:myUid,
-    user_account:myAccount,
-    badge:badge,
-    followers:followers,
-    status:"pending"
-  }]);
+  var r=await supabaseClient.from("verify_requests").insert([{user_email:myEmail,user_uid:myUid,user_account:myAccount,badge:badge,followers:followers,status:"pending"}]);
   if(r.error){statusEl.textContent="提交失败: "+r.error.message;statusEl.style.color="#ef4444";return;}
-  statusEl.textContent="已提交申请，请等待审核";
-  statusEl.style.color="#10b981";
+  statusEl.textContent="已提交申请，请等待审核";statusEl.style.color="#10b981";
   setTimeout(function(){closeModal("verifyModal");loadProfile();},1200);
 }
-
 async function checkVerifyNotification(){
   var r=await supabaseClient.from("verify_notifications").select("*").eq("user_email",myEmail).eq("read",false).order("created_at",{ascending:false}).limit(1);
   if(!r.data||r.data.length===0)return;
@@ -386,7 +697,6 @@ function openEdit(){
   $("editBio").value=localStorage.getItem("bio")||"";
   $("editStatus").textContent="";
 }
-
 async function saveEdit(){
   var account=$("editAccount").value.trim();
   var gender=$("editGender").value;
@@ -398,30 +708,29 @@ async function saveEdit(){
   $("editStatus").textContent="保存中...";
   var r=await supabaseClient.from("profiles").update({account:account,gender:gender,bio:bio}).eq("email",myEmail);
   if(r.error){$("editStatus").textContent="保存失败: "+r.error.message;$("editStatus").style.color="#ef4444";return;}
-  localStorage.setItem("account",account);
-  localStorage.setItem("gender",gender);
-  localStorage.setItem("bio",bio);
-  $("editStatus").textContent="保存成功！";
-  $("editStatus").style.color="#10b981";
+  localStorage.setItem("account",account);localStorage.setItem("gender",gender);localStorage.setItem("bio",bio);
+  $("editStatus").textContent="保存成功！";$("editStatus").style.color="#10b981";
   setTimeout(function(){closeModal("editModal");location.reload();},600);
 }
-
 async function submitReport(){
   var reason=$("reportReason").value.trim();
   if(!reason){$("reportStatus").textContent="请填写举报理由";$("reportStatus").style.color="#ef4444";return;}
   $("reportStatus").textContent="提交中...";
   var r=await supabaseClient.from("reports").insert([{reporter_uid:myUid,reporter_email:myEmail,target_uid:targetProfile.uid,target_email:targetProfile.email,reason:reason}]).select().single();
   if(r.error){$("reportStatus").textContent="提交失败: "+r.error.message;$("reportStatus").style.color="#ef4444";return;}
-  try{
-    await fetch(SUPABASE_URL+"/functions/v1/report_handler",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({report_id:r.data.id,target_uid:targetProfile.uid})});
-  }catch(e){}
-  $("reportStatus").textContent="举报已提交";
-  $("reportStatus").style.color="#10b981";
+  try{await fetch(SUPABASE_URL+"/functions/v1/report_handler",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({report_id:r.data.id,target_uid:targetProfile.uid})});}catch(e){}
+  $("reportStatus").textContent="举报已提交";$("reportStatus").style.color="#10b981";
   setTimeout(function(){closeModal("reportModal");},1000);
+}
+async function doLogout(){
+  if(supabaseClient){try{await supabaseClient.auth.signOut();}catch(e){}}
+  ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(function(k){localStorage.removeItem(k);});
+  window.location.replace(AUTH_PAGE_URL);
 }
 
 window.addEventListener("DOMContentLoaded",function(){
   if(localStorage.getItem(AUTH_KEY)!=="true"){window.location.replace(AUTH_PAGE_URL);return;}
+  if(localStorage.getItem("profile_light")==="1")document.body.classList.add("light");
   loadProfile();
 });
 </script>
