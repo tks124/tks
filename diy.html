@@ -8,8 +8,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f5f7fb;--card:#ffffff;--text:#111418;--muted:#6b7280;--line:rgba(17,20,24,.09);--primary:#0a6cff;--primary2:#4a9bff;--shadow:0 6px 20px rgba(16,32,64,.08);--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);}
 body.dark{--bg:#0f1115;--card:#181b21;--text:#eceff4;--muted:#98a2b3;--line:rgba(255,255,255,.1);--shadow:0 6px 22px rgba(0,0,0,.45);}
-html{scroll-behavior:smooth;}
-html,body{width:100%;}
+html{scroll-behavior:smooth;}html,body{width:100%;}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;}
 body.locked{overflow:hidden;}
 #topBar{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--card);border-bottom:1px solid var(--line);padding:calc(8px + var(--sat)) 14px 8px;display:flex;justify-content:space-between;align-items:center;}
@@ -74,9 +73,7 @@ body.dark .diy-card .d-menu{background:rgba(255,255,255,.1);color:#fff;}
 body.admin .diy-card .d-menu{display:flex;align-items:center;justify-content:center;}
 .badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;line-height:1;}
 .badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;animation:firePulse 1.6s ease-in-out infinite;}
-.badge-z{background:#2196f3;}
-.badge-s{background:#ffc107;}
-.badge-a{background:#e53935;}
+.badge-z{background:#2196f3;}.badge-s{background:#ffc107;}.badge-a{background:#e53935;}
 @keyframes firePulse{0%,100%{box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}50%{box-shadow:0 0 6px #ff5722,0 0 14px #ff9800,0 0 22px #ff5722;}}
 .badge-text{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;background:#f0f7ff;color:#2196f3;margin-left:2px;}
 .badge-text-author{background:#fff3e0;color:#e65100;}
@@ -88,18 +85,18 @@ body.admin .diy-card .d-menu{display:flex;align-items:center;justify-content:cen
 .game-row .arr{color:var(--muted);font-size:18px;}
 #addGameBtn{position:fixed;top:calc(56px + var(--sat));right:14px;z-index:1200;width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#10b981,#059669);color:#fff;border:none;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 6px 16px rgba(16,185,129,.4);display:none;}
 body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
+#grantVerifyBtn{position:fixed;top:calc(56px + var(--sat));right:14px;z-index:1200;width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#8b5cf6,#7c3aed);color:#fff;border:none;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 6px 16px rgba(139,92,246,.5);display:none;align-items:center;justify-content:center;}
+body.admin #grantVerifyBtn{display:flex;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1500;justify-content:center;align-items:center;padding:20px;}
 .modal-overlay.show{display:flex;}
-.modal-content{background:var(--card);border-radius:14px;padding:24px;width:100%;max-width:340px;color:var(--text);max-height:80vh;overflow-y:auto;}
+.modal-content{background:var(--card);border-radius:14px;padding:24px;width:100%;max-width:380px;color:var(--text);max-height:80vh;overflow-y:auto;}
 .modal-content h3{font-size:17px;margin-bottom:16px;text-align:center;}
-.modal-content input,.modal-content textarea{width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;}
+.modal-content input,.modal-content textarea,.modal-content select{width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;}
 .modal-content textarea{min-height:90px;resize:vertical;}
 .modal-buttons{display:flex;gap:10px;}
 .modal-buttons button{flex:1;padding:11px;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-weight:bold;color:#fff;}
-.btn-cancel{background:#64748b;}
-.btn-confirm{background:#10b981;}
-.btn-danger{background:#ef4444;}
-.btn-warn{background:#f59e0b;}
+.btn-cancel{background:#64748b;}.btn-confirm{background:#10b981;}.btn-danger{background:#ef4444;}.btn-warn{background:#f59e0b;}
+.modal-status{font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
 .comment-list{max-height:400px;overflow-y:auto;margin-bottom:12px;}
 .comment-item{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
 .comment-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;}
@@ -112,11 +109,11 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
 .admin-menu-box button:last-child{margin-bottom:0;}
 .review-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);}
 .review-card img{width:100%;border-radius:10px;margin:10px 0;}
-.review-card .r-info{font-size:13px;color:var(--muted);margin-bottom:6px;}
-.review-card .r-title{font-size:16px;font-weight:bold;margin-bottom:6px;}
+.review-card .r-info{font-size:13px;color:var(--muted);margin-bottom:6px;word-break:break-word;}
+.review-card .r-title{font-size:16px;font-weight:bold;margin-bottom:6px;word-break:break-word;}
 .review-card .r-text{font-size:13px;color:var(--text);line-height:1.6;max-height:200px;overflow-y:auto;white-space:pre-wrap;padding:10px;background:var(--bg);border-radius:8px;margin:10px 0;}
-.review-card .r-actions{display:flex;gap:8px;margin-top:10px;}
-.review-card .r-actions button{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:bold;color:#fff;cursor:pointer;}
+.review-card .r-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.review-card .r-actions button{flex:1;min-width:70px;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:bold;color:#fff;cursor:pointer;}
 .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px;}
 #searchBox{width:100%;padding:12px 16px;margin-bottom:16px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font-size:14px;}
 #toast{position:fixed;left:50%;bottom:calc(60px + var(--sab));transform:translate(-50%,20px);max-width:80vw;background:rgba(18,22,30,.92);color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:2700;}
@@ -139,11 +136,13 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
 </div>
 <button id="menuBtn">☰</button>
 <button id="addGameBtn" title="添加新游戏">+</button>
+<button id="grantVerifyBtn" title="授予官方认证">+</button>
 <div id="sidebar">
   <h2>菜单</h2>
   <button class="side-btn" onclick="goPage('page-home')">主页</button>
   <button class="side-btn" onclick="goPublic()">已公开的DIY</button>
   <button class="side-btn" onclick="goUpload()">上传DIY</button>
+  <button class="side-btn" onclick="goOfficialList()">官方公告</button>
   <button class="side-btn" onclick="openOfficialPost()" id="officialPostBtn" style="display:none;">官号发布</button>
   <button class="side-btn" id="themeBtn"><span>夜间模式</span><span class="switch" id="switchEl"></span></button>
   <button class="side-btn" id="reviewBtn" style="display:none;" onclick="goReview()">审核</button>
@@ -153,9 +152,10 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
 <div class="page active" id="page-home">
   <h1>DIY 收集站</h1>
   <p class="sub">欢迎来到太空杀124 DIY合集</p>
-  <button class="big-btn" onclick="window.location.href='SpaceKill124_源代码.html'">返回主站</button>
+  <button class="big-btn" onclick="window.location.href='SpaceKill124.html'">返回主站</button>
   <button class="big-btn" onclick="goUpload()">上传DIY</button>
   <button class="big-btn" onclick="goPublic()">已公开的DIY</button>
+  <button class="big-btn" onclick="goOfficialList()">官方公告</button>
 </div>
 
 <div class="page" id="page-upload">
@@ -188,12 +188,20 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
   <div class="grid-list" id="diyGrid"></div>
 </div>
 
+<div class="page" id="page-official-list">
+  <button class="back-btn" onclick="goPage('page-home')">← 返回</button>
+  <h1>官方公告</h1>
+  <p class="sub">由 SpaceKill124 官方发布</p>
+  <div id="officialList"></div>
+</div>
+
 <div class="page" id="page-review-select">
   <button class="back-btn" onclick="goPage('page-home')">← 返回</button>
   <h1>审核中心</h1>
   <p class="sub">选择要审核的内容</p>
   <button class="big-btn" onclick="goReviewDiy()">审核 DIY 内容</button>
   <button class="big-btn" onclick="goReviewVerify()">审核认证标识</button>
+  <button class="big-btn" onclick="goReviewReport()">审核举报</button>
 </div>
 
 <div class="page" id="page-review">
@@ -206,6 +214,12 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
   <button class="back-btn" onclick="goReview()">← 返回</button>
   <h1>认证审核</h1>
   <div class="grid-list" id="verifyReviewGrid"></div>
+</div>
+
+<div class="page" id="page-report-review">
+  <button class="back-btn" onclick="goReview()">← 返回</button>
+  <h1>审核举报</h1>
+  <div class="grid-list" id="reportReviewGrid"></div>
 </div>
 
 <div class="page" id="page-official">
@@ -230,6 +244,45 @@ body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
       <button class="btn-cancel" onclick="closeModal('addGameModal')">取消</button>
       <button class="btn-confirm" onclick="createGame()">确定</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="grantVerifyModal">
+  <div class="modal-content">
+    <h3>授予官方认证</h3>
+    <input id="gvUid" placeholder="输入用户 UID" type="number" inputmode="numeric">
+    <select id="gvBadge">
+      <option value="author">官方认证 · 作者</option>
+      <option value="z">10万粉认证</option>
+      <option value="s">百万粉认证</option>
+      <option value="a">企业认证</option>
+    </select>
+    <input id="gvText" placeholder="企业/政府名称（仅企业认证需要）" style="display:none;">
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('grantVerifyModal')">取消</button>
+      <button class="btn-confirm" onclick="doGrantVerify()">确认</button>
+    </div>
+    <p class="modal-status" id="gvStatus"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="banModal">
+  <div class="modal-content">
+    <h3>封禁用户</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">快捷选择：</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button type="button" class="btn-warn" data-days="1" style="padding:8px 14px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">1 天</button>
+      <button type="button" class="btn-warn" data-days="7" style="padding:8px 14px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">7 天</button>
+      <button type="button" class="btn-warn" data-days="30" style="padding:8px 14px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">30 天</button>
+      <button type="button" class="btn-danger" data-days="0" style="padding:8px 14px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;">永久</button>
+    </div>
+    <input id="banDays" placeholder="自定义天数（输入 0 表示永久）" type="number" min="0" inputmode="numeric">
+    <textarea id="banReason" placeholder="封禁原因"></textarea>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('banModal')">取消</button>
+      <button class="btn-danger" onclick="doBan()">确认封禁</button>
+    </div>
+    <p class="modal-status" id="banStatus"></p>
   </div>
 </div>
 
@@ -316,6 +369,8 @@ let currentCommentItemId = null;
 let currentShareItem = null;
 let pendingReasonAction = null;
 let pendingVerifyRejectId = null;
+let pendingBanTargetUid = null;
+let pendingBanReportId = null;
 let pendingLikes = {};
 let pendingFollows = {};
 let likesCache = {};
@@ -325,23 +380,8 @@ function $(id){return document.getElementById(id);}
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function fmtTime(t){if(!t)return"";return new Date(t).toLocaleString("zh-CN");}
 function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),2000);}
-function maskedEmail(email){
-  if(!email)return"—";
-  var at=email.indexOf("@");
-  if(at<0)return email;
-  var pre=email.substring(0,at);
-  var suf=email.substring(at);
-  if(pre.length<=4)return pre+"***"+suf;
-  return pre.substring(0,4)+"***"+suf;
-}
-function containsBanWord(text){
-  if(!text)return false;
-  var t=String(text).toLowerCase();
-  for(var i=0;i<BAN_KEYWORDS.length;i++){
-    if(t.indexOf(BAN_KEYWORDS[i].toLowerCase())>-1)return true;
-  }
-  return false;
-}
+function maskedEmail(email){if(!email)return"—";var at=email.indexOf("@");if(at<0)return email;var pre=email.substring(0,at);var suf=email.substring(at);if(pre.length<=4)return pre+"***"+suf;return pre.substring(0,4)+"***"+suf;}
+function containsBanWord(text){if(!text)return false;var t=String(text).toLowerCase();for(var i=0;i<BAN_KEYWORDS.length;i++){if(t.indexOf(BAN_KEYWORDS[i].toLowerCase())>-1)return true;}return false;}
 function getBadgeHTML(badge,badgeText){
   if(!badge)return "";
   var letter = badge==="author"?"V":badge==="z"?"Z":badge==="s"?"S":badge==="a"?"A":"";
@@ -350,55 +390,17 @@ function getBadgeHTML(badge,badgeText){
   var text = textMap[badge]||"";
   return '<span class="'+cls+'">'+letter+'</span><span class="badge-text badge-text-'+badge+'">'+escapeHtml(text)+'</span>';
 }
-
-function showLoading(label){
-  $("loadingLabel").textContent = label || "加载中…";
-  $("loadingFill").style.width = "0%";
-  $("loadingPct").textContent = "0%";
-  $("loadingModal").classList.add("show");
-  var v = 0;
-  var timer = setInterval(function(){
-    v += Math.random()*8 + 4;
-    if(v >= 90){v = 90;clearInterval(timer);}
-    $("loadingFill").style.width = v + "%";
-    $("loadingPct").textContent = Math.round(v) + "%";
-  }, 120);
-  $("loadingModal")._timer = timer;
-}
-function hideLoading(){
-  clearInterval($("loadingModal")._timer);
-  $("loadingFill").style.width = "100%";
-  $("loadingPct").textContent = "100%";
-  setTimeout(function(){$("loadingModal").classList.remove("show");}, 200);
-}
-
-function updateProgressBar(){
-  var h = document.documentElement.scrollHeight;
-  var wh = window.innerHeight;
-  var pct = h > wh ? (window.scrollY / (h - wh)) * 100 : 0;
-  $("progressBar").style.width = Math.min(100, Math.max(0, pct)) + "%";
-}
+function showLoading(label){$("loadingLabel").textContent = label || "加载中…";$("loadingFill").style.width = "0%";$("loadingPct").textContent = "0%";$("loadingModal").classList.add("show");var v = 0;var timer = setInterval(function(){v += Math.random()*8 + 4;if(v >= 90){v = 90;clearInterval(timer);}$("loadingFill").style.width = v + "%";$("loadingPct").textContent = Math.round(v) + "%";}, 120);$("loadingModal")._timer = timer;}
+function hideLoading(){clearInterval($("loadingModal")._timer);$("loadingFill").style.width = "100%";$("loadingPct").textContent = "100%";setTimeout(function(){$("loadingModal").classList.remove("show");}, 200);}
+function updateProgressBar(){var h = document.documentElement.scrollHeight;var wh = window.innerHeight;var pct = h > wh ? (window.scrollY / (h - wh)) * 100 : 0;$("progressBar").style.width = Math.min(100, Math.max(0, pct)) + "%";}
 window.addEventListener("scroll", updateProgressBar, {passive:true});
 window.addEventListener("resize", updateProgressBar);
-
-function goPage(id){
-  var pages = document.querySelectorAll(".page");
-  for(var i=0;i<pages.length;i++){pages[i].classList.toggle("active", pages[i].id === id);}
-  window.scrollTo(0,0);
-  closeSidebar();
-}
+function goPage(id){var pages = document.querySelectorAll(".page");for(var i=0;i<pages.length;i++){pages[i].classList.toggle("active", pages[i].id === id);}window.scrollTo(0,0);closeSidebar();}
 function openSidebar(){$("sidebar").classList.add("open");$("overlay").classList.add("show");}
 function closeSidebar(){$("sidebar").classList.remove("open");$("overlay").classList.remove("show");}
 $("menuBtn").addEventListener("click", function(e){e.stopPropagation();openSidebar();});
 $("overlay").addEventListener("click", closeSidebar);
-
-$("themeBtn").addEventListener("click", function(){
-  var dark = !document.body.classList.contains("dark");
-  document.body.classList.toggle("dark", dark);
-  $("switchEl").classList.toggle("on", dark);
-  localStorage.setItem("diy_dark", dark ? "1" : "0");
-});
-
+$("themeBtn").addEventListener("click", function(){var dark = !document.body.classList.contains("dark");document.body.classList.toggle("dark", dark);$("switchEl").classList.toggle("on", dark);localStorage.setItem("diy_dark", dark ? "1" : "0");});
 function openModal(id){$(id).classList.add("show");}
 function closeModal(id){$(id).classList.remove("show");}
 $("alertOkBtn").addEventListener("click", function(){closeModal("alertModal");});
@@ -410,27 +412,13 @@ async function init(){
   if(session && session.user){
     myEmail = session.user.email;
     var pr = await supabaseClient.from("profiles").select("*").eq("email", myEmail).maybeSingle();
-    if(pr.data){
-      myUid = pr.data.uid;
-      myAccount = pr.data.account || myEmail;
-      myAvatar = pr.data.avatar || "";
-    }
+    if(pr.data){myUid = pr.data.uid;myAccount = pr.data.account || myEmail;myAvatar = pr.data.avatar || "";}
     $("userDisplay").innerHTML = "已登录: <span>" + escapeHtml(myAccount || myEmail) + "</span>";
     isAdmin = (myEmail === ADMIN_EMAIL);
-  }else{
-    $("userDisplay").textContent = "未登录";
-    isAdmin = false;
-  }
-  if(isAdmin){
-    document.body.classList.add("admin");
-    $("reviewBtn").style.display = "flex";
-    $("officialPostBtn").style.display = "flex";
-  }
+  }else{$("userDisplay").textContent = "未登录";isAdmin = false;}
+  if(isAdmin){document.body.classList.add("admin");$("reviewBtn").style.display = "flex";$("officialPostBtn").style.display = "flex";}
   var darkSaved = localStorage.getItem("diy_dark") === "1";
-  if(darkSaved){
-    document.body.classList.add("dark");
-    $("switchEl").classList.add("on");
-  }
+  if(darkSaved){document.body.classList.add("dark");$("switchEl").classList.add("on");}
   await loadGameList();
   await handleShareLink();
 }
@@ -442,19 +430,10 @@ async function loadGameList(){
   var dl = $("gameList");
   dl.innerHTML = games.map(function(g){return '<option value="'+escapeHtml(g.name)+'">';}).join("");
   var box = $("gameListBox");
-  if(games.length === 0){
-    box.innerHTML = '<div class="empty">还没有分类，请先由管理员添加</div>';
-    return;
-  }
-  box.innerHTML = games.map(function(g){
-    return '<button class="game-row" data-game="'+escapeHtml(g.name)+'"><span>'+escapeHtml(g.name)+'</span><span class="arr">›</span></button>';
-  }).join("");
+  if(games.length === 0){box.innerHTML = '<div class="empty">还没有分类，请先由管理员添加</div>';return;}
+  box.innerHTML = games.map(function(g){return '<button class="game-row" data-game="'+escapeHtml(g.name)+'"><span>'+escapeHtml(g.name)+'</span><span class="arr">›</span></button>';}).join("");
   var rows = box.querySelectorAll(".game-row");
-  for(var i=0;i<rows.length;i++){
-    (function(btn){
-      btn.addEventListener("click", function(){openGame(btn.dataset.game);});
-    })(rows[i]);
-  }
+  for(var i=0;i<rows.length;i++){(function(btn){btn.addEventListener("click", function(){openGame(btn.dataset.game);});})(rows[i]);}
 }
 
 function goPublic(){goPage("page-public");loadGameList();}
@@ -462,34 +441,68 @@ function goUpload(){goPage("page-upload");}
 function goReview(){goPage("page-review-select");}
 function goReviewDiy(){goPage("page-review");loadReview();}
 function goReviewVerify(){goPage("page-verify-review");loadVerifyReview();}
+function goReviewReport(){goPage("page-report-review");loadReportReview();}
 function openOfficialPost(){$("offText").value="";$("offFileName").textContent="";$("offImgInput").value="";$("offFileInput").value="";goPage("page-official");}
 
-$("addGameBtn").addEventListener("click", function(){
-  $("newGameName").value = "";
-  openModal("addGameModal");
-});
-
-async function createGame(){
-  var name = $("newGameName").value.trim();
-  if(!name){toast("请输入名称");return;}
-  var res = await supabaseClient.from("diy_games").insert([{name:name}]);
-  if(res.error){toast("失败: " + res.error.message);return;}
-  closeModal("addGameModal");
-  await loadGameList();
-  toast("已添加");
+function goOfficialList(){
+  goPage("page-official-list");
+  loadOfficialList();
 }
 
-async function openGame(game){
-  currentGame = game;
-  $("gameTitle").textContent = game;
-  $("searchBox").value = "";
-  goPage("page-game");
-  await loadGameItems(game, "");
+async function loadOfficialList(){
+  var box=$("officialList");
+  box.innerHTML='<div class="empty">加载中...</div>';
+  var r=await supabaseClient.from("official_posts").select("*").order("created_at",{ascending:false}).limit(100);
+  if(r.error){box.innerHTML='<div class="empty">加载失败: '+escapeHtml(r.error.message)+'</div>';return;}
+  if(!r.data||r.data.length===0){box.innerHTML='<div class="empty">官方还没有发布任何内容</div>';return;}
+  box.innerHTML=r.data.map(function(p){
+    var body="";
+    if(p.text_content)body+='<div style="font-size:14px;line-height:1.7;margin-bottom:10px;white-space:pre-wrap;word-break:break-word;">'+escapeHtml(p.text_content)+'</div>';
+    if(p.image_url)body+='<img src="'+escapeHtml(p.image_url)+'" style="width:100%;border-radius:10px;margin-bottom:10px;display:block;">';
+    var dl="";
+    if(p.file_url)dl='<a href="'+escapeHtml(p.file_url)+'" download style="display:inline-block;padding:8px 14px;background:#fbbf24;color:#7c2d12;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold;margin-bottom:10px;">下载 '+escapeHtml(p.file_name||"文件")+'</a>';
+    var type=p.content_type==="image"?"官方图片":(p.content_type==="file"?"官方文件":"官方动态");
+    return '<div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);">'+
+      '<div style="font-size:13px;color:var(--primary);font-weight:bold;margin-bottom:8px;">'+escapeHtml(type)+'</div>'+
+      body+dl+
+      '<div style="font-size:11px;color:var(--muted);margin-top:6px;">'+fmtTime(p.created_at)+'</div>'+
+    '</div>';
+  }).join("");
 }
 
-$("searchBox").addEventListener("input", function(){
-  loadGameItems(currentGame, $("searchBox").value.trim());
+$("addGameBtn").addEventListener("click", function(){$("newGameName").value = "";openModal("addGameModal");});
+async function createGame(){var name = $("newGameName").value.trim();if(!name){toast("请输入名称");return;}var res = await supabaseClient.from("diy_games").insert([{name:name}]);if(res.error){toast("失败: " + res.error.message);return;}closeModal("addGameModal");await loadGameList();toast("已添加");}
+
+$("grantVerifyBtn").addEventListener("click", function(){
+  if(!isAdmin){toast("仅管理员可用");return;}
+  $("gvUid").value="";$("gvBadge").value="author";$("gvText").value="";$("gvText").style.display="none";
+  $("gvStatus").textContent="";
+  openModal("grantVerifyModal");
 });
+$("gvBadge").addEventListener("change", function(){
+  $("gvText").style.display = (this.value === "a") ? "block" : "none";
+});
+async function doGrantVerify(){
+  if(!isAdmin){toast("仅管理员可用");return;}
+  var uidStr = $("gvUid").value.trim();
+  var badge = $("gvBadge").value;
+  var text = $("gvText").value.trim();
+  var status = $("gvStatus");
+  if(!uidStr || !/^\d+$/.test(uidStr)){status.textContent="请输入有效的 UID";status.style.color="#ef4444";return;}
+  if(badge === "a" && !text){status.textContent="企业认证需要填写企业名称";status.style.color="#ef4444";return;}
+  status.textContent="处理中...";status.style.color="#94a3b8";
+  var targetUid = parseInt(uidStr, 10);
+  var r = await supabaseClient.from("profiles").select("*").eq("uid", targetUid).maybeSingle();
+  if(r.error || !r.data){status.textContent="找不到该 UID 的用户";status.style.color="#ef4444";return;}
+  var ur = await supabaseClient.from("profiles").update({badge:badge, badge_text:(badge==="a"?text:"")}).eq("uid", targetUid);
+  if(ur.error){status.textContent="授予失败: " + ur.error.message;status.style.color="#ef4444";return;}
+  status.textContent="已成功授予认证";status.style.color="#10b981";
+  toast("已授予认证");
+  setTimeout(function(){closeModal("grantVerifyModal");}, 800);
+}
+
+async function openGame(game){currentGame = game;$("gameTitle").textContent = game;$("searchBox").value = "";goPage("page-game");await loadGameItems(game, "");}
+$("searchBox").addEventListener("input", function(){loadGameItems(currentGame, $("searchBox").value.trim());});
 
 async function loadGameItems(game, keyword){
   showLoading("加载中...");
@@ -497,46 +510,33 @@ async function loadGameItems(game, keyword){
   hideLoading();
   if(res.error){$("diyGrid").innerHTML = '<div class="empty">加载失败</div>';return;}
   var items = res.data || [];
-  items.forEach(function(it,i){
-    it.position = i+1;
-  });
-  if(keyword){
-    var kw = keyword.toLowerCase();
-    items = items.filter(function(it){
-      return (it.name||"").toLowerCase().indexOf(kw)>-1 || (it.text_content||"").toLowerCase().indexOf(kw)>-1;
-    });
+  items.forEach(function(it,i){it.position = i+1;});
+  if(items.length > 0){
+    var emails = [];
+    items.forEach(function(it){ if(it.uploader_email && emails.indexOf(it.uploader_email)<0) emails.push(it.uploader_email); });
+    if(emails.length > 0){
+      var pr = await supabaseClient.from("profiles").select("email,account,avatar,badge,badge_text").in("email", emails);
+      var map = {};
+      (pr.data||[]).forEach(function(p){ map[p.email] = p; });
+      items.forEach(function(it){
+        var prof = map[it.uploader_email];
+        if(prof){it.uploader_name = prof.account || it.uploader_name;it.uploader_avatar = prof.avatar || "";it.uploader_badge = prof.badge || "";it.uploader_badge_text = prof.badge_text || "";}
+      });
+    }
   }
+  if(keyword){var kw = keyword.toLowerCase();items = items.filter(function(it){return (it.name||"").toLowerCase().indexOf(kw)>-1 || (it.text_content||"").toLowerCase().indexOf(kw)>-1;});}
   currentGameItems = items;
   await loadLikesForItems(items);
   await loadFollowsForItems(items);
   renderGameItems(items);
 }
 
-async function loadLikesForItems(items){
-  if(!myEmail)return;
-  var ids = items.map(function(i){return i.id;});
-  if(ids.length===0)return;
-  var res = await supabaseClient.from("diy_likes").select("diy_id").eq("user_email", myEmail).in("diy_id", ids);
-  likesCache = {};
-  if(res.data){res.data.forEach(function(r){likesCache[r.diy_id]=true;});}
-}
-
-async function loadFollowsForItems(items){
-  if(!myEmail)return;
-  var emails = [];
-  items.forEach(function(it){if(it.uploader_email && emails.indexOf(it.uploader_email)<0)emails.push(it.uploader_email);});
-  if(emails.length===0)return;
-  var res = await supabaseClient.from("diy_follows").select("target_email").eq("follower_email", myEmail).in("target_email", emails);
-  followsCache = {};
-  if(res.data){res.data.forEach(function(r){followsCache[r.target_email]=true;});}
-}
+async function loadLikesForItems(items){if(!myEmail)return;var ids = items.map(function(i){return i.id;});if(ids.length===0)return;var res = await supabaseClient.from("diy_likes").select("diy_id").eq("user_email", myEmail).in("diy_id", ids);likesCache = {};if(res.data){res.data.forEach(function(r){likesCache[r.diy_id]=true;});}}
+async function loadFollowsForItems(items){if(!myEmail)return;var emails = [];items.forEach(function(it){if(it.uploader_email && emails.indexOf(it.uploader_email)<0)emails.push(it.uploader_email);});if(emails.length===0)return;var res = await supabaseClient.from("diy_follows").select("target_email").eq("follower_email", myEmail).in("target_email", emails);followsCache = {};if(res.data){res.data.forEach(function(r){followsCache[r.target_email]=true;});}}
 
 function renderGameItems(items){
   var grid = $("diyGrid");
-  if(items.length === 0){
-    grid.innerHTML = '<div class="empty">还没有 DIY 内容</div>';
-    return;
-  }
+  if(items.length === 0){grid.innerHTML = '<div class="empty">还没有 DIY 内容</div>';return;}
   var html = "";
   items.forEach(function(item){
     var liked = !!likesCache[item.id];
@@ -545,18 +545,17 @@ function renderGameItems(items){
     var tags = "";
     if(item.is_pinned)tags += '<span class="d-tag tag-pinned">置顶</span>';
     if(item.is_official)tags += '<span class="d-tag tag-official">官方推荐</span>';
-    var avatarChar = (item.uploader_name || item.uploader_email || "?").charAt(0).toUpperCase();
+    var avatarHTML = item.uploader_avatar ? '<img src="'+escapeHtml(item.uploader_avatar)+'">' : escapeHtml((item.uploader_name || "?").charAt(0).toUpperCase());
+    var badgeHTML = getBadgeHTML(item.uploader_badge, item.uploader_badge_text);
     var imgHTML = item.image_url ? '<img class="diy-img" src="'+escapeHtml(item.image_url)+'">' : "";
     var textHTML = (!item.image_url && item.text_content) ? '<div class="d-text">'+escapeHtml(item.text_content)+'</div>' : "";
     var followBtnHTML = "";
-    if(!isOwn){
-      followBtnHTML = '<button class="follow-btn'+(followed?' followed':'')+'" data-follow="'+escapeHtml(item.uploader_email)+'">'+(followed?'已关注':'关注')+'</button>';
-    }
+    if(!isOwn){followBtnHTML = '<button class="follow-btn'+(followed?' followed':'')+'" data-follow="'+escapeHtml(item.uploader_email)+'">'+(followed?'已关注':'关注')+'</button>';}
     html += '<div class="diy-card" data-id="'+item.id+'" data-pos="'+item.position+'">';
     html += '<button class="d-menu" data-id="'+item.id+'">⋮</button>';
     html += '<div class="diy-head">';
-    html += '<div class="diy-avatar">'+escapeHtml(avatarChar)+'</div>';
-    html += '<div class="diy-userinfo"><div class="diy-username">'+escapeHtml(item.uploader_name || "匿名")+'</div><div class="diy-time">'+fmtTime(item.created_at)+'</div></div>';
+    html += '<div class="diy-avatar">'+avatarHTML+'</div>';
+    html += '<div class="diy-userinfo"><div class="diy-username">'+escapeHtml(item.uploader_name || "匿名")+badgeHTML+'</div><div class="diy-time">'+fmtTime(item.created_at)+'</div></div>';
     html += followBtnHTML;
     html += '</div>';
     html += '<div class="d-title">'+escapeHtml(item.name)+tags+'</div>';
@@ -575,109 +574,21 @@ function renderGameItems(items){
 
 function bindCardEvents(){
   var grid = $("diyGrid");
-  grid.querySelectorAll("[data-like]").forEach(function(el){
-    el.addEventListener("click", function(){
-      var id = parseInt(el.getAttribute("data-like"),10);
-      toggleLike(id, el);
-    });
-  });
-  grid.querySelectorAll("[data-comment]").forEach(function(el){
-    el.addEventListener("click", function(){
-      var id = parseInt(el.getAttribute("data-comment"),10);
-      openCommentModal(id);
-    });
-  });
-  grid.querySelectorAll("[data-share]").forEach(function(el){
-    el.addEventListener("click", function(){
-      var id = parseInt(el.getAttribute("data-share"),10);
-      doShare(id);
-    });
-  });
-  grid.querySelectorAll(".follow-btn").forEach(function(el){
-    el.addEventListener("click", function(){
-      var target = el.getAttribute("data-follow");
-      toggleFollow(target, el);
-    });
-  });
-  grid.querySelectorAll(".d-menu").forEach(function(el){
-    el.addEventListener("click", function(e){
-      e.stopPropagation();
-      currentAdminItemId = parseInt(el.getAttribute("data-id"),10);
-      $("adminMenu").classList.add("show");
-    });
-  });
+  grid.querySelectorAll("[data-like]").forEach(function(el){el.addEventListener("click", function(){var id = parseInt(el.getAttribute("data-like"),10);toggleLike(id, el);});});
+  grid.querySelectorAll("[data-comment]").forEach(function(el){el.addEventListener("click", function(){var id = parseInt(el.getAttribute("data-comment"),10);openCommentModal(id);});});
+  grid.querySelectorAll("[data-share]").forEach(function(el){el.addEventListener("click", function(){var id = parseInt(el.getAttribute("data-share"),10);doShare(id);});});
+  grid.querySelectorAll(".follow-btn").forEach(function(el){el.addEventListener("click", function(){var target = el.getAttribute("data-follow");toggleFollow(target, el);});});
+  grid.querySelectorAll(".d-menu").forEach(function(el){el.addEventListener("click", function(e){e.stopPropagation();currentAdminItemId = parseInt(el.getAttribute("data-id"),10);$("adminMenu").classList.add("show");});});
 }
 
-function toggleLike(id, el){
-  if(!myEmail){toast("请先登录");return;}
-  var isLiked = !!likesCache[id];
-  var newLiked = !isLiked;
-  likesCache[id] = newLiked;
-  pendingLikes[id] = newLiked;
-  el.classList.toggle("liked", newLiked);
-  el.querySelector(".heart").textContent = newLiked ? "❤️" : "🤍";
-  var countEl = el.querySelector(".like-count");
-  var current = parseInt(countEl.textContent,10) || 0;
-  countEl.textContent = newLiked ? current+1 : Math.max(0,current-1);
-  flushLike(id);
-}
+function toggleLike(id, el){if(!myEmail){toast("请先登录");return;}var isLiked = !!likesCache[id];var newLiked = !isLiked;likesCache[id] = newLiked;pendingLikes[id] = newLiked;el.classList.toggle("liked", newLiked);el.querySelector(".heart").textContent = newLiked ? "❤️" : "🤍";var countEl = el.querySelector(".like-count");var current = parseInt(countEl.textContent,10) || 0;countEl.textContent = newLiked ? current+1 : Math.max(0,current-1);flushLike(id);}
+async function flushLike(id){var liked = pendingLikes[id];delete pendingLikes[id];if(liked){await supabaseClient.from("diy_likes").insert([{diy_id:id, user_email:myEmail}]);var r = await supabaseClient.from("diy").select("likes").eq("id",id).maybeSingle();if(r.data){await supabaseClient.from("diy").update({likes:(r.data.likes||0)+1}).eq("id",id);}}else{await supabaseClient.from("diy_likes").delete().eq("diy_id",id).eq("user_email",myEmail);var r2 = await supabaseClient.from("diy").select("likes").eq("id",id).maybeSingle();if(r2.data){await supabaseClient.from("diy").update({likes:Math.max(0,(r2.data.likes||1)-1)}).eq("id",id);}}}
 
-async function flushLike(id){
-  var liked = pendingLikes[id];
-  delete pendingLikes[id];
-  if(liked){
-    await supabaseClient.from("diy_likes").insert([{diy_id:id, user_email:myEmail}]);
-    var r = await supabaseClient.from("diy").select("likes").eq("id",id).maybeSingle();
-    if(r.data){await supabaseClient.from("diy").update({likes:(r.data.likes||0)+1}).eq("id",id);}
-  }else{
-    await supabaseClient.from("diy_likes").delete().eq("diy_id",id).eq("user_email",myEmail);
-    var r2 = await supabaseClient.from("diy").select("likes").eq("id",id).maybeSingle();
-    if(r2.data){await supabaseClient.from("diy").update({likes:Math.max(0,(r2.data.likes||1)-1)}).eq("id",id);}
-  }
-}
+function toggleFollow(targetEmail, el){if(!myEmail){toast("请先登录");return;}if(targetEmail === myEmail){toast("不能关注自己");return;}var isFollowed = !!followsCache[targetEmail];var newFollowed = !isFollowed;followsCache[targetEmail] = newFollowed;pendingFollows[targetEmail] = newFollowed;el.textContent = newFollowed ? "已关注" : "关注";el.classList.toggle("followed", newFollowed);flushFollow(targetEmail);}
+async function flushFollow(targetEmail){var followed = pendingFollows[targetEmail];delete pendingFollows[targetEmail];if(followed){await supabaseClient.from("diy_follows").insert([{follower_email:myEmail, target_email:targetEmail}]);}else{await supabaseClient.from("diy_follows").delete().eq("follower_email",myEmail).eq("target_email",targetEmail);}}
 
-function toggleFollow(targetEmail, el){
-  if(!myEmail){toast("请先登录");return;}
-  if(targetEmail === myEmail){toast("不能关注自己");return;}
-  var isFollowed = !!followsCache[targetEmail];
-  var newFollowed = !isFollowed;
-  followsCache[targetEmail] = newFollowed;
-  pendingFollows[targetEmail] = newFollowed;
-  el.textContent = newFollowed ? "已关注" : "关注";
-  el.classList.toggle("followed", newFollowed);
-  flushFollow(targetEmail);
-}
-
-async function flushFollow(targetEmail){
-  var followed = pendingFollows[targetEmail];
-  delete pendingFollows[targetEmail];
-  if(followed){
-    await supabaseClient.from("diy_follows").insert([{follower_email:myEmail, target_email:targetEmail}]);
-  }else{
-    await supabaseClient.from("diy_follows").delete().eq("follower_email",myEmail).eq("target_email",targetEmail);
-  }
-}
-
-function openCommentModal(id){
-  currentCommentItemId = id;
-  $("commentInput").value = "";
-  $("commentList").innerHTML = '<div class="empty">加载中...</div>';
-  openModal("commentModal");
-  loadComments(id);
-}
-
-async function loadComments(id){
-  var res = await supabaseClient.from("diy_comments").select("*").eq("diy_id", id).order("created_at", {ascending:true});
-  var list = $("commentList");
-  if(res.error || !res.data || res.data.length===0){
-    list.innerHTML = '<div class="empty">还没有评论，来抢沙发吧</div>';
-    return;
-  }
-  list.innerHTML = res.data.map(function(c){
-    return '<div class="comment-item"><div class="comment-head"><span class="comment-name">'+escapeHtml(c.user_name||"匿名")+'</span><span>'+fmtTime(c.created_at)+'</span></div><div class="comment-text">'+escapeHtml(c.content)+'</div></div>';
-  }).join("");
-}
-
+function openCommentModal(id){currentCommentItemId = id;$("commentInput").value = "";$("commentList").innerHTML = '<div class="empty">加载中...</div>';openModal("commentModal");loadComments(id);}
+async function loadComments(id){var res = await supabaseClient.from("diy_comments").select("*").eq("diy_id", id).order("created_at", {ascending:true});var list = $("commentList");if(res.error || !res.data || res.data.length===0){list.innerHTML = '<div class="empty">还没有评论，来抢沙发吧</div>';return;}list.innerHTML = res.data.map(function(c){return '<div class="comment-item"><div class="comment-head"><span class="comment-name">'+escapeHtml(c.user_name||"匿名")+'</span><span>'+fmtTime(c.created_at)+'</span></div><div class="comment-text">'+escapeHtml(c.content)+'</div></div>';}).join("");}
 async function submitComment(){
   if(!myEmail){toast("请先登录");return;}
   var content = $("commentInput").value.trim();
@@ -701,142 +612,26 @@ async function doShare(id){
   var res = await supabaseClient.from("diy_shares").insert([{token:token, diy_id:id, game:item.game, position:item.position, expires_at:expiresAt}]);
   if(res.error){toast("生成失败: " + res.error.message);return;}
   var base = window.location.href.split("?")[0].split("#")[0];
-  var link = base + "?share=" + token;
-  $("shareLink").value = link;
+  $("shareLink").value = base + "?share=" + token;
   currentShareItem = item;
   openModal("shareModal");
 }
+function copyShareLink(){var input = $("shareLink");input.select();input.setSelectionRange(0, 99999);try{if(navigator.clipboard && navigator.clipboard.writeText){navigator.clipboard.writeText(input.value).then(function(){toast("已复制");closeModal("shareModal");});}else{document.execCommand("copy");toast("已复制");closeModal("shareModal");}}catch(e){document.execCommand("copy");toast("已复制");closeModal("shareModal");}}
+async function handleShareLink(){var params = new URLSearchParams(window.location.search);var token = params.get("share");if(!token)return;var res = await supabaseClient.from("diy_shares").select("*").eq("token",token).maybeSingle();if(!res.data){toast("链接无效或已过期");return;}var share = res.data;if(new Date(share.expires_at) < new Date()){toast("链接已过期");return;}currentGame = share.game;$("gameTitle").textContent = share.game;goPage("page-game");await loadGameItems(share.game, "");setTimeout(function(){var card = document.querySelector('.diy-card[data-id="'+share.diy_id+'"]');if(card){card.scrollIntoView({behavior:"smooth",block:"center"});card.style.outline="3px solid #0a6cff";}}, 400);}
 
-function copyShareLink(){
-  var input = $("shareLink");
-  input.select();
-  input.setSelectionRange(0, 99999);
-  try{
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(input.value).then(function(){toast("已复制");closeModal("shareModal");});
-    }else{
-      document.execCommand("copy");
-      toast("已复制");
-      closeModal("shareModal");
-    }
-  }catch(e){
-    document.execCommand("copy");
-    toast("已复制");
-    closeModal("shareModal");
-  }
-}
-
-async function handleShareLink(){
-  var params = new URLSearchParams(window.location.search);
-  var token = params.get("share");
-  if(!token)return;
-  var res = await supabaseClient.from("diy_shares").select("*").eq("token",token).maybeSingle();
-  if(!res.data){toast("链接无效或已过期");return;}
-  var share = res.data;
-  if(new Date(share.expires_at) < new Date()){toast("链接已过期");return;}
-  currentGame = share.game;
-  $("gameTitle").textContent = share.game;
-  goPage("page-game");
-  await loadGameItems(share.game, "");
-  setTimeout(function(){
-    var card = document.querySelector('.diy-card[data-id="'+share.diy_id+'"]');
-    if(card){card.scrollIntoView({behavior:"smooth",block:"center"});card.style.outline="3px solid #0a6cff";}
-  }, 400);
-}
-
-function closeAdminMenu(){
-  $("adminMenu").classList.remove("show");
-  currentAdminItemId = null;
-}
-$("adminMenu").addEventListener("click", function(e){
-  if(e.target === $("adminMenu"))closeAdminMenu();
-});
-
-async function adminRemove(){
-  if(!currentAdminItemId){closeAdminMenu();return;}
-  if(!confirm("确定下架这条内容吗？")){closeAdminMenu();return;}
-  var res = await supabaseClient.from("diy").delete().eq("id", currentAdminItemId);
-  closeAdminMenu();
-  if(res.error){toast("失败: " + res.error.message);return;}
-  toast("已下架");
-  loadGameItems(currentGame, $("searchBox").value.trim());
-}
-
-async function adminPin(){
-  if(!currentAdminItemId){closeAdminMenu();return;}
-  var item = currentGameItems.find(function(i){return i.id===currentAdminItemId;});
-  if(!item){closeAdminMenu();return;}
-  if(item.is_pinned){
-    await supabaseClient.from("diy").update({is_pinned:false}).eq("id",currentAdminItemId);
-    toast("已取消置顶");
-  }else{
-    await supabaseClient.from("diy").update({is_pinned:false}).eq("game", currentGame).eq("is_pinned", true);
-    await supabaseClient.from("diy").update({is_pinned:true}).eq("id",currentAdminItemId);
-    toast("已置顶，原置顶已取消");
-  }
-  closeAdminMenu();
-  loadGameItems(currentGame, $("searchBox").value.trim());
-}
-
-async function adminOfficial(){
-  if(!currentAdminItemId){closeAdminMenu();return;}
-  var item = currentGameItems.find(function(i){return i.id===currentAdminItemId;});
-  if(!item){closeAdminMenu();return;}
-  await supabaseClient.from("diy").update({is_official: !item.is_official}).eq("id", currentAdminItemId);
-  closeAdminMenu();
-  toast(item.is_official ? "已取消官方推荐" : "已标记为官方推荐");
-  loadGameItems(currentGame, $("searchBox").value.trim());
-}
+function closeAdminMenu(){$("adminMenu").classList.remove("show");currentAdminItemId = null;}
+$("adminMenu").addEventListener("click", function(e){if(e.target === $("adminMenu"))closeAdminMenu();});
+async function adminRemove(){if(!currentAdminItemId){closeAdminMenu();return;}if(!confirm("确定下架这条内容吗？")){closeAdminMenu();return;}var res = await supabaseClient.from("diy").delete().eq("id", currentAdminItemId);closeAdminMenu();if(res.error){toast("失败: " + res.error.message);return;}toast("已下架");loadGameItems(currentGame, $("searchBox").value.trim());}
+async function adminPin(){if(!currentAdminItemId){closeAdminMenu();return;}var item = currentGameItems.find(function(i){return i.id===currentAdminItemId;});if(!item){closeAdminMenu();return;}if(item.is_pinned){await supabaseClient.from("diy").update({is_pinned:false}).eq("id",currentAdminItemId);toast("已取消置顶");}else{await supabaseClient.from("diy").update({is_pinned:false}).eq("game", currentGame).eq("is_pinned", true);await supabaseClient.from("diy").update({is_pinned:true}).eq("id",currentAdminItemId);toast("已置顶，原置顶已取消");}closeAdminMenu();loadGameItems(currentGame, $("searchBox").value.trim());}
+async function adminOfficial(){if(!currentAdminItemId){closeAdminMenu();return;}var item = currentGameItems.find(function(i){return i.id===currentAdminItemId;});if(!item){closeAdminMenu();return;}await supabaseClient.from("diy").update({is_official: !item.is_official}).eq("id", currentAdminItemId);closeAdminMenu();toast(item.is_official ? "已取消官方推荐" : "已标记为官方推荐");loadGameItems(currentGame, $("searchBox").value.trim());}
 
 $("pickImgBtn").addEventListener("click", function(){$("imgInput").click();});
 $("pickTxtBtn").addEventListener("click", function(){$("txtInput").click();});
+$("imgInput").addEventListener("change", function(){var f = this.files[0];if(!f)return;$("upText").value = "";});
+$("txtInput").addEventListener("change", function(){var f = this.files[0];if(!f)return;var reader = new FileReader();reader.onload = function(e){$("upText").value = e.target.result;};reader.readAsText(f);});
 
-$("imgInput").addEventListener("change", function(){
-  var f = this.files[0];
-  if(!f)return;
-  $("upText").value = "";
-});
-
-$("txtInput").addEventListener("change", function(){
-  var f = this.files[0];
-  if(!f)return;
-  var reader = new FileReader();
-  reader.onload = function(e){$("upText").value = e.target.result;};
-  reader.readAsText(f);
-});
-
-function compressImage(file, maxSize, quality){
-  return new Promise(function(resolve, reject){
-    var reader = new FileReader();
-    reader.onerror = function(){reject(new Error("读取失败"));};
-    reader.onload = function(e){
-      var img = new Image();
-      img.onerror = function(){reject(new Error("解析失败"));};
-      img.onload = function(){
-        var w = img.width, h = img.height;
-        if(w > h && w > maxSize){h = Math.round(h * maxSize / w); w = maxSize;}
-        else if(h > w && h > maxSize){w = Math.round(w * maxSize / h); h = maxSize;}
-        else if(w === h && w > maxSize){w = h = maxSize;}
-        var canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob(function(blob){
-          if(blob)resolve(blob);
-          else reject(new Error("压缩失败"));
-        }, "image/jpeg", quality);
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function safeFileName(original){
-  var ext = String(original||"").split(".").pop().toLowerCase();
-  if(!/^[a-z0-9]+$/.test(ext))ext = "jpg";
-  return Date.now() + "_" + Math.random().toString(36).slice(2,10) + "." + ext;
-}
+function compressImage(file, maxSize, quality){return new Promise(function(resolve, reject){var reader = new FileReader();reader.onerror = function(){reject(new Error("读取失败"));};reader.onload = function(e){var img = new Image();img.onerror = function(){reject(new Error("解析失败"));};img.onload = function(){var w = img.width, h = img.height;if(w > h && w > maxSize){h = Math.round(h * maxSize / w); w = maxSize;}else if(h > w && h > maxSize){w = Math.round(w * maxSize / h); h = maxSize;}else if(w === h && w > maxSize){w = h = maxSize;}var canvas = document.createElement("canvas");canvas.width = w;canvas.height = h;var ctx = canvas.getContext("2d");ctx.drawImage(img, 0, 0, w, h);canvas.toBlob(function(blob){if(blob)resolve(blob);else reject(new Error("压缩失败"));}, "image/jpeg", quality);};img.src = e.target.result;};reader.readAsDataURL(file);});}
+function safeFileName(original){var ext = String(original||"").split(".").pop().toLowerCase();if(!/^[a-z0-9]+$/.test(ext))ext = "jpg";return Date.now() + "_" + Math.random().toString(36).slice(2,10) + "." + ext;}
 
 $("submitUpload").addEventListener("click", async function(){
   if(!myEmail){toast("请先返回主站登录");return;}
@@ -848,39 +643,14 @@ $("submitUpload").addEventListener("click", async function(){
   if(!game){toast("请输入所属游戏/分类");return;}
   if(!imgFile && !textContent){toast("请上传图片或填写文字内容");return;}
   if(textContent && containsBanWord(textContent)){toast("内容包含违禁词");return;}
-
   showLoading("处理中...");
   var uploadFile = imgFile;
   var uploadName = "";
-  if(imgFile){
-    try{
-      var compressed = await compressImage(imgFile, 1600, 0.8);
-      uploadFile = compressed;
-      uploadName = safeFileName(imgFile.name);
-    }catch(e){
-      uploadFile = imgFile;
-      uploadName = safeFileName(imgFile.name);
-    }
-  }
+  if(imgFile){try{var compressed = await compressImage(imgFile, 1600, 0.8);uploadFile = compressed;uploadName = safeFileName(imgFile.name);}catch(e){uploadFile = imgFile;uploadName = safeFileName(imgFile.name);}}
   var imageUrl = "";
-  if(uploadFile){
-    $("loadingLabel").textContent = "上传图片中...";
-    var up = await supabaseClient.storage.from("diy").upload(uploadName, uploadFile);
-    if(up.error){hideLoading();toast("图片上传失败: " + up.error.message);return;}
-    var pub = supabaseClient.storage.from("diy").getPublicUrl(uploadName);
-    imageUrl = pub.data.publicUrl;
-  }
+  if(uploadFile){$("loadingLabel").textContent = "上传图片中...";var up = await supabaseClient.storage.from("diy").upload(uploadName, uploadFile);if(up.error){hideLoading();toast("图片上传失败: " + up.error.message);return;}var pub = supabaseClient.storage.from("diy").getPublicUrl(uploadName);imageUrl = pub.data.publicUrl;}
   $("loadingLabel").textContent = "写入数据...";
-  var ins = await supabaseClient.from("diy").insert([{
-    name: name, game: game,
-    content_type: uploadFile ? "image" : "txt",
-    image_url: imageUrl,
-    text_content: textContent,
-    uploader_email: myEmail,
-    uploader_uid: myUid,
-    uploader_name: myAccount || myEmail,
-    status: "pending"
-  }]);
+  var ins = await supabaseClient.from("diy").insert([{name: name, game: game,content_type: uploadFile ? "image" : "txt",image_url: imageUrl,text_content: textContent,uploader_email: myEmail,uploader_uid: myUid,uploader_name: myAccount || myEmail,status: "pending"}]);
   hideLoading();
   if(ins.error){toast("提交失败: " + ins.error.message);return;}
   $("upName").value="";$("upGame").value="";$("upText").value="";$("imgInput").value="";$("txtInput").value="";
@@ -889,14 +659,8 @@ $("submitUpload").addEventListener("click", async function(){
 
 $("offPickImg").addEventListener("click", function(){$("offImgInput").click();});
 $("offPickFile").addEventListener("click", function(){$("offFileInput").click();});
-$("offImgInput").addEventListener("change", function(){
-  var f = this.files[0];
-  if(f)$("offFileName").textContent = "已选图片: " + f.name;
-});
-$("offFileInput").addEventListener("change", function(){
-  var f = this.files[0];
-  if(f)$("offFileName").textContent = "已选文件: " + f.name;
-});
+$("offImgInput").addEventListener("change", function(){var f = this.files[0];if(f)$("offFileName").textContent = "已选图片: " + f.name;});
+$("offFileInput").addEventListener("change", function(){var f = this.files[0];if(f)$("offFileName").textContent = "已选文件: " + f.name;});
 
 $("offSubmit").addEventListener("click", async function(){
   if(!isAdmin){toast("仅管理员可用");return;}
@@ -906,33 +670,9 @@ $("offSubmit").addEventListener("click", async function(){
   if(!text && !imgFile && !fileFile){toast("至少填一项");return;}
   showLoading("发布中...");
   var imageUrl = "", fileUrl = "", fileName = "";
-  if(imgFile){
-    try{
-      var compressed = await compressImage(imgFile, 1600, 0.8);
-      var upName = safeFileName(imgFile.name);
-      var up = await supabaseClient.storage.from("official").upload(upName, compressed);
-      if(!up.error){
-        var pub = supabaseClient.storage.from("official").getPublicUrl(upName);
-        imageUrl = pub.data.publicUrl;
-      }
-    }catch(e){}
-  }
-  if(fileFile){
-    var fname = safeFileName(fileFile.name);
-    var up2 = await supabaseClient.storage.from("official").upload(fname, fileFile);
-    if(!up2.error){
-      var pub2 = supabaseClient.storage.from("official").getPublicUrl(fname);
-      fileUrl = pub2.data.publicUrl;
-      fileName = fileFile.name;
-    }
-  }
-  var res = await supabaseClient.from("official_posts").insert([{
-    content_type: fileFile ? "file" : (imgFile ? "image" : "text"),
-    text_content: text,
-    image_url: imageUrl,
-    file_url: fileUrl,
-    file_name: fileName
-  }]);
+  if(imgFile){try{var compressed = await compressImage(imgFile, 1600, 0.8);var upName = safeFileName(imgFile.name);var up = await supabaseClient.storage.from("official").upload(upName, compressed);if(!up.error){var pub = supabaseClient.storage.from("official").getPublicUrl(upName);imageUrl = pub.data.publicUrl;}}catch(e){}}
+  if(fileFile){var fname = safeFileName(fileFile.name);var up2 = await supabaseClient.storage.from("official").upload(fname, fileFile);if(!up2.error){var pub2 = supabaseClient.storage.from("official").getPublicUrl(fname);fileUrl = pub2.data.publicUrl;fileName = fileFile.name;}}
+  var res = await supabaseClient.from("official_posts").insert([{content_type: fileFile ? "file" : (imgFile ? "image" : "text"),text_content: text,image_url: imageUrl,file_url: fileUrl,file_name: fileName}]);
   hideLoading();
   if(res.error){toast("发布失败: " + res.error.message);return;}
   $("offText").value="";$("offImgInput").value="";$("offFileInput").value="";$("offFileName").textContent="";
@@ -950,41 +690,14 @@ async function loadReview(){
   grid.innerHTML = res.data.map(function(item){
     var img = item.image_url ? '<img src="' + escapeHtml(item.image_url) + '">' : "";
     var txt = (!item.image_url && item.text_content) ? '<div class="r-text">' + escapeHtml(item.text_content) + '</div>' : "";
-    return '<div class="review-card">' +
-      '<div class="r-title">' + escapeHtml(item.name) + '</div>' +
-      '<div class="r-info">分类: ' + escapeHtml(item.game) + '</div>' +
-      '<div class="r-info">上传者: ' + escapeHtml(item.uploader_email || "未知") + '</div>' +
-      '<div class="r-info">时间: ' + fmtTime(item.created_at) + '</div>' +
-      img + txt +
-      '<div class="r-actions">' +
-        '<button style="background:#10b981;" data-id="' + item.id + '" data-act="approve">过审</button>' +
-        '<button style="background:#f59e0b;" data-id="' + item.id + '" data-act="edit">待修改</button>' +
-        '<button style="background:#ef4444;" data-id="' + item.id + '" data-act="reject">不过审</button>' +
-      '</div></div>';
+    return '<div class="review-card"><div class="r-title">' + escapeHtml(item.name) + '</div><div class="r-info">分类: ' + escapeHtml(item.game) + '</div><div class="r-info">上传者: ' + escapeHtml(item.uploader_email || "未知") + '</div><div class="r-info">时间: ' + fmtTime(item.created_at) + '</div>' + img + txt + '<div class="r-actions"><button style="background:#10b981;" data-id="' + item.id + '" data-act="approve">过审</button><button style="background:#f59e0b;" data-id="' + item.id + '" data-act="edit">待修改</button><button style="background:#ef4444;" data-id="' + item.id + '" data-act="reject">不过审</button></div></div>';
   }).join("");
-  grid.querySelectorAll("button[data-act]").forEach(function(btn){
-    btn.addEventListener("click", function(){handleReview(parseInt(btn.dataset.id,10), btn.dataset.act);});
-  });
+  grid.querySelectorAll("button[data-act]").forEach(function(btn){btn.addEventListener("click", function(){handleReview(parseInt(btn.dataset.id,10), btn.dataset.act);});});
 }
 
-function handleReview(id, act){
-  if(act === "approve"){approveItem(id);}
-  else{openReasonModal(id, act);}
-}
-
-async function approveItem(id){
-  await supabaseClient.from("diy").update({status: "approved"}).eq("id", id);
-  toast("已过审");
-  loadReview();
-}
-
-function openReasonModal(id, act){
-  pendingVerifyRejectId = null;
-  pendingReasonAction = {id:id, act:act};
-  $("reasonTitle").textContent = act === "edit" ? "待修改理由" : "不过审理由";
-  $("reasonInput").value = "";
-  openModal("reasonModal");
-}
+function handleReview(id, act){if(act === "approve"){approveItem(id);}else{openReasonModal(id, act);}}
+async function approveItem(id){await supabaseClient.from("diy").update({status: "approved"}).eq("id", id);toast("已过审");loadReview();}
+function openReasonModal(id, act){pendingVerifyRejectId = null;pendingReasonAction = {id:id, act:act};$("reasonTitle").textContent = act === "edit" ? "待修改理由" : "不过审理由";$("reasonInput").value = "";openModal("reasonModal");}
 
 async function loadVerifyReview(){
   showLoading("加载认证申请...");
@@ -995,28 +708,12 @@ async function loadVerifyReview(){
   if(!res.data || res.data.length === 0){grid.innerHTML = '<div class="empty">暂无待审核认证</div>';return;}
   var badgeNameMap = {z:"10万粉认证",s:"百万粉认证",a:"企业认证"};
   grid.innerHTML = res.data.map(function(item){
-    return '<div class="review-card">' +
-      '<div class="r-title">' + escapeHtml(item.user_account || item.user_email) + '</div>' +
-      '<div class="r-info">UID: ' + (item.user_uid || "—") + '</div>' +
-      '<div class="r-info">申请认证: ' + escapeHtml(badgeNameMap[item.badge] || item.badge) + '</div>' +
-      '<div class="r-info">当前粉丝数: ' + (item.followers || 0) + '</div>' +
-      '<div class="r-info">申请时间: ' + fmtTime(item.created_at) + '</div>' +
-      '<div class="r-actions">' +
-        '<button style="background:#10b981;" data-vid="' + item.id + '" data-vact="approve">同意</button>' +
-        '<button style="background:#ef4444;" data-vid="' + item.id + '" data-vact="reject">拒绝</button>' +
-      '</div></div>';
+    return '<div class="review-card"><div class="r-title">' + escapeHtml(item.user_account || item.user_email) + '</div><div class="r-info">UID: ' + (item.user_uid || "—") + '</div><div class="r-info">申请认证: ' + escapeHtml(badgeNameMap[item.badge] || item.badge) + '</div><div class="r-info">当前粉丝数: ' + (item.followers || 0) + '</div><div class="r-info">申请时间: ' + fmtTime(item.created_at) + '</div><div class="r-actions"><button style="background:#10b981;" data-vid="' + item.id + '" data-vact="approve">同意</button><button style="background:#ef4444;" data-vid="' + item.id + '" data-vact="reject">拒绝</button></div></div>';
   }).join("");
-  grid.querySelectorAll("button[data-vact]").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      handleVerifyReview(parseInt(btn.dataset.vid,10), btn.dataset.vact);
-    });
-  });
+  grid.querySelectorAll("button[data-vact]").forEach(function(btn){btn.addEventListener("click", function(){handleVerifyReview(parseInt(btn.dataset.vid,10), btn.dataset.vact);});});
 }
 
-function handleVerifyReview(id, act){
-  if(act === "approve"){approveVerify(id);}
-  else{openVerifyRejectModal(id);}
-}
+function handleVerifyReview(id, act){if(act === "approve"){approveVerify(id);}else{openVerifyRejectModal(id);}}
 
 async function approveVerify(id){
   var r = await supabaseClient.from("verify_requests").select("*").eq("id",id).maybeSingle();
@@ -1029,12 +726,91 @@ async function approveVerify(id){
   loadVerifyReview();
 }
 
-function openVerifyRejectModal(id){
-  pendingReasonAction = null;
-  pendingVerifyRejectId = id;
-  $("reasonTitle").textContent = "拒绝理由";
-  $("reasonInput").value = "";
-  openModal("reasonModal");
+function openVerifyRejectModal(id){pendingReasonAction = null;pendingVerifyRejectId = id;$("reasonTitle").textContent = "拒绝理由";$("reasonInput").value = "";openModal("reasonModal");}
+
+async function loadReportReview(){
+  showLoading("加载举报列表...");
+  var res = await supabaseClient.from("reports").select("*").eq("status","pending").order("created_at",{ascending:true});
+  hideLoading();
+  var grid = $("reportReviewGrid");
+  if(res.error){grid.innerHTML = '<div class="empty">加载失败: ' + escapeHtml(res.error.message) + '</div>';return;}
+  if(!res.data || res.data.length === 0){grid.innerHTML = '<div class="empty">暂无待审核举报</div>';return;}
+  grid.innerHTML = res.data.map(function(item){
+    return '<div class="review-card">' +
+      '<div class="r-title">举报 #' + item.id + '</div>' +
+      '<div class="r-info">举报人: ' + escapeHtml(item.reporter_email || "—") + '</div>' +
+      '<div class="r-info">被举报人 UID: ' + (item.target_uid || "—") + '</div>' +
+      '<div class="r-info">被举报人邮箱: ' + escapeHtml(maskedEmail(item.target_email)) + '</div>' +
+      '<div class="r-info">时间: ' + fmtTime(item.created_at) + '</div>' +
+      '<div class="r-text">举报理由: ' + escapeHtml(item.reason || "无") + '</div>' +
+      '<div class="r-actions">' +
+        '<button style="background:#ef4444;" data-rid="' + item.id + '" data-r-uid="' + (item.target_uid||'') + '" data-r-email="' + escapeHtml(item.target_email||'') + '" data-r-act="ban">封禁</button>' +
+        '<button style="background:#64748b;" data-rid="' + item.id + '" data-r-act="dismiss">驳回</button>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+  grid.querySelectorAll("button[data-r-act]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var rid = parseInt(btn.dataset.rid,10);
+      var act = btn.dataset.rAct;
+      if(act === "ban"){
+        pendingBanReportId = rid;
+        pendingBanTargetUid = parseInt(btn.dataset.rUid,10) || null;
+        $("banDays").value = "1";
+        $("banReason").value = "";
+        $("banStatus").textContent = "";
+        openModal("banModal");
+      }else{
+        dismissReport(rid);
+      }
+    });
+  });
+}
+
+document.querySelectorAll("#banModal button[data-days]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    $("banDays").value = btn.dataset.days;
+  });
+});
+
+async function doBan(){
+  if(!isAdmin){toast("仅管理员可用");return;}
+  var days = parseInt($("banDays").value, 10);
+  var reason = $("banReason").value.trim() || "违反社区规范";
+  var status = $("banStatus");
+  if(isNaN(days) || days < 0){status.textContent="请输入有效的天数（0 表示永久）";status.style.color="#ef4444";return;}
+  if(!pendingBanTargetUid){status.textContent="无法获取被举报用户";status.style.color="#ef4444";return;}
+  status.textContent="处理中...";status.style.color="#94a3b8";
+
+  var banType = days === 0 ? "permanent" : (days + "day");
+  var expiresAt = days === 0 ? null : new Date(Date.now() + days*24*60*60*1000).toISOString();
+
+  var ins = await supabaseClient.from("bans").insert([{
+    target_uid: pendingBanTargetUid,
+    ban_type: banType,
+    reason: reason,
+    expires_at: expiresAt
+  }]);
+  if(ins.error){status.textContent="封禁失败: " + ins.error.message;status.style.color="#ef4444";return;}
+
+  if(pendingBanReportId){
+    await supabaseClient.from("reports").update({status:"resolved"}).eq("id", pendingBanReportId);
+  }
+
+  status.textContent="已封禁";status.style.color="#10b981";
+  toast(days === 0 ? "已永久封禁" : ("已封禁 " + days + " 天"));
+  pendingBanTargetUid = null;
+  pendingBanReportId = null;
+  setTimeout(function(){closeModal("banModal");loadReportReview();}, 800);
+}
+
+async function dismissReport(rid){
+  var ok = confirm("确定驳回该举报吗？");
+  if(!ok)return;
+  var r = await supabaseClient.from("reports").update({status:"dismissed"}).eq("id", rid);
+  if(r.error){toast("驳回失败: " + r.error.message);return;}
+  toast("已驳回");
+  loadReportReview();
 }
 
 $("reasonConfirmBtn").addEventListener("click", async function(){
@@ -1042,10 +818,7 @@ $("reasonConfirmBtn").addEventListener("click", async function(){
   if(!reason){toast("请填写理由");return;}
   if(pendingVerifyRejectId){
     var r = await supabaseClient.from("verify_requests").select("*").eq("id",pendingVerifyRejectId).maybeSingle();
-    if(r.data){
-      await supabaseClient.from("verify_requests").update({status:"rejected", reject_reason:reason}).eq("id",pendingVerifyRejectId);
-      await supabaseClient.from("verify_notifications").insert([{user_email:r.data.user_email, badge:r.data.badge, status:"rejected", reason:reason}]);
-    }
+    if(r.data){await supabaseClient.from("verify_requests").update({status:"rejected", reject_reason:reason}).eq("id",pendingVerifyRejectId);await supabaseClient.from("verify_notifications").insert([{user_email:r.data.user_email, badge:r.data.badge, status:"rejected", reason:reason}]);}
     pendingVerifyRejectId = null;
     closeModal("reasonModal");
     toast("已拒绝");
@@ -1058,17 +831,7 @@ $("reasonConfirmBtn").addEventListener("click", async function(){
   if(!dr.data){toast("找不到该内容");closeModal("reasonModal");return;}
   var newStatus = act === "edit" ? "needs_edit" : "rejected";
   await supabaseClient.from("diy").update({status:newStatus, reject_reason:reason}).eq("id",id);
-  await supabaseClient.from("diy_notifications").insert([{
-    user_email:dr.data.uploader_email,
-    diy_id:id,
-    name:dr.data.name,
-    game:dr.data.game,
-    content_type:dr.data.content_type,
-    image_url:dr.data.image_url,
-    text_content:dr.data.text_content,
-    status:newStatus,
-    reason:reason
-  }]);
+  await supabaseClient.from("diy_notifications").insert([{user_email:dr.data.uploader_email,diy_id:id,name:dr.data.name,game:dr.data.game,content_type:dr.data.content_type,image_url:dr.data.image_url,text_content:dr.data.text_content,status:newStatus,reason:reason}]);
   closeModal("reasonModal");
   pendingReasonAction = null;
   toast(act === "edit" ? "已通知用户修改" : "已通知用户不过审");
@@ -1082,10 +845,7 @@ function showAlert(title, body, onOk){
   var btn = $("alertOkBtn");
   var clone = btn.cloneNode(true);
   btn.parentNode.replaceChild(clone, btn);
-  clone.addEventListener("click", function(){
-    closeModal("alertModal");
-    if(onOk)onOk();
-  });
+  clone.addEventListener("click", function(){closeModal("alertModal");if(onOk)onOk();});
 }
 </script>
 </body>
