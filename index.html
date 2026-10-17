@@ -54,6 +54,7 @@
         #musicBtn:active { transform: translateY(0); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
 </head>
 <body>
     <button id="musicBtn" onclick="goMusic()">🎵 点播</button>
@@ -132,6 +133,29 @@
         </div>
     </div>
 
+    <div id="twoFAModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>双因素认证</h2>
+            <p style="font-size:0.9rem;color:#9ca3af;margin-bottom:16px;">请输入验证器 App 上显示的 6 位动态验证码</p>
+            <input type="text" id="twoFACode" class="modal-input" placeholder="6位动态验证码" maxlength="6" style="text-align:center;letter-spacing:6px;font-size:1.3rem;">
+            <p id="twoFAMsg" style="font-size:0.85rem;color:#ef4444;min-height:20px;"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" onclick="cancel2FALogin()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="confirm2FALogin()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="banModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:#ef4444;">账号已被封禁</h2>
+            <p id="banInfo" style="font-size:0.95rem;line-height:1.6;color:#d1d5db;"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" onclick="closeModal('banModal')" style="flex:1;">知道了</button>
+            </div>
+        </div>
+    </div>
+
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <h2>编辑资料</h2>
@@ -163,12 +187,87 @@
 
         let pendingEmail = "";
         let loginMode = "pwd";
+        let pendingLoginInfo = null;
 
         function isReservedName(account, email) {
             if (!account) return false;
             const a = account.trim();
             if (a !== RESERVED_NAME) return false;
             if (email && email === RESERVED_OWNER_EMAIL) return false;
+            return true;
+        }
+
+        function base32Decode(str){
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            let bits = "";
+            str = String(str||"").replace(/=+$/,"").toUpperCase();
+            for(let i=0;i<str.length;i++){
+                const v = alphabet.indexOf(str.charAt(i));
+                if(v<0) continue;
+                bits += v.toString(2).padStart(5,"0");
+            }
+            const bytes = [];
+            for(let j=0;j+8<=bits.length;j+=8){
+                bytes.push(parseInt(bits.substring(j,j+8),2));
+            }
+            return bytes;
+        }
+        function genTOTP(secret, timeSec){
+            const t0 = timeSec!==undefined?timeSec:Math.floor(Date.now()/1000);
+            const keyBytes = base32Decode(secret);
+            const counter = Math.floor(t0/30);
+            const high = Math.floor(counter/0x100000000);
+            const low = counter - high*0x100000000;
+            const msgBytes = [(high>>>24)&255,(high>>>16)&255,(high>>>8)&255,high&255,(low>>>24)&255,(low>>>16)&255,(low>>>8)&255,low&255];
+            const keyHex = keyBytes.map(b=>("0"+b.toString(16)).slice(-2)).join("");
+            const msgHex = msgBytes.map(b=>("0"+b.toString(16)).slice(-2)).join("");
+            const hmac = CryptoJS.HmacSHA1(CryptoJS.enc.Hex.parse(msgHex), CryptoJS.enc.Hex.parse(keyHex));
+            const hmacArray = Array.from(CryptoJS.enc.Hex.parse(hmac.toString()).words).reduce((acc,w)=>{
+                return acc.concat([(w>>>24)&255,(w>>>16)&255,(w>>>8)&255,w&255]);
+            },[]);
+            const offset = hmacArray[hmacArray.length-1]&15;
+            const code = ((hmacArray[offset]&127)<<24)|((hmacArray[offset+1]&255)<<16)|((hmacArray[offset+2]&255)<<8)|(hmacArray[offset+3]&255);
+            return String(code%1000000).padStart(6,"0");
+        }
+        function verifyTOTP(secret, code){
+            const now = Math.floor(Date.now()/1000);
+            for(let i=-1;i<=1;i++){
+                if(genTOTP(secret, now+i*30) === code) return true;
+            }
+            return false;
+        }
+
+        async function checkBan(uid){
+            if(!uid) return false;
+            try{
+                const { data, error } = await supabaseClient
+                    .from("bans")
+                    .select("*")
+                    .eq("target_uid", uid);
+                if (error || !data || data.length === 0) return false;
+                const now = Date.now();
+                for (const b of data) {
+                    if (b.ban_type === "permanent") return b;
+                    if (b.expires_at && new Date(b.expires_at).getTime() > now) return b;
+                }
+                return false;
+            }catch(e){ return false; }
+        }
+
+        async function enforceBan(uid, email, account){
+            const b = await checkBan(uid);
+            if (!b) return false;
+            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch(e){} }
+            ["account","email","password","uid","gender","bio","sk124_auth_token"].forEach(k=>localStorage.removeItem(k));
+            let info = "原因：" + (b.reason || "违反社区规范") + "\n";
+            if (b.ban_type === "permanent") {
+                info += "封禁类型：永久封禁";
+            } else {
+                info += "封禁类型：限时封禁\n";
+                if (b.expires_at) info += "解封时间：" + new Date(b.expires_at).toLocaleString("zh-CN");
+            }
+            document.getElementById("banInfo").textContent = info;
+            document.getElementById("banModal").style.display = "flex";
             return true;
         }
 
@@ -332,30 +431,14 @@
             const password = document.getElementById("regPassword").value;
             if (!account) { alert("请输入账号名！"); return; }
             if (!password || password.length < 6) { alert("密码长度至少6位！"); return; }
-
-            if (isReservedName(account, pendingEmail)) {
-                alert("该账号名为保留名称，仅限指定邮箱使用！");
-                return;
-            }
-
+            if (isReservedName(account, pendingEmail)) { alert("该账号名为保留名称，仅限指定邮箱使用！"); return; }
             const btn = document.getElementById("completeRegBtn");
             btn.disabled = true; btn.textContent = "注册中...";
-
             try {
                 const taken = await isAccountTaken(account, null);
-                if (taken) {
-                    alert("账号名已被占用，请换一个！");
-                    btn.disabled = false; btn.textContent = "完成注册";
-                    return;
-                }
-
+                if (taken) { alert("账号名已被占用，请换一个！"); btn.disabled = false; btn.textContent = "完成注册"; return; }
                 const { error } = await supabaseClient.auth.updateUser({ password: password, data: { account: account } });
-                if (error) {
-                    alert("注册失败: " + error.message);
-                    btn.disabled = false; btn.textContent = "完成注册";
-                    return;
-                }
-
+                if (error) { alert("注册失败: " + error.message); btn.disabled = false; btn.textContent = "完成注册"; return; }
                 const { error: signInError } = await supabaseClient.auth.signInWithPassword({ email: pendingEmail, password: password });
                 if (signInError) {
                     localStorage.setItem("email", pendingEmail);
@@ -363,13 +446,11 @@
                     btn.disabled = false; btn.textContent = "完成注册";
                     return;
                 }
-
                 const profile = await ensureProfile(pendingEmail, account);
                 localStorage.setItem("email", pendingEmail);
                 localStorage.setItem("password", password);
                 localStorage.setItem("sk124_auth_token", "true");
                 if (profile) renderUserInfo(profile, pendingEmail);
-
                 alert("注册成功！你的 UID 是 " + (profile ? profile.uid : "-"));
                 closeModal("registerModal");
                 window.location.href = "rjyz.html";
@@ -412,14 +493,7 @@
             try {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
                 if (error) { alert("登录失败: " + error.message); return; }
-                const profile = await ensureProfile(email, data.user.user_metadata ? data.user.user_metadata.account : "");
-                localStorage.setItem("email", email);
-                localStorage.setItem("password", password);
-                localStorage.setItem("sk124_auth_token", "true");
-                if (profile) renderUserInfo(profile, email);
-                alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
-                closeModal("loginModal");
-                window.location.href = "rjyz.html";
+                await finishLoginAfterAuth(data.user, email, password);
             } catch (err) { alert("登录出错: " + err.message); }
         }
 
@@ -431,14 +505,59 @@
             try {
                 const { data, error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
                 if (error) { alert("登录失败: " + error.message); return; }
-                const profile = await ensureProfile(email, data.user && data.user.user_metadata ? data.user.user_metadata.account : "");
-                localStorage.setItem("email", email);
-                localStorage.setItem("sk124_auth_token", "true");
-                if (profile) renderUserInfo(profile, email);
-                alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
-                closeModal("loginModal");
-                window.location.href = "rjyz.html";
+                await finishLoginAfterAuth(data.user, email, "");
             } catch (err) { alert("登录出错: " + err.message); }
+        }
+
+        async function finishLoginAfterAuth(user, email, password) {
+            let profile = await ensureProfile(email, user.user_metadata ? user.user_metadata.account : "");
+            if (profile) {
+                const banned = await enforceBan(profile.uid, email, profile.account);
+                if (banned) return;
+            }
+            if (profile && profile.two_factor_secret) {
+                pendingLoginInfo = { email: email, password: password, profile: profile };
+                closeModal("loginModal");
+                document.getElementById("twoFACode").value = "";
+                document.getElementById("twoFAMsg").textContent = "";
+                openModal("twoFAModal");
+                document.getElementById("twoFACode").focus();
+                return;
+            }
+            await completeLogin(email, password, profile);
+        }
+
+        async function completeLogin(email, password, profile) {
+            if (profile) {
+                const banned = await enforceBan(profile.uid, email, profile.account);
+                if (banned) return;
+            }
+            localStorage.setItem("email", email);
+            if (password) localStorage.setItem("password", password);
+            localStorage.setItem("sk124_auth_token", "true");
+            if (profile) renderUserInfo(profile, email);
+            alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
+            closeModal("twoFAModal");
+            closeModal("loginModal");
+            window.location.href = "rjyz.html";
+        }
+
+        async function confirm2FALogin() {
+            const code = document.getElementById("twoFACode").value.trim();
+            const msg = document.getElementById("twoFAMsg");
+            if (!code || code.length !== 6) { msg.textContent = "请输入6位动态验证码"; return; }
+            if (!pendingLoginInfo) { msg.textContent = "会话已过期，请重新登录"; return; }
+            const secret = pendingLoginInfo.profile.two_factor_secret;
+            const ok = verifyTOTP(secret, code);
+            if (!ok) { msg.textContent = "验证码错误，请重试"; return; }
+            await completeLogin(pendingLoginInfo.email, pendingLoginInfo.password, pendingLoginInfo.profile);
+            pendingLoginInfo = null;
+        }
+
+        async function cancel2FALogin() {
+            pendingLoginInfo = null;
+            closeModal("twoFAModal");
+            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
         }
 
         async function logout() {
@@ -465,10 +584,19 @@
             const contentContainer = document.getElementById("contentContainer");
             const userInfo = document.getElementById("userInfo");
             if (session) {
+                const profile = await ensureProfile(session.user.email, session.user.user_metadata ? session.user.user_metadata.account : "");
+                if (profile) {
+                    const banned = await enforceBan(profile.uid, session.user.email, profile.account);
+                    if (banned) {
+                        mainContainer.style.display = "block";
+                        contentContainer.style.display = "none";
+                        userInfo.style.display = "none";
+                        return;
+                    }
+                }
                 mainContainer.style.display = "none";
                 contentContainer.style.display = "block";
                 userInfo.style.display = "block";
-                const profile = await ensureProfile(session.user.email, session.user.user_metadata ? session.user.user_metadata.account : "");
                 if (profile) renderUserInfo(profile, session.user.email);
             } else {
                 mainContainer.style.display = "block";
@@ -483,7 +611,6 @@
             document.getElementById("profileGender").value = localStorage.getItem("gender") || "保密";
             document.getElementById("profileBio").value = localStorage.getItem("bio") || "";
         }
-
         function closeProfileModal() { document.getElementById("profileModal").style.display = "none"; }
 
         async function saveProfile() {
@@ -491,29 +618,19 @@
             const gender = document.getElementById("profileGender").value;
             const bio = document.getElementById("profileBio").value.trim();
             if (!account) { alert("请输入账号名称！"); return; }
-
             const email = localStorage.getItem("email");
-
-            if (isReservedName(account, email)) {
-                alert("该账号名为保留名称，仅限指定邮箱使用！");
-                return;
-            }
-
+            if (isReservedName(account, email)) { alert("该账号名为保留名称，仅限指定邮箱使用！"); return; }
             const taken = await isAccountTaken(account, email);
             if (taken) { alert("该账号名已被使用，请换一个！"); return; }
-
             const res = await saveProfileToDB(email, account, gender, bio);
             if (!res.ok) { alert("保存失败: " + res.msg); return; }
-
             localStorage.setItem("account", account);
             localStorage.setItem("gender", gender);
             localStorage.setItem("bio", bio);
-
             const uid = localStorage.getItem("uid") || "-";
             document.getElementById("userEmail").textContent = "UID:" + uid + " " + account;
             document.getElementById("userUid").textContent = uid;
             document.getElementById("userBio").textContent = bio || "还没有个性签名";
-
             alert("资料已保存！");
             closeProfileModal();
         }
