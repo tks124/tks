@@ -19,10 +19,13 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 .search-row{display:flex;gap:8px;margin-bottom:12px;}
 .search-row input{flex:1;padding:10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#fff;font-size:14px;}
 .search-row button{padding:10px 14px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;font-size:13px;}
-.friend-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;font-size:14px;cursor:pointer;position:relative;}
+.friend-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;font-size:14px;position:relative;}
 .friend-item:hover{background:rgba(255,255,255,0.08);}
+.friend-info-box{flex:1;min-width:0;cursor:pointer;}
 .friend-item .fname{color:#f1f5f9;font-weight:bold;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
 .friend-item .fuid{color:#94a3b8;font-size:12px;margin-left:6px;}
+.chat-btn{padding:6px 12px;border:none;border-radius:8px;background:#8b5cf6;color:#fff;font-size:12px;font-weight:bold;cursor:pointer;flex-shrink:0;}
+.chat-btn:hover{background:#7c3aed;}
 .friend-item.has-dot{padding-left:22px;}
 .friend-item.has-dot.official{padding-left:26px;}
 .dot-badge{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#3b82f6;}
@@ -155,7 +158,7 @@ async function searchUid(){
   if(targetUid===myUid){resultBox.innerHTML="";status.textContent="不能加自己";status.style.color="#ef4444";return;}
   var r=await supabaseClient.from("profiles").select("uid,account").eq("uid",targetUid).maybeSingle();
   if(r.error||!r.data){resultBox.innerHTML="";status.textContent="没有找到该 UID 的用户";status.style.color="#ef4444";return;}
-  resultBox.innerHTML='<div class="friend-item"><div><span class="fname">'+escapeHtml(r.data.account||"未命名")+'</span><span class="fuid">UID:'+r.data.uid+'</span></div><button onclick="sendRequest('+r.data.uid+')">加好友</button></div>';
+  resultBox.innerHTML='<div class="friend-item"><div class="friend-info-box" onclick="location.href=\'profile.html?uid='+r.data.uid+'\'"><div class="fname">'+escapeHtml(r.data.account||"未命名")+'</div><div class="fuid">UID:'+r.data.uid+'</div></div><button class="chat-btn" onclick="sendRequest('+r.data.uid+')">加好友</button></div>';
 }
 
 async function sendRequest(targetUid){
@@ -195,10 +198,15 @@ async function loadFriends(){
       if(lp.data){hasDot=new Date(lp.data.created_at).getTime()>officialLastSeen;}
     }
     var cls="friend-item"+(hasDot?" has-dot"+(isOfficial?" official":""):"");
-    html+='<div class="'+cls+'" onclick="openFriend('+f.uid+')">';
+    
+    html+='<div class="'+cls+'">';
     if(hasDot)html+='<span class="dot-badge'+(isOfficial?' official':'')+'"></span>';
-    html+='<div><div class="fname">'+escapeHtml(f.account||("UID"+f.uid))+badgeHTML(f.badge)+'</div>';
-    html+='<div class="fuid">'+(isOfficial?"官方账号":"UID: "+f.uid)+'</div></div></div>';
+    html+='<div class="friend-info-box" onclick="location.href=\'profile.html?uid='+f.uid+'\'">';
+    html+='<div class="fname">'+escapeHtml(f.account||("UID"+f.uid))+badgeHTML(f.badge)+'</div>';
+    html+='<div class="fuid">'+(isOfficial?"官方账号":"UID: "+f.uid)+'</div>';
+    html+='</div>';
+    html+='<button class="chat-btn" onclick="openFriend('+f.uid+')">聊天</button>';
+    html+='</div>';
   }
   $("friendList").innerHTML=html;
 }
@@ -225,7 +233,7 @@ async function openFriend(uid){
 }
 
 function switchChat(mode){
-  if(mode==="private"&&!currentFriend){alert("请先在好友列表点一个好友");return;}
+  if(mode==="private"&&!currentFriend){alert("请先在好友列表点一个好友的聊天按钮");return;}
   chatMode=mode;
   updateTabs();
   if(mode==="public")$("chatTitle").textContent="公共频道 · 所有登录用户可见";
