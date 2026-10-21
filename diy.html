@@ -83,10 +83,8 @@ body.admin .diy-card .d-menu{display:flex;align-items:center;justify-content:cen
 .game-row{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;margin-bottom:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font-size:16px;cursor:pointer;box-shadow:var(--shadow);}
 .game-row:hover{transform:translateX(6px);border-color:rgba(10,108,255,.5);}
 .game-row .arr{color:var(--muted);font-size:18px;}
-#addGameBtn{position:fixed;top:calc(56px + var(--sat));right:14px;z-index:1200;width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#10b981,#059669);color:#fff;border:none;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 6px 16px rgba(16,185,129,.4);display:none;}
-body.admin #addGameBtn{display:flex;align-items:center;justify-content:center;}
-#grantVerifyBtn{position:fixed;top:calc(56px + var(--sat));right:14px;z-index:1200;width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#8b5cf6,#7c3aed);color:#fff;border:none;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 6px 16px rgba(139,92,246,.5);display:none;align-items:center;justify-content:center;}
-body.admin #grantVerifyBtn{display:flex;}
+#adminMenuBtn{position:fixed;top:calc(56px + var(--sat));right:14px;z-index:1200;width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,#10b981,#059669);color:#fff;border:none;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 6px 16px rgba(16,185,129,.4);display:none;align-items:center;justify-content:center;}
+body.admin #adminMenuBtn{display:flex;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1500;justify-content:center;align-items:center;padding:20px;}
 .modal-overlay.show{display:flex;}
 .modal-content{background:var(--card);border-radius:14px;padding:24px;width:100%;max-width:380px;color:var(--text);max-height:80vh;overflow-y:auto;}
@@ -135,8 +133,7 @@ body.admin #grantVerifyBtn{display:flex;}
   <div class="user" id="userDisplay">加载中...</div>
 </div>
 <button id="menuBtn">☰</button>
-<button id="addGameBtn" title="添加新游戏">+</button>
-<button id="grantVerifyBtn" title="授予官方认证">+</button>
+<button id="adminMenuBtn" title="管理员操作">+</button>
 <div id="sidebar">
   <h2>菜单</h2>
   <button class="side-btn" onclick="goPage('page-home')">主页</button>
@@ -202,6 +199,7 @@ body.admin #grantVerifyBtn{display:flex;}
   <button class="big-btn" onclick="goReviewDiy()">审核 DIY 内容</button>
   <button class="big-btn" onclick="goReviewVerify()">审核认证标识</button>
   <button class="big-btn" onclick="goReviewReport()">审核举报</button>
+  <button class="big-btn" onclick="goReviewPvz2()">审核 PVZ2 地图</button>
 </div>
 
 <div class="page" id="page-review">
@@ -220,6 +218,12 @@ body.admin #grantVerifyBtn{display:flex;}
   <button class="back-btn" onclick="goReview()">← 返回</button>
   <h1>审核举报</h1>
   <div class="grid-list" id="reportReviewGrid"></div>
+</div>
+
+<div class="page" id="page-pvz2-review">
+  <button class="back-btn" onclick="goReview()">← 返回</button>
+  <h1>审核 PVZ2 地图</h1>
+  <div class="grid-list" id="pvz2ReviewGrid"></div>
 </div>
 
 <div class="page" id="page-official">
@@ -442,6 +446,7 @@ function goReview(){goPage("page-review-select");}
 function goReviewDiy(){goPage("page-review");loadReview();}
 function goReviewVerify(){goPage("page-verify-review");loadVerifyReview();}
 function goReviewReport(){goPage("page-report-review");loadReportReview();}
+function goReviewPvz2(){goPage("page-pvz2-review");loadPvz2Review();}
 function openOfficialPost(){$("offText").value="";$("offFileName").textContent="";$("offImgInput").value="";$("offFileInput").value="";goPage("page-official");}
 
 function goOfficialList(){
@@ -470,15 +475,18 @@ async function loadOfficialList(){
   }).join("");
 }
 
-$("addGameBtn").addEventListener("click", function(){$("newGameName").value = "";openModal("addGameModal");});
+$("adminMenuBtn").addEventListener("click", function(){
+  var choice = prompt("请选择管理员操作：\n1. 添加新游戏/分区\n2. 授予官方认证\n\n请输入数字：");
+  if(choice === "1") {
+    $("newGameName").value = ""; openModal("addGameModal");
+  } else if(choice === "2") {
+    $("gvUid").value="";$("gvBadge").value="author";$("gvText").value="";$("gvText").style.display="none";$("gvStatus").textContent="";
+    openModal("grantVerifyModal");
+  }
+});
+
 async function createGame(){var name = $("newGameName").value.trim();if(!name){toast("请输入名称");return;}var res = await supabaseClient.from("diy_games").insert([{name:name}]);if(res.error){toast("失败: " + res.error.message);return;}closeModal("addGameModal");await loadGameList();toast("已添加");}
 
-$("grantVerifyBtn").addEventListener("click", function(){
-  if(!isAdmin){toast("仅管理员可用");return;}
-  $("gvUid").value="";$("gvBadge").value="author";$("gvText").value="";$("gvText").style.display="none";
-  $("gvStatus").textContent="";
-  openModal("grantVerifyModal");
-});
 $("gvBadge").addEventListener("change", function(){
   $("gvText").style.display = (this.value === "a") ? "block" : "none";
 });
@@ -765,6 +773,51 @@ async function loadReportReview(){
       }
     });
   });
+}
+
+async function loadPvz2Review(){
+  showLoading("加载地图审核列表...");
+  var res = await supabaseClient.from("pvz2_maps").select("*").eq("status","pending").order("created_at",{ascending:true});
+  hideLoading();
+  var grid = $("pvz2ReviewGrid"); 
+  if(res.error){grid.innerHTML = '<div class="empty">加载失败</div>';return;}
+  if(!res.data || res.data.length === 0){grid.innerHTML = '<div class="empty">暂无待审核地图</div>';return;}
+  grid.innerHTML = res.data.map(function(item){
+    var fileLink = item.source_url ? '<a href="'+item.source_url+'" target="_blank" style="color:#0a6cff;text-decoration:underline;">点击查看源代码文件</a>' : '未上传文件';
+    return '<div class="review-card">' +
+      '<div class="r-title">' + escapeHtml(item.name) + '</div>' +
+      '<div class="r-info">安卓ID: ' + escapeHtml(item.android_id) + '</div>' +
+      '<div class="r-info">iOS ID: ' + escapeHtml(item.ios_id) + '</div>' +
+      '<div class="r-info">作者: ' + escapeHtml(item.author_name) + '</div>' +
+      '<div class="r-info">其他: ' + escapeHtml(item.other_info || "无") + '</div>' +
+      '<div class="r-info">文件: ' + fileLink + '</div>' +
+      '<div class="r-actions">' +
+        '<button style="background:#10b981;" data-pvid="' + item.id + '" data-pvact="approve">过审</button>' +
+        '<button style="background:#ef4444;" data-pvid="' + item.id + '" data-pvact="reject">不过审</button>' +
+      '</div></div>';
+  }).join("");
+  
+  grid.querySelectorAll("button[data-pvact]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = parseInt(btn.dataset.pvid,10);
+      if(btn.dataset.pvact === "approve"){
+        approvePvz2(id);
+      } else {
+        if(confirm("确定要拒绝该地图吗？")) {
+          supabaseClient.from("pvz2_maps").update({status:"rejected"}).eq("id",id).then(function(){
+            toast("已拒绝");
+            loadPvz2Review();
+          });
+        }
+      }
+    });
+  });
+}
+
+async function approvePvz2(id){
+  await supabaseClient.from("pvz2_maps").update({status:"approved"}).eq("id",id);
+  toast("已过审");
+  loadPvz2Review();
 }
 
 document.querySelectorAll("#banModal button[data-days]").forEach(function(btn){
