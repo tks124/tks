@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银行大劫案 - 官网</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.6; overflow-x: hidden; }
+.hidden { display: none !important; }
+
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #0d0d0d 0%, #1a1a2e 100%); padding: 40px 20px; }
+.hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); color: #ff4444; text-shadow: 0 0 30px rgba(255,68,68,0.5); letter-spacing: 8px; margin-bottom: 20px; }
+.hero .subtitle { font-size: clamp(1rem, 3vw, 1.5rem); color: #aaa; margin-bottom: 40px; }
+.hero .tagline { font-size: clamp(1.1rem, 3.5vw, 1.8rem); color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.4); margin-bottom: 30px; }
+.hero-btn-group { display: flex; gap: 20px; }
+.btn { padding: 16px 48px; background: linear-gradient(135deg, #ff4444, #cc0000); color: #fff; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; transition: transform 0.3s; }
+.btn:hover { transform: scale(1.05); }
+.btn-secondary { background: transparent; border: 2px solid #ff4444; }
+
+.section { max-width: 1100px; margin: 0 auto; padding: 80px 20px; }
+.section-title { font-size: clamp(1.8rem, 5vw, 2.8rem); text-align: center; color: #ff4444; margin-bottom: 50px; letter-spacing: 4px; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+.feature-card { background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 35px 25px; text-align: center; transition: transform 0.3s, border-color 0.3s; opacity: 0; transform: translateX(-100px); }
+.feature-card.show { opacity: 1; transform: translateX(0); }
+.feature-card:hover { transform: translateY(-6px); border-color: #ff4444; }
+.feature-icon { font-size: 3rem; margin-bottom: 15px; }
+.feature-card h3 { font-size: 1.3rem; color: #ffd700; margin-bottom: 12px; }
+
+.story-content { max-width: 800px; margin: 0 auto; text-align: center; }
+.highlight { color: #ff4444; font-weight: bold; }
+.gold { color: #ffd700; font-weight: bold; }
+.weapon-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+.weapon-tag { padding: 10px 22px; background: #1a1a2e; border: 1px solid #444; border-radius: 25px; font-size: 1rem; }
+.enemy-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+.enemy-stage { padding: 30px 20px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #ff4444; }
+
+.police-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 80px; }
+.unit-item { display: flex; justify-content: space-between; padding: 20px 30px; background: rgba(255,255,255,0.04); border-radius: 8px; border-left: 5px solid transparent; opacity: 0; transform: translateY(30px); transition: all 0.3s; }
+.unit-item.reveal { opacity: 1; transform: translateY(0); }
+.unit-item.selected { border-left-color: #007aff; background: rgba(0,122,255,0.1); box-shadow: 0 0 15px rgba(0,122,255,0.3); }
+
+footer { text-align: center; padding: 40px 20px; color: #555; font-size: 0.9rem; border-top: 1px solid #222; }
+footer a { color: #888; text-decoration: none; }
+
+.select-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.select-overlay h2 { font-size: 32px; margin-bottom: 40px; color: #fff; }
+.faction-btn { width: 260px; padding: 18px; font-size: 20px; border: none; border-radius: 8px; margin: 10px; cursor: pointer; font-weight: bold; }
+.faction-gang { background: #ff4444; color: #fff; }
+.faction-police { background: #007aff; color: #fff; }
+
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: flex; justify-content: center; align-items: center; }
+.modal-content { background: #1a1a2e; padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; }
+.modal-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; }
+.modal-win { background: #007aff; }
+.modal-android { background: #34c759; }
+.close-btn { margin-top: 20px; background: transparent; border: 1px solid #555; color: #aaa; }
+</style>
+</head>
+<body>
+
+<section class="hero" id="page-hero">
+  <h1>银 行 大 劫 案</h1>
+  <p class="subtitle">HEIST: BANK ROBBERY</p>
+  <p class="tagline">踩点 · 进攻 · 掠夺 · 突围</p>
+  <div class="hero-btn-group">
+    <button class="btn" onclick="document.getElementById('select-overlay').classList.remove('hidden')">进入游戏</button>
+    <button class="btn btn-secondary" onclick="openModal()">立即下载</button>
+  </div>
+</section>
+
+<section class="section hidden" id="page-story" style="background: #0a0a0a;">
+  <h2 class="section-title">游 戏 介 绍</h2>
+  <div class="story-content">
+    <p>你是一名帮派领导人，你盯上了在一座戒备森严的城市银行。<br>
+    行动开始前，你需要<span class="highlight">指引你的人员去踩点</span>，布置好场景。<br>
+    在行动中，你可以<span class="gold">选择多种武器</span>与装备，制定属于你的完美抢劫方案。</p>
+    <p>但别以为拿到钱就能全身而退——<br>
+    警察不会坐视不管，<span class="highlight">本地警方将会在你下令开始抢劫的时候</span>，以快速响应的方式赶到现场。<br>
+    <span class="highlight">随后特警将以雷霆之势</span>，以装甲车和直升机空降的方式对你的人员展开进攻。<br>
+    而当你终于打开把成堆现金打包带走时，<br>
+    真正的噩梦才刚刚开始：<span class="gold">国民警卫队已经赶到</span>…</p>
+  </div>
+</section>
+
+<section class="section hidden" id="page-features" style="background: #0f0f1a;">
+  <h2 class="section-title">核 心 玩 法</h2>
+  <div class="features">
+    <div class="feature-card"><div class="feature-icon">🔍</div><h3>实地踩点</h3><p>行动前潜入银行，布置你的的道具，他们将为你带来奇效。</p></div>
+    <div class="feature-card"><div class="feature-icon">💣</div><h3>暗雷与陷阱</h3><p>部署暗雷，为出口保驾护航，部署声音设备吸引警方，部署陷阱限制警方。</p></div>
+    <div class="feature-card"><div class="feature-icon">🔫</div><h3>武器库</h3><p>手枪、冲锋枪、步枪、军用步枪……自由搭配你的装备。</p></div>
+    <div class="feature-card"><div class="feature-icon">🚁</div><h3>空中威胁</h3><p>警方直升机随时空投特警，从屋顶到街道，无处可藏。</p></div>
+    <div class="feature-card"><div class="feature-icon">🛡️</div><h3>国民警卫队</h3><p>金库得手后警报拉满，运兵车的轰鸣声将告诉你危机。</p></div>
+    <div class="feature-card"><div class="feature-icon">🚗</div><h3>极限突围</h3><p>抢车、甩掉追击，逃避警方的追捕。</p></div>
+  </div>
+</section>
+
+<section class="section hidden" id="page-weapons" style="background: #0a0a0a;">
+  <h2 class="section-title">武 器 装 备</h2>
+  <div class="weapon-list">
+    <span class="weapon-tag">手枪</span><span class="weapon-tag">冲锋枪</span><span class="weapon-tag">步枪</span>
+    <span class="weapon-tag">狙击枪</span><span class="weapon-tag">军用步枪</span><span class="weapon-tag">帮派改装步枪</span>
+    <span class="weapon-tag">手雷</span><span class="weapon-tag">以及后续还会加入的新式装备</span>
+    <span class="weapon-tag">同时你可以在侧滑栏中自定义你要携带的装备，但请注意，警方也可能携带这种武器</span>
+  </div>
+  <div style="text-align:center; margin-top: 50px;">
+    <button class="btn" onclick="openModal()">立即下载</button>
+  </div>
+</section>
+
+<section class="section hidden" id="page-enemies" style="background: #0f0f1a;">
+  <h2 class="section-title">敌 对 势 力</h2>
+  <div class="enemy-stages">
+    <div class="enemy-stage"><h4>第一阶段 · 银行保安</h4><p>行动初期，面对银行内部安保人员，火力较弱但会触发警报。</p></div>
+    <div class="enemy-stage"><h4>第二阶段 · 城市警察</h4><p>警报响起后，本地警方将以迅雷之势赶到现场并堵住你的退路。</p></div>
+    <div class="enemy-stage"><h4>第三阶段 · 特警部队</h4><p>直升机、装甲车带来的特警将会告诉你压迫感。</p></div>
+    <div class="enemy-stage"><h4>第四阶段 · 国民警卫队</h4><p>金钱得手，运兵车同到，这群士兵将告诉你逃跑的困难。</p></div>
+  </div>
+</section>
+
+<section class="section hidden" id="page-police" style="background: linear-gradient(180deg, #0a0a0a, #1a1a2e);">
+  <h2 class="section-title">警方</h2>
+  <div class="police-list" id="police-list">
+    <div class="unit-item"><h3>巡逻警员</h3><p>日常巡逻</p></div>
+    <div class="unit-item"><h3>特警队员</h3><p>突击主力</p></div>
+    <div class="unit-item"><h3>指挥官</h3><p>全能增益</p></div>
+    <div class="unit-item"><h3>狙击直升机</h3><p>空中狙击</p></div>
+    <div class="unit-item"><h3>运输直升机</h3><p>天降正义</p></div>
+    <div class="unit-item"><h3>警盾</h3><p>前锋开路</p></div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 银行大劫案 tks124 银行大劫案宣传网</p>
+  <p>反馈邮箱：<a href="mailto:tks124jqr@spacekill124.cn">tks124jqr@spacekill124.cn</a></p>
+  <p>官网：<a href="http://www.spacekill124.cn" target="_blank">www.spacekill124.cn</a></p>
+</footer>
+
+<div id="select-overlay" class="select-overlay hidden">
+  <h2>选择你的阵营</h2>
+  <button class="faction-btn faction-gang" onclick="enterGang()">帮派阵营</button>
+  <button class="faction-btn faction-police" onclick="enterPolice()">警方阵营</button>
+</div>
+
+<div id="download-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2 style="color:#fff; margin-bottom:20px;">下载游戏</h2>
+    <a href="#" id="link-win" class="modal-btn modal-win">Windows 版下载</a>
+    <a href="#" id="link-android" class="modal-btn modal-android">Android 版下载</a>
+    <button class="modal-btn close-btn" onclick="document.getElementById('download-modal').classList.add('hidden')">关闭</button>
+  </div>
+</div>
+
+<script>
+document.getElementById('link-win').href = "#";
+document.getElementById('link-android').href = "https://github.com/tks124/tks/releases/download/v1.0.4/v1.0.4-yhdja.APK";
+
+function openModal() { document.getElementById('download-modal').classList.remove('hidden'); }
+
+function enterGang() {
+  document.getElementById('select-overlay').classList.add('hidden');
+  document.getElementById('page-hero').classList.add('hidden');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('hidden'));
+  document.getElementById('page-police').classList.add('hidden');
+  
+  const cards = document.querySelectorAll('.feature-card');
+  cards.forEach((c, i) => setTimeout(() => c.classList.add('show'), i * 150));
+}
+
+function enterPolice() {
+  document.getElementById('select-overlay').classList.add('hidden');
+  document.getElementById('page-hero').classList.add('hidden');
+  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('page-police').classList.remove('hidden');
+
+  const items = document.querySelectorAll('.unit-item');
+  items.forEach((item, i) => setTimeout(() => item.classList.add('reveal'), i * 200));
+
+  setTimeout(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, 1800);
+
+  setTimeout(() => {
+    let i = 0;
+    let speed = 150;
+    let count = 0;
+    const maxCount = 15;
+    
+    function loop() {
+      items.forEach(u => u.classList.remove('selected'));
+      items[i].classList.add('selected');
+      i = (i + 1) % items.length;
+      count++;
+      
+      if(count < maxCount) {
+        speed += 20;
+        setTimeout(loop, speed);
+      } else {
+        items.forEach(u => u.classList.remove('selected'));
+        items[Math.floor(Math.random() * items.length)].classList.add('selected');
+        openModal();
+      }
+    }
+    loop();
+  }, 3500);
+}
+</script>
+</body>
+</html>
