@@ -131,7 +131,7 @@ loadInfo().then(function (info) {
     "v" + info.product.version + " " + info.product.channel + "已发布";
 
   document.getElementById("meta-os").textContent = info.platform.os;
-  document.getElementById("meta-size").textContent = "安装包仅 " + info.platform.packageSize;
+  document.getElementById("meta-size").textContent = "安装包 " + info.platform.packageSize;
 
   const stats = [
     { num: info.platform.packageSize, label: "极简安装包" },
