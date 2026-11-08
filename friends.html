@@ -63,7 +63,7 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
   <div class="topbar">
     <h2>好友与聊天</h2>
     <div class="me" id="meInfo">—</div>
-    <button onclick="location.href='SpaceKill124.html'">返回首页</button>
+    <button onclick="location.href='SpaceKill124'">返回首页</button>
   </div>
   <div class="grid">
     <div>
@@ -124,7 +124,7 @@ async function init(){
   if(!supabaseClient){document.body.innerHTML="<p style='text-align:center;padding:40px;'>Supabase 未加载</p>";return;}
   var ses=await supabaseClient.auth.getSession();
   var session=ses&&ses.data?ses.data.session:null;
-  if(!session){location.href="SpaceKill124.html";return;}
+  if(!session){location.href="SpaceKill124";return;}
   myEmail=session.user.email;
   var pr=await supabaseClient.from("profiles").select("*").eq("email",myEmail).maybeSingle();
   if(pr.data){myUid=pr.data.uid;myAccount=pr.data.account||myEmail;}
