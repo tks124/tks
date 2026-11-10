@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>制作模组 - 银行大劫案</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg:#070b14; --panel:#0f172a; --panel2:#131c2e; --line:#1e293b;
+    --gold:#f5b942; --red:#e11d48; --blue:#3b82f6; --green:#22c55e;
+    --txt:#e2e8f0; --dim:#94a3b8;
+  }
+  body {
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--txt); min-height:100vh; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bg-fx { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .bg-fx::before {
+    content:''; position:absolute; width:800px; height:800px; border-radius:50%;
+    background:radial-gradient(circle, rgba(245,185,66,0.13), transparent 65%);
+    top:-360px; right:-240px; filter:blur(20px);
+  }
+  .bg-fx::after {
+    content:''; position:absolute; width:700px; height:700px; border-radius:50%;
+    background:radial-gradient(circle, rgba(59,130,246,0.13), transparent 65%);
+    bottom:-320px; left:-200px; filter:blur(20px);
+  }
+  .wrap { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 20px 60px; }
+
+  header {
+    position:sticky; top:0; z-index:50; backdrop-filter:blur(14px);
+    background:rgba(7,11,20,0.82); border-bottom:1px solid var(--line);
+  }
+  .nav { display:flex; align-items:center; justify-content:space-between; height:62px; }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:16px; }
+  .logo-mark {
+    width:30px; height:30px; border-radius:8px; display:grid; place-items:center;
+    background:linear-gradient(135deg,var(--gold),#b45309); font-size:15px;
+  }
+  .nav a { color:var(--dim); text-decoration:none; font-size:13px; }
+  .nav a:hover { color:var(--gold); }
+
+  .page-head { padding:34px 0 22px; }
+  .page-head h1 { font-size:28px; font-weight:900; letter-spacing:-0.6px; margin-bottom:8px; }
+  .page-head p { font-size:13px; color:var(--dim); line-height:1.8; }
+
+  .layout { display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
+  @media (max-width:900px){ .layout { grid-template-columns:1fr; } }
+
+  .panel {
+    background:linear-gradient(165deg, rgba(15,23,42,0.96), rgba(15,23,42,0.62));
+    border:1px solid var(--line); border-radius:14px; padding:20px;
+  }
+  .tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .tab {
+    padding:9px 16px; border-radius:9px; font-size:12.5px; font-weight:700; cursor:pointer;
+    background:#1e293b; color:var(--dim); border:1px solid transparent; transition:all .16s;
+    font-family:inherit;
+  }
+  .tab:hover { color:var(--txt); }
+  .tab.active { background:linear-gradient(135deg,var(--gold),#d97706); color:#1a1206; }
+
+  .pane { display:none; }
+  .pane.active { display:block; }
+
+  .field { margin-bottom:12px; }
+  .field label { display:block; font-size:11.5px; color:var(--dim); margin-bottom:5px; font-weight:600; }
+  .field input, .field select {
+    width:100%; padding:9px 11px; border-radius:8px; font-size:12.5px;
+    background:#0b1220; border:1px solid #334155; color:var(--txt);
+    font-family:inherit; outline:none; transition:border-color .16s;
+  }
+  .field input:focus, .field select:focus { border-color:var(--gold); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .chk { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--txt); cursor:pointer; }
+  .chk input { width:15px; height:15px; accent-color:var(--gold); cursor:pointer; }
+
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    padding:10px 18px; border-radius:9px; font-size:12.5px; font-weight:800;
+    cursor:pointer; border:none; font-family:inherit; transition:all .16s;
+  }
+  .btn-gold { background:linear-gradient(135deg,var(--gold),#d97706); color:#1a1206; }
+  .btn-gold:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,185,66,0.3); }
+  .btn-green { background:linear-gradient(135deg,#16a34a,#15803d); color:#fff; }
+  .btn-green:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(34,197,94,0.3); }
+  .btn-red { background:linear-gradient(135deg,#dc2626,#991b1b); color:#fff; }
+  .btn-ghost { background:#1e293b; color:var(--txt); border:1px solid #334155; }
+  .btn-ghost:hover { background:#273449; }
+  .btn-sm { padding:5px 10px; font-size:11px; border-radius:6px; }
+
+  .list { display:flex; flex-direction:column; gap:8px; margin-top:14px; max-height:340px; overflow-y:auto; }
+  .item {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; border-radius:9px; background:#0b1220; border:1px solid #1e293b;
+    font-size:12px;
+  }
+  .item:hover { border-color:#334155; }
+  .item .name { font-weight:700; color:#fff; }
+  .item .meta { font-size:10.5px; color:var(--dim); margin-top:2px; }
+  .empty { font-size:11.5px; color:#64748b; padding:14px; text-align:center; border:1px dashed #334155; border-radius:9px; }
+
+  /* 导出面板 */
+  .export-panel { position:sticky; top:78px; }
+  .export-panel h3 { font-size:14px; font-weight:800; margin-bottom:4px; }
+  .export-panel .hint { font-size:11px; color:var(--dim); line-height:1.7; margin-bottom:14px; }
+  .sel-group { margin-bottom:12px; }
+  .sel-group .ghead {
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:11.5px; font-weight:800; color:var(--gold); margin-bottom:6px;
+  }
+  .sel-group .ghead button {
+    background:none; border:none; color:var(--blue); font-size:10.5px; cursor:pointer;
+    font-family:inherit; padding:0;
+  }
+  .sel-list { display:flex; flex-direction:column; gap:4px; max-height:150px; overflow-y:auto; }
+  .sel-list label {
+    display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--txt);
+    padding:4px 6px; border-radius:5px; cursor:pointer;
+  }
+  .sel-list label:hover { background:#0b1220; }
+  .sel-list input { width:14px; height:14px; accent-color:var(--gold); cursor:pointer; }
+  .summary {
+    font-size:11.5px; color:#60a5fa; padding:9px 11px; border-radius:8px;
+    background:rgba(59,130,246,0.09); border:1px solid rgba(59,130,246,0.25);
+    margin:12px 0; text-align:center; font-weight:700;
+  }
+  .toast {
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:#1e293b; color:#fff; padding:11px 20px; border-radius:9px; font-size:12.5px;
+    border:1px solid #334155; opacity:0; pointer-events:none; transition:all .25s; z-index:300;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.ok { border-color:rgba(34,197,94,0.5); }
+  .toast.err { border-color:rgba(220,38,38,0.5); }
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><div class="logo-mark">🧩</div>制作模组</div>
+    <a href="yhdja">← 返回官网</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <h1>模组制作器</h1>
+    <p>自定义武器、单位与势力，勾选要导出的内容，生成 <b style="color:#f5b942;">.yhdja</b> 模组包。<br>
+       在完整版游戏侧滑栏「加载模组」中导入即可使用。</p>
+  </div>
+
+  <div class="layout">
+    <!-- 左：编辑区 -->
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" data-pane="weapon">🔫 武器</button>
+        <button class="tab" data-pane="unit">👤 单位</button>
+        <button class="tab" data-pane="faction">🏳️ 势力</button>
+      </div>
+
+      <!-- 武器 -->
+      <div class="pane active" id="pane-weapon">
+        <div class="row2">
+          <div class="field"><label>武器名称</label><input id="wName" value="新武器"></div>
+          <div class="field"><label>伤害</label><input id="wDmg" type="number" value="20"></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label>弹容</label><input id="wMag" type="number" value="20"></div>
+          <div class="field"><label>射速(秒)</label><input id="wRate" type="number" step="0.01" value="0.2"></div>
+          <div class="field"><label>换弹(秒)</label><input id="wReload" type="number" step="0.1" value="1.5"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>射程(米)</label><input id="wRange" type="number" step="0.5" value="4"></div>
+          <div class="field"><label>散布</label><input id="wSpread" type="number" step="0.01" value="0.1"></div>
+        </div>
+        <label class="chk" style="margin-bottom:14px;"><input type="checkbox" id="wSniper"> 设为狙击枪（低散布、移速减半）</label>
+        <button class="btn btn-green" onclick="addWeapon()">＋ 添加武器</button>
+        <div class="list" id="weaponList"></div>
+      </div>
+
+      <!-- 单位 -->
+      <div class="pane" id="pane-unit">
+        <div class="row2">
+          <div class="field"><label>单位名字</label><input id="uName" value="新单位"></div>
+          <div class="field"><label>图标</label>
+            <select id="uIcon">
+              <option value="none">无</option>
+              <option value="star">★ 星形</option>
+              <option value="bar">— 横条</option>
+              <option value="soldier">✮ 士兵</option>
+              <option value="square">■ 方块</option>
+            </select>
+          </div>
+        </div>
+        <div class="row3">
+          <div class="field"><label>血量</label><input id="uHp" type="number" value="50"></div>
+          <div class="field"><label>速度</label><input id="uSpeed" type="number" step="0.05" value="0.4"></div>
+          <div class="field"><label>视野</label><input id="uView" type="number" value="260"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>所属势力</label><select id="uFaction"></select></div>
+          <div class="field"><label>携带武器</label><select id="uWeapon"></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>行为逻辑</label>
+            <select id="uBehavior">
+              <option value="attack">主动进攻</option>
+              <option value="defend">防守</option>
+              <option value="safe">安全 / 逃跑</option>
+            </select>
+          </div>
+          <div class="field"><label>制作人</label><input id="uAuthor" value="Anonymous"></div>
+        </div>
+        <button class="btn btn-green" onclick="addUnit()">＋ 添加单位</button>
+        <div class="list" id="unitList"></div>
+      </div>
+
+      <!-- 势力 -->
+      <div class="pane" id="pane-faction">
+        <div class="row2">
+          <div class="field"><label>势力名称</label><input id="fName" value="新势力"></div>
+          <div class="field"><label>敌对势力（可多选）</label><select id="fEnemies" multiple size="4" style="height:auto;"></select></div>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:12px;">按住 Ctrl / Cmd 可多选。敌对关系为双向生效。</div>
+        <button class="btn btn-green" onclick="addFaction()">＋ 添加势力</button>
+        <div class="list" id="factionList"></div>
+      </div>
+    </div>
+
+    <!-- 右：导出 -->
+    <div class="panel export-panel">
+      <h3>📦 导出模组</h3>
+      <div class="hint">勾选要包含在模组包里的内容。未勾选的不会导出。</div>
+
+      <div class="field"><label>文件名</label><input id="exName" value="my-mod"></div>
+      <div class="row2">
+        <div class="field"><label>作者</label><input id="exAuthor" value="Admin"></div>
+        <div class="field"><label>版本</label><input id="exVersion" value="1.0.0"></div>
+      </div>
+
+      <div class="sel-group">
+        <div class="ghead"><span>武器</span><button onclick="selAll('weapons',true)">全选</button></div>
+        <div class="sel-list" id="selWeapons"></div>
+      </div>
+      <div class="sel-group">
+        <div class="ghead"><span>单位</span><button onclick="selAll('units',true)">全选</button></div>
+        <div class="sel-list" id="selUnits"></div>
+      </div>
+      <div class="sel-group">
+        <div class="ghead"><span>势力</span><button onclick="selAll('factions',true)">全选</button></div>
+        <div class="sel-list" id="selFactions"></div>
+      </div>
+
+      <div class="summary" id="exSummary">已选：0 项</div>
+      <button class="btn btn-gold" style="width:100%;" onclick="exportMod()">⬇ 导出 .yhdja</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="clearAll()">清空全部</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="yhdja-mods.js"></script>
+
+</body>
+</html>
