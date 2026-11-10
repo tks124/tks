@@ -53,7 +53,7 @@
   .nav-cta {
     padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
     background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206; border:none;
-    transition: transform .15s, box-shadow .2s;
+    transition: transform .15s, box-shadow .2s; font-family:inherit;
   }
   .nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,185,66,0.35); }
   .hero { padding: 74px 0 56px; text-align:center; }
@@ -155,24 +155,15 @@
   .dl-item .meta { display:flex; flex-direction:column; gap:2px; }
   .dl-item .meta b { font-size:13px; }
   .dl-item .meta span { font-size:10.5px; color:var(--dim); }
+  .note {
+    max-width:720px; margin:18px auto 0; font-size:11.5px; color:#64748b;
+    line-height:1.8; padding:12px 16px; border-radius:9px;
+    background:rgba(15,23,42,0.6); border:1px solid #1e293b;
+  }
   footer {
     margin-top:56px; padding:26px 0; border-top:1px solid var(--line);
     text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
   }
-  .modal {
-    display:none; position:fixed; inset:0; z-index:200;
-    background: rgba(2,6,15,0.82); backdrop-filter: blur(6px);
-    align-items:center; justify-content:center; padding:20px;
-  }
-  .modal.show { display:flex; }
-  .modal-card {
-    background: var(--panel); border:1px solid #334155; border-radius:16px;
-    padding:26px; max-width:420px; width:100%; text-align:center;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.6);
-  }
-  .modal-card h3 { font-size:18px; font-weight:900; margin-bottom:10px; }
-  .modal-card p { font-size:12.5px; color:var(--dim); line-height:1.8; margin-bottom:20px; }
-  .modal-card .btn { width:100%; margin-bottom:9px; }
   @media (max-width: 720px) {
     .nav-links { display:none; }
     .compare { grid-template-columns:1fr; }
@@ -192,9 +183,9 @@
       <a href="#features">游戏特色</a>
       <a href="#versions">版本对比</a>
       <a href="#download">下载</a>
-      <a href="yhdja-mod-maker.html">制作模组</a>
+      <a href="yhdja-mods">制作模组</a>
     </nav>
-    <button class="nav-cta" onclick="openTrial()">立即试玩</button>
+    <button class="nav-cta" onclick="location.href='yhdja-sweet'">立即试玩</button>
   </div>
 </header>
 
@@ -207,9 +198,9 @@
       也可以换边执法，用特警、盾警与直升机把劫匪堵在银行里。
     </p>
     <div class="cta-row">
-      <button class="btn btn-primary" onclick="openTrial()">▶ 网页试玩（免安装）</button>
-      <a class="btn btn-ghost" href="#download">⬇ 下载完整版</a>
-      <a class="btn btn-gold" href="yhdja-mod-maker.html">🧩 制作模组</a>
+      <button class="btn btn-primary" onclick="location.href='yhdja-sweet'">▶ 网页试玩（免安装）</button>
+      <a class="btn btn-ghost" href="#download">⬇ 下载软件</a>
+      <a class="btn btn-gold" href="yhdja-mods">🧩 制作模组</a>
     </div>
   </section>
 
@@ -247,7 +238,7 @@
       <div class="card">
         <div class="card-ico">🎵</div>
         <h3>自定义音轨</h3>
-        <p>普通音乐 3 段、BOSS 音乐 5 段，全部支持替换为你自己的音频文件。</p>
+        <p>普通音乐 3 段、BOSS 音乐 5 段、结束音乐 1 段，全部支持替换为你自己的音频文件。</p>
       </div>
     </div>
   </section>
@@ -255,7 +246,7 @@
   <section class="section" id="versions">
     <div class="sec-head">
       <h2>选择你的版本</h2>
-      <p>网页试玩版免安装即开即玩，完整版解锁全部内容</p>
+      <p>网页试玩版免安装即开即玩，软件完整版解锁全部内容</p>
     </div>
     <div class="compare">
       <div class="plan trial">
@@ -273,44 +264,47 @@
           <li class="off"><span class="no">✕</span> 禁用狙击枪 / 帮派步枪 / 军用步枪</li>
           <li class="off"><span class="no">✕</span> 道具数量减半</li>
         </ul>
-        <button class="btn btn-ghost" onclick="openTrial()">开始试玩</button>
+        <button class="btn btn-ghost" onclick="location.href='yhdja-sweet'">开始试玩</button>
       </div>
       <div class="plan full">
         <div class="plan-tag">完整版</div>
         <h3>软件完整版</h3>
-        <div class="price">下载即玩 · 全部功能解锁</div>
+        <div class="price">下载安装包 · 全部功能解锁</div>
         <ul>
           <li><span class="ok">✓</span> 全部地图与完整玩法</li>
           <li><span class="ok">✓</span> 加载模组（.yhdja）</li>
           <li><span class="ok">✓</span> 编辑本局所有势力及单位</li>
           <li><span class="ok">✓</span> 打BOSS模式（三阶段局长）</li>
           <li><span class="ok">✓</span> 全部武器与完整道具数量</li>
-          <li><span class="ok">✓</span> 自定义音轨（普通 3 段 + BOSS 5 段）</li>
+          <li><span class="ok">✓</span> 自定义音轨（普通 3 段 + BOSS 5 段 + 结束 1 段）</li>
           <li><span class="ok">✓</span> 单位详细图鉴与模型预览</li>
           <li class="off"><span class="no">✕</span> 不含「制作模组」（请用网页端制作）</li>
         </ul>
-        <a class="btn btn-gold" href="#download">下载完整版</a>
+        <a class="btn btn-gold" href="#download">下载软件</a>
       </div>
     </div>
   </section>
 
   <section class="section" id="download">
     <div class="dl-box">
-      <h2>下载完整版</h2>
-      <p>单文件 HTML，无需安装、无需联网，双击即可运行。<br>模组文件（.yhdja）与音乐文件放在同一目录即可自动加载。</p>
+      <h2>下载软件完整版</h2>
+      <p>完整版以软件安装包形式提供，安装后即可离线游玩全部内容。<br>模组文件（.yhdja）与音乐文件放在安装目录即可自动加载。</p>
       <div class="dl-grid">
-        <a class="dl-item" href="yhdja-full.html" download="银行大劫案-完整版.html">
-          <span class="ico">💻</span>
-          <span class="meta"><b>完整版 HTML</b><span>单文件 · 全平台</span></span>
+        <a class="dl-item" href="https://github.com/tks124/tks/releases/download/v1.0.4/v1.0.4-yhdja.APK" rel="noopener">
+          <span class="ico">🤖</span>
+          <span class="meta"><b>Android 安装包</b><span>.APK · 手机点击直接安装</span></span>
         </a>
-        <a class="dl-item" href="yhdja-mod-maker.html">
+        <a class="dl-item" href="https://github.com/tks124/tks/releases" target="_blank" rel="noopener">
+          <span class="ico">🪟</span>
+          <span class="meta"><b>Windows 安装包</b><span>前往 Releases 页面获取</span></span>
+        </a>
+        <a class="dl-item" href="yhdja-mods">
           <span class="ico">🧩</span>
           <span class="meta"><b>制作模组</b><span>网页端在线制作</span></span>
         </a>
-        <a class="dl-item" href="yhdja-trial.html">
-          <span class="ico">🌐</span>
-          <span class="meta"><b>网页试玩版</b><span>浏览器直接运行</span></span>
-        </a>
+      </div>
+      <div class="note">
+        说明：完整版仅以软件安装包形式分发，不提供网页源码下载。安卓手机点击「Android 安装包」即可下载安装；其他平台请前往 Releases 页面获取。
       </div>
     </div>
   </section>
@@ -319,28 +313,11 @@
 <footer>
   <div class="wrap">
     银行大劫案 · 战术策略游戏<br>
-    本页面为游戏官方网站，试玩版与完整版均为单机离线游戏。
+    本页面为游戏官方网站，试玩版可直接在浏览器运行，完整版以软件安装包形式提供。
   </div>
 </footer>
 
-<div class="modal" id="trialModal">
-  <div class="modal-card">
-    <h3>🎮 进入网页试玩版</h3>
-    <p>
-      试玩版包含完整核心玩法，单局限时 <b style="color:#f5b942;">3 分钟</b>。<br>
-      不支持模组、本局编辑、打BOSS与音乐，部分武器与道具受限。
-    </p>
-    <button class="btn btn-primary" onclick="location.href='yhdja-trial.html'">开始试玩</button>
-    <button class="btn btn-ghost" onclick="closeModal('trialModal')">再看看</button>
-  </div>
-</div>
-
 <script>
-function openTrial(){ document.getElementById('trialModal').classList.add('show'); }
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
-document.getElementById('trialModal').addEventListener('click', function(e){
-  if (e.target === this) closeModal('trialModal');
-});
 document.querySelectorAll('a[href^="#"]').forEach(function(a){
   a.addEventListener('click', function(e){
     var t = document.querySelector(this.getAttribute('href'));
