@@ -1,1 +1,40 @@
-__PLACEHOLDER_LOADER__
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>银行大劫案 · 网页试玩版</title>
+<style>
+  html,body{margin:0;height:100%;background:#070b14;overflow:hidden;}
+  #pg{display:block;width:100vw;height:100vh;border:0;background:#070b14;}
+  #ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:14px;background:#070b14;color:#94a3b8;
+      font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;z-index:9;}
+  .sp{width:34px;height:34px;border:3px solid #1e293b;border-top-color:#f5b942;
+      border-radius:50%;animation:r .8s linear infinite;}
+  @keyframes r{to{transform:rotate(360deg)}}
+  #er{color:#f87171;font-size:12px;max-width:560px;text-align:center;line-height:1.7;padding:0 20px;}
+</style>
+</head>
+<body>
+<div id="ld"><div class="sp"></div><div>正在加载试玩版…</div><div id="er"></div></div>
+<iframe id="pg" allow="autoplay; fullscreen; gamepad" title="银行大劫案试玩版"></iframe>
+<script>
+(function(){
+  var GAME = "https://static.teamily.ai/sites/5f3941d4-a968-4893-a049-f2751356e1cd/webpages/ultimate-tactics_trial_v6/game.html";
+  var f = document.getElementById('pg');
+  var ld = document.getElementById('ld');
+  var er = document.getElementById('er');
+  var done = false;
+  function show(){ if(done) return; done = true; ld.style.display = 'none'; }
+  f.onload = function(){ setTimeout(show, 900); };
+  f.onerror = function(){
+    er.textContent = '试玩版加载失败，请刷新页面重试。';
+    ld.querySelector('.sp').style.display = 'none';
+  };
+  f.src = GAME;
+  setTimeout(show, 8000);
+})();
+</script>
+</body>
+</html>
