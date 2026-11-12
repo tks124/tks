@@ -6,7 +6,6 @@
 <title>银行大劫案 · 网页试玩版</title>
 <style>
   html,body{margin:0;height:100%;background:#070b14;overflow:hidden;}
-  #pg{display:block;width:100vw;height:100vh;border:0;background:#070b14;}
   #ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
       flex-direction:column;gap:14px;background:#070b14;color:#94a3b8;
       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;z-index:9;}
@@ -17,23 +16,36 @@
 </style>
 </head>
 <body>
-<div id="ld"><div class="sp"></div><div>正在加载试玩版…</div><div id="er"></div></div>
-<iframe id="pg" allow="autoplay; fullscreen; gamepad" title="银行大劫案试玩版"></iframe>
+<div id="ld"><div class="sp"></div><div id="st">正在加载试玩版…</div><div id="er"></div></div>
 <script>
 (function(){
-  var GAME = "https://static.teamily.ai/sites/5f3941d4-a968-4893-a049-f2751356e1cd/webpages/ultimate-tactics_trial_v6/game.html";
-  var f = document.getElementById('pg');
-  var ld = document.getElementById('ld');
-  var er = document.getElementById('er');
-  var done = false;
-  function show(){ if(done) return; done = true; ld.style.display = 'none'; }
-  f.onload = function(){ setTimeout(show, 900); };
-  f.onerror = function(){
-    er.textContent = '试玩版加载失败，请刷新页面重试。';
-    ld.querySelector('.sp').style.display = 'none';
-  };
-  f.src = GAME;
-  setTimeout(show, 8000);
+  var REPO = "https://raw.githubusercontent.com/tks124/tks/main/";
+  var N = 4, TS = Date.now();
+  var st = document.getElementById('st'), er = document.getElementById('er');
+  function fail(m){ st.textContent='加载失败'; er.textContent=m; var s=document.querySelector('.sp'); if(s) s.style.display='none'; }
+  var jobs = [];
+  for (var i = 1; i <= N; i++) {
+    (function(i){
+      jobs.push(fetch(REPO + 'yhdja-sweet-' + i + '.js?v=' + TS, {cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw new Error('分片 '+i+' HTTP '+r.status); return r.text(); })
+        .then(function(t){
+          var m = t.match(/\+'([A-Za-z0-9+\/=]+)'/);
+          if (!m) throw new Error('分片 '+i+' 内容损坏');
+          st.textContent = '正在加载试玩版… ' + i + '/' + N;
+          return m[1];
+        }));
+    })(i);
+  }
+  Promise.all(jobs).then(function(parts){
+    var b64 = parts.join('');
+    var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
+    for (var i = 0; i < n; i++) bytes[i] = bin.charCodeAt(i);
+    if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请用新版 Chrome / Edge / Safari');
+    var s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(s).text();
+  }).then(function(html){
+    document.open(); document.write(html); document.close();
+  }).catch(function(e){ fail('试玩版启动失败：' + (e && e.message ? e.message : e)); });
 })();
 </script>
 </body>
