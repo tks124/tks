@@ -12,40 +12,32 @@
   .sp{width:34px;height:34px;border:3px solid #1e293b;border-top-color:#f5b942;
       border-radius:50%;animation:r .8s linear infinite;}
   @keyframes r{to{transform:rotate(360deg)}}
-  #er{color:#f87171;font-size:12px;max-width:560px;text-align:center;line-height:1.7;padding:0 20px;}
+  #er{color:#f87171;font-size:12px;max-width:600px;text-align:center;line-height:1.7;padding:0 20px;}
 </style>
 </head>
 <body>
 <div id="ld"><div class="sp"></div><div id="st">正在加载试玩版…</div><div id="er"></div></div>
+<script src="yhdja-sweet-1.js"></script>
+<script src="yhdja-sweet-2.js"></script>
+<script src="yhdja-sweet-3.js"></script>
+<script src="yhdja-sweet-4.js"></script>
+<script src="yhdja-sweet-5.js"></script>
+<script src="yhdja-sweet-6.js"></script>
 <script>
 (function(){
-  var REPO = "https://raw.githubusercontent.com/tks124/tks/main/";
-  var N = 4, TS = Date.now();
-  var st = document.getElementById('st'), er = document.getElementById('er');
+  var st=document.getElementById('st'), er=document.getElementById('er');
   function fail(m){ st.textContent='加载失败'; er.textContent=m; var s=document.querySelector('.sp'); if(s) s.style.display='none'; }
-  var jobs = [];
-  for (var i = 1; i <= N; i++) {
-    (function(i){
-      jobs.push(fetch(REPO + 'yhdja-sweet-' + i + '.js?v=' + TS, {cache:'no-store'})
-        .then(function(r){ if(!r.ok) throw new Error('分片 '+i+' HTTP '+r.status); return r.text(); })
-        .then(function(t){
-          var m = t.match(/\+'([A-Za-z0-9+\/=]+)'/);
-          if (!m) throw new Error('分片 '+i+' 内容损坏');
-          st.textContent = '正在加载试玩版… ' + i + '/' + N;
-          return m[1];
-        }));
-    })(i);
-  }
-  Promise.all(jobs).then(function(parts){
-    var b64 = parts.join('');
+  try{
+    var b64 = window.__P;
+    if(!b64 || b64.length < 1000){ throw new Error('分片未加载完整，请刷新重试'); }
     var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
-    for (var i = 0; i < n; i++) bytes[i] = bin.charCodeAt(i);
-    if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请用新版 Chrome / Edge / Safari');
-    var s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-    return new Response(s).text();
-  }).then(function(html){
-    document.open(); document.write(html); document.close();
-  }).catch(function(e){ fail('试玩版启动失败：' + (e && e.message ? e.message : e)); });
+    for (var i=0;i<n;i++) bytes[i]=bin.charCodeAt(i);
+    if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
+    var s2 = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    new Response(s2).text().then(function(html){
+      document.open(); document.write(html); document.close();
+    }).catch(function(e){ fail('试玩版启动失败：'+e.message); });
+  }catch(e){ fail('试玩版启动失败：'+e.message); }
 })();
 </script>
 </body>
