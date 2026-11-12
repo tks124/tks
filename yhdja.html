@@ -5,325 +5,348 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>银行大劫案 - 官网</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  :root {
-    --bg:#070b14; --panel:#0f172a; --line:#1e293b;
-    --gold:#f5b942; --red:#e11d48; --blue:#3b82f6; --txt:#e2e8f0; --dim:#94a3b8;
-  }
-  body {
-    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: var(--bg); color: var(--txt); overflow-x:hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-  .bg-fx { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-  .bg-fx::before {
-    content:''; position:absolute; width:900px; height:900px; border-radius:50%;
-    background: radial-gradient(circle, rgba(225,29,72,0.20), transparent 65%);
-    top:-380px; left:-260px; filter:blur(20px);
-  }
-  .bg-fx::after {
-    content:''; position:absolute; width:800px; height:800px; border-radius:50%;
-    background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
-    bottom:-360px; right:-240px; filter:blur(20px);
-  }
-  .grid-lines {
-    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.35;
-    background-image: linear-gradient(rgba(148,163,184,0.07) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(148,163,184,0.07) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
-  }
-  .wrap { position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:0 22px; }
-  header {
-    position:sticky; top:0; z-index:50;
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    background: rgba(7,11,20,0.78); border-bottom:1px solid rgba(30,41,59,0.9);
-  }
-  .nav { display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; letter-spacing:0.5px; }
-  .logo-mark {
-    width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
-    background: linear-gradient(135deg, var(--red), #7f1d1d); font-size:16px;
-    box-shadow: 0 4px 16px rgba(225,29,72,0.4);
-  }
-  .nav-links { display:flex; gap:22px; font-size:13px; color:var(--dim); }
-  .nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
-  .nav-links a:hover { color:var(--gold); }
-  .nav-cta {
-    padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
-    background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206; border:none;
-    transition: transform .15s, box-shadow .2s; font-family:inherit;
-  }
-  .nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,185,66,0.35); }
-  .hero { padding: 74px 0 56px; text-align:center; }
-  .badge {
-    display:inline-flex; align-items:center; gap:7px; font-size:11.5px; letter-spacing:1.2px;
-    padding:6px 14px; border-radius:999px; color:var(--gold);
-    background: rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.28);
-    margin-bottom:22px; text-transform:uppercase;
-  }
-  .dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); }
-  h1 {
-    font-size: clamp(34px, 6.2vw, 62px); line-height:1.1; font-weight:900; letter-spacing:-1.5px;
-    background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    margin-bottom:18px;
-  }
-  h1 em {
-    font-style:normal;
-    background: linear-gradient(135deg, var(--gold), var(--red));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .sub { font-size:15px; color:var(--dim); line-height:1.85; max-width:600px; margin:0 auto 34px; }
-  .cta-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
-  .btn {
-    display:inline-flex; align-items:center; justify-content:center; gap:9px;
-    padding:14px 30px; border-radius:11px; font-size:14.5px; font-weight:800;
-    cursor:pointer; border:none; text-decoration:none; transition: all .18s;
-    font-family:inherit;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--red), #9f1239); color:#fff;
-    box-shadow: 0 8px 28px rgba(225,29,72,0.35);
-  }
-  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(225,29,72,0.5); }
-  .btn-ghost {
-    background: rgba(30,41,59,0.6); color:var(--txt); border:1px solid #334155;
-  }
-  .btn-ghost:hover { background: rgba(51,65,85,0.8); border-color:#475569; transform:translateY(-2px); }
-  .btn-gold {
-    background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206;
-    box-shadow: 0 8px 28px rgba(245,185,66,0.28);
-  }
-  .btn-gold:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(245,185,66,0.42); }
-  .section { padding: 46px 0; }
-  .sec-head { text-align:center; margin-bottom:34px; }
-  .sec-head h2 { font-size:26px; font-weight:800; letter-spacing:-0.5px; margin-bottom:9px; }
-  .sec-head p { font-size:13.5px; color:var(--dim); }
-  .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(238px,1fr)); gap:16px; }
-  .card {
-    background: linear-gradient(160deg, rgba(15,23,42,0.95), rgba(15,23,42,0.6));
-    border:1px solid var(--line); border-radius:14px; padding:22px 20px;
-    transition: transform .2s, border-color .2s;
-  }
-  .card:hover { transform:translateY(-3px); border-color:#334155; }
-  .card-ico { font-size:22px; margin-bottom:12px; }
-  .card h3 { font-size:14.5px; font-weight:800; margin-bottom:7px; }
-  .card p { font-size:12.5px; color:var(--dim); line-height:1.75; }
-  .compare { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  .plan {
-    border-radius:16px; padding:26px 24px; border:1px solid var(--line);
-    background: linear-gradient(165deg, rgba(15,23,42,0.95), rgba(15,23,42,0.55));
-    position:relative; overflow:hidden;
-  }
-  .plan.full { border-color: rgba(245,185,66,0.42); }
-  .plan.full::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:3px;
-    background: linear-gradient(90deg, var(--gold), var(--red));
-  }
-  .plan-tag {
-    position:absolute; top:16px; right:16px; font-size:10px; font-weight:800;
-    padding:4px 9px; border-radius:6px; letter-spacing:0.6px;
-  }
-  .plan.full .plan-tag { background:rgba(245,185,66,0.16); color:var(--gold); border:1px solid rgba(245,185,66,0.35); }
-  .plan.trial .plan-tag { background:rgba(59,130,246,0.14); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
-  .plan h3 { font-size:19px; font-weight:900; margin-bottom:5px; }
-  .plan .price { font-size:12.5px; color:var(--dim); margin-bottom:18px; }
-  .plan ul { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:22px; }
-  .plan li { font-size:12.5px; display:flex; gap:9px; align-items:flex-start; line-height:1.6; }
-  .plan li .ok { color:#22c55e; flex-shrink:0; font-weight:900; }
-  .plan li .no { color:#64748b; flex-shrink:0; font-weight:900; }
-  .plan li.off { color:#64748b; }
-  .plan .btn { width:100%; }
-  #download { scroll-margin-top:80px; }
-  .dl-box {
-    border-radius:18px; padding:34px 28px; text-align:center;
-    background: linear-gradient(150deg, rgba(225,29,72,0.10), rgba(15,23,42,0.9) 55%);
-    border:1px solid rgba(225,29,72,0.28);
-  }
-  .dl-box h2 { font-size:24px; font-weight:900; margin-bottom:10px; }
-  .dl-box p { font-size:13px; color:var(--dim); margin-bottom:24px; line-height:1.8; }
-  .dl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; max-width:720px; margin:0 auto; }
-  .dl-item {
-    display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:11px;
-    background: rgba(15,23,42,0.85); border:1px solid #334155; text-decoration:none;
-    color:var(--txt); transition: all .18s; text-align:left;
-  }
-  .dl-item:hover { border-color:var(--gold); background:rgba(30,41,59,0.9); transform:translateY(-2px); }
-  .dl-item .ico { font-size:20px; }
-  .dl-item .meta { display:flex; flex-direction:column; gap:2px; }
-  .dl-item .meta b { font-size:13px; }
-  .dl-item .meta span { font-size:10.5px; color:var(--dim); }
-  .note {
-    max-width:720px; margin:18px auto 0; font-size:11.5px; color:#64748b;
-    line-height:1.8; padding:12px 16px; border-radius:9px;
-    background:rgba(15,23,42,0.6); border:1px solid #1e293b;
-  }
-  footer {
-    margin-top:56px; padding:26px 0; border-top:1px solid var(--line);
-    text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
-  }
-  @media (max-width: 720px) {
-    .nav-links { display:none; }
-    .compare { grid-template-columns:1fr; }
-    .hero { padding:52px 0 40px; }
-    .cta-row .btn { flex:1 1 100%; }
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+--bg:#070b14; --panel:#0f172a; --line:#1e293b;
+--gold:#f5b942; --red:#e11d48; --blue:#3b82f6; --txt:#e2e8f0; --dim:#94a3b8;
+}
+body {
+font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+background: var(--bg); color: var(--txt); overflow-x:hidden;
+-webkit-font-smoothing: antialiased;
+}
+.bg-fx { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.bg-fx::before {
+content:''; position:absolute; width:900px; height:900px; border-radius:50%;
+background: radial-gradient(circle, rgba(225,29,72,0.20), transparent 65%);
+top:-380px; left:-260px; filter:blur(20px);
+}
+.bg-fx::after {
+content:''; position:absolute; width:800px; height:800px; border-radius:50%;
+background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
+bottom:-360px; right:-240px; filter:blur(20px);
+}
+.grid-lines {
+position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.35;
+background-image: linear-gradient(rgba(148,163,184,0.07) 1px, transparent 1px),
+linear-gradient(90deg, rgba(148,163,184,0.07) 1px, transparent 1px);
+background-size: 56px 56px;
+mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
+-webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
+}
+.wrap { position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:0 22px; }
+header {
+position:sticky; top:0; z-index:50;
+backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+background: rgba(7,11,20,0.78); border-bottom:1px solid rgba(30,41,59,0.9);
+}
+.nav { display:flex; align-items:center; justify-content:space-between; height:64px; }
+.logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; letter-spacing:0.5px; }
+.logo-mark {
+width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
+background: linear-gradient(135deg, var(--red), #7f1d1d); font-size:16px;
+box-shadow: 0 4px 16px rgba(225,29,72,0.4);
+}
+.nav-links { display:flex; gap:22px; font-size:13px; color:var(--dim); }
+.nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--gold); }
+.nav-cta {
+padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
+background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206; border:none;
+transition: transform .15s, box-shadow .2s; font-family:inherit;
+}
+.nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,185,66,0.35); }
+.hero { padding: 74px 0 56px; text-align:center; }
+.badge {
+display:inline-flex; align-items:center; gap:7px; font-size:11.5px; letter-spacing:1.2px;
+padding:6px 14px; border-radius:999px; color:var(--gold);
+background: rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.28);
+margin-bottom:22px; text-transform:uppercase;
+}
+.dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); }
+h1 {
+font-size: clamp(34px, 6.2vw, 62px); line-height:1.1; font-weight:900; letter-spacing:-1.5px;
+background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
+-webkit-background-clip:text; background-clip:text; color:transparent;
+margin-bottom:18px;
+}
+h1 em {
+font-style:normal;
+background: linear-gradient(135deg, var(--gold), var(--red));
+-webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub { font-size:15px; color:var(--dim); line-height:1.85; max-width:600px; margin:0 auto 34px; }
+.cta-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.btn {
+display:inline-flex; align-items:center; justify-content:center; gap:9px;
+padding:14px 30px; border-radius:11px; font-size:14.5px; font-weight:800;
+cursor:pointer; border:none; text-decoration:none; transition: all .18s;
+font-family:inherit;
+}
+.btn-primary {
+background: linear-gradient(135deg, var(--red), #9f1239); color:#fff;
+box-shadow: 0 8px 28px rgba(225,29,72,0.35);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(225,29,72,0.5); }
+.btn-ghost {
+background: rgba(30,41,59,0.6); color:var(--txt); border:1px solid #334155;
+}
+.btn-ghost:hover { background: rgba(51,65,85,0.8); border-color:#475569; transform:translateY(-2px); }
+.btn-gold {
+background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206;
+box-shadow: 0 8px 28px rgba(245,185,66,0.28);
+}
+.btn-gold:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(245,185,66,0.42); }
+.section { padding: 46px 0; }
+.sec-head { text-align:center; margin-bottom:34px; }
+.sec-head h2 { font-size:26px; font-weight:800; letter-spacing:-0.5px; margin-bottom:9px; }
+.sec-head p { font-size:13.5px; color:var(--dim); }
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(238px,1fr)); gap:16px; }
+.card {
+background: linear-gradient(160deg, rgba(15,23,42,0.95), rgba(15,23,42,0.6));
+border:1px solid var(--line); border-radius:14px; padding:22px 20px;
+transition: transform .2s, border-color .2s;
+}
+.card:hover { transform:translateY(-3px); border-color:#334155; }
+.card-ico { font-size:22px; margin-bottom:12px; }
+.card h3 { font-size:14.5px; font-weight:800; margin-bottom:7px; }
+.card p { font-size:12.5px; color:var(--dim); line-height:1.75; }
+.compare { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.plan {
+border-radius:16px; padding:26px 24px; border:1px solid var(--line);
+background: linear-gradient(165deg, rgba(15,23,42,0.95), rgba(15,23,42,0.55));
+position:relative; overflow:hidden;
+}
+.plan.full { border-color: rgba(245,185,66,0.42); }
+.plan.full::before {
+content:''; position:absolute; top:0; left:0; right:0; height:3px;
+background: linear-gradient(90deg, var(--gold), var(--red));
+}
+.plan-tag {
+position:absolute; top:16px; right:16px; font-size:10px; font-weight:800;
+padding:4px 9px; border-radius:6px; letter-spacing:0.6px;
+}
+.plan.full .plan-tag { background:rgba(245,185,66,0.16); color:var(--gold); border:1px solid rgba(245,185,66,0.35); }
+.plan.trial .plan-tag { background:rgba(59,130,246,0.14); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+.plan h3 { font-size:19px; font-weight:900; margin-bottom:5px; }
+.plan .price { font-size:12.5px; color:var(--dim); margin-bottom:18px; }
+.plan ul { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:22px; }
+.plan li { font-size:12.5px; display:flex; gap:9px; align-items:flex-start; line-height:1.6; }
+.plan li .ok { color:#22c55e; flex-shrink:0; font-weight:900; }
+.plan li .no { color:#64748b; flex-shrink:0; font-weight:900; }
+.plan li.off { color:#64748b; }
+.plan .btn { width:100%; }
+#download { scroll-margin-top:80px; }
+.dl-box {
+border-radius:18px; padding:34px 28px; text-align:center;
+background: linear-gradient(150deg, rgba(225,29,72,0.10), rgba(15,23,42,0.9) 55%);
+border:1px solid rgba(225,29,72,0.28);
+}
+.dl-box h2 { font-size:24px; font-weight:900; margin-bottom:10px; }
+.dl-box p { font-size:13px; color:var(--dim); margin-bottom:24px; line-height:1.8; }
+.dl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; max-width:720px; margin:0 auto; }
+.dl-item {
+display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:11px;
+background: rgba(15,23,42,0.85); border:1px solid #334155; text-decoration:none;
+color:var(--txt); transition: all .18s; text-align:left;
+}
+.dl-item:hover { border-color:var(--gold); background:rgba(30,41,59,0.9); transform:translateY(-2px); }
+.dl-item .ico { font-size:20px; }
+.dl-item .meta { display:flex; flex-direction:column; gap:2px; }
+.dl-item .meta b { font-size:13px; }
+.dl-item .meta span { font-size:10.5px; color:var(--dim); }
+.note {
+max-width:720px; margin:18px auto 0; font-size:11.5px; color:#64748b;
+line-height:1.8; padding:12px 16px; border-radius:9px;
+background:rgba(15,23,42,0.6); border:1px solid #1e293b;
+}
+footer {
+margin-top:56px; padding:26px 0; border-top:1px solid var(--line);
+text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
+}
+@media (max-width: 720px) {
+.nav-links { display:none; }
+.compare { grid-template-columns:1fr; }
+.hero { padding:52px 0 40px; }
+.cta-row .btn { flex:1 1 100%; }
+}
 </style>
 </head>
 <body>
 <div class="bg-fx"></div>
 <div class="grid-lines"></div>
-
 <header>
-  <div class="wrap nav">
-    <div class="logo"><div class="logo-mark">🏦</div>银行大劫案</div>
-    <nav class="nav-links">
-      <a href="#features">游戏特色</a>
-      <a href="#versions">版本对比</a>
-      <a href="#download">下载</a>
-      <a href="yhdja-mods">制作模组</a>
-    </nav>
-    <button class="nav-cta" onclick="location.href='yhdja-sweet'">立即试玩</button>
-  </div>
+<div class="wrap nav">
+<div class="logo"><div class="logo-mark">🏦</div>银行大劫案</div>
+<nav class="nav-links">
+<a href="#features">游戏特色</a>
+<a href="#versions">版本对比</a>
+<a href="#download">下载</a>
+<a href="yhdja-mods">制作模组</a>
+</nav>
+<button class="nav-cta" onclick="location.href='yhdja-sweet'">立即试玩</button>
+</div>
 </header>
-
 <main class="wrap">
-  <section class="hero">
-    <div class="badge"><span class="dot"></span>战术策略 · 单机 · 模组支持</div>
-    <h1>策划一场<br><em>完美的银行大劫案</em></h1>
-    <p class="sub">
-      指挥劫匪小队，踩点、布防、破门、搬空金库，在警方抵达前全身而退。
-      也可以换边执法，用特警、盾警与直升机把劫匪堵在银行里。
-    </p>
-    <div class="cta-row">
-      <button class="btn btn-primary" onclick="location.href='yhdja-sweet'">▶ 网页试玩（免安装）</button>
-      <a class="btn btn-ghost" href="#download">⬇ 下载软件</a>
-      <a class="btn btn-gold" href="yhdja-mods">🧩 制作模组</a>
-    </div>
-  </section>
-
-  <section class="section" id="features">
-    <div class="sec-head">
-      <h2>游戏特色</h2>
-      <p>实时战术 AI · 多势力对抗 · 完整模组生态</p>
-    </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-ico">🎯</div>
-        <h3>双视角对抗</h3>
-        <p>劫匪视角主动逃跑，警方视角拦截抓捕。同一张地图，两套完全不同的战术思路。</p>
-      </div>
-      <div class="card">
-        <div class="card-ico">🚔</div>
-        <h3>多势力混战</h3>
-        <p>政府、帮派、保安公司三方势力，敌对关系完整建模。保安公司会在关键时刻带枪增援。</p>
-      </div>
-      <div class="card">
-        <div class="card-ico">👑</div>
-        <h3>打BOSS模式</h3>
-        <p>挑战 3 万血的警察局局长。三阶段战斗、五个技能、独立 BOSS 战音乐。</p>
-      </div>
-      <div class="card">
-        <div class="card-ico">🧩</div>
-        <h3>模组系统</h3>
-        <p>自定义武器、单位、势力，导出 .yhdja 模组包分享给其他玩家。</p>
-      </div>
-      <div class="card">
-        <div class="card-ico">📖</div>
-        <h3>单位图鉴</h3>
-        <p>所有单位的阵营、属性、敌对关系与进入方式一目了然，还能查看单位模型。</p>
-      </div>
-      <div class="card">
-        <div class="card-ico">🎵</div>
-        <h3>自定义音轨</h3>
-        <p>普通音乐 3 段、BOSS 音乐 5 段、结束音乐 1 段，全部支持替换为你自己的音频文件。</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="versions">
-    <div class="sec-head">
-      <h2>选择你的版本</h2>
-      <p>网页试玩版免安装即开即玩，软件完整版解锁全部内容</p>
-    </div>
-    <div class="compare">
-      <div class="plan trial">
-        <div class="plan-tag">免费</div>
-        <h3>网页试玩版</h3>
-        <div class="price">浏览器直接运行 · 无需安装</div>
-        <ul>
-          <li><span class="ok">✓</span> 完整核心玩法（银行 / 警局地图）</li>
-          <li><span class="ok">✓</span> 单位详细图鉴</li>
-          <li><span class="ok">✓</span> 单局 3 分钟体验</li>
-          <li class="off"><span class="no">✕</span> 不支持加载模组</li>
-          <li class="off"><span class="no">✕</span> 不支持编辑本局单位</li>
-          <li class="off"><span class="no">✕</span> 不支持打BOSS模式</li>
-          <li class="off"><span class="no">✕</span> 无背景音乐</li>
-          <li class="off"><span class="no">✕</span> 禁用狙击枪 / 帮派步枪 / 军用步枪</li>
-          <li class="off"><span class="no">✕</span> 道具数量减半</li>
-        </ul>
-        <button class="btn btn-ghost" onclick="location.href='yhdja-sweet'">开始试玩</button>
-      </div>
-      <div class="plan full">
-        <div class="plan-tag">完整版</div>
-        <h3>软件完整版</h3>
-        <div class="price">下载安装包 · 全部功能解锁</div>
-        <ul>
-          <li><span class="ok">✓</span> 全部地图与完整玩法</li>
-          <li><span class="ok">✓</span> 加载模组（.yhdja）</li>
-          <li><span class="ok">✓</span> 编辑本局所有势力及单位</li>
-          <li><span class="ok">✓</span> 打BOSS模式（三阶段局长）</li>
-          <li><span class="ok">✓</span> 全部武器与完整道具数量</li>
-          <li><span class="ok">✓</span> 自定义音轨（普通 3 段 + BOSS 5 段 + 结束 1 段）</li>
-          <li><span class="ok">✓</span> 单位详细图鉴与模型预览</li>
-          <li class="off"><span class="no">✕</span> 不含「制作模组」（请用网页端制作）</li>
-        </ul>
-        <a class="btn btn-gold" href="#download">下载软件</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="download">
-    <div class="dl-box">
-      <h2>下载软件完整版</h2>
-      <p>完整版以软件安装包形式提供，安装后即可离线游玩全部内容。<br>模组文件（.yhdja）与音乐文件放在安装目录即可自动加载。</p>
-      <div class="dl-grid">
-        <a class="dl-item" href="https://github.com/tks124/tks/releases/download/v1.0.4/v1.0.4-yhdja.APK" rel="noopener">
-          <span class="ico">🤖</span>
-          <span class="meta"><b>Android 安装包</b><span>.APK · 手机点击直接安装</span></span>
-        </a>
-        <a class="dl-item" href="https://github.com/tks124/tks/releases" target="_blank" rel="noopener">
-          <span class="ico">🪟</span>
-          <span class="meta"><b>Windows 安装包</b><span>前往 Releases 页面获取</span></span>
-        </a>
-        <a class="dl-item" href="yhdja-mods">
-          <span class="ico">🧩</span>
-          <span class="meta"><b>制作模组</b><span>网页端在线制作</span></span>
-        </a>
-      </div>
-      <div class="note">
-        说明：完整版仅以软件安装包形式分发，不提供网页源码下载。安卓手机点击「Android 安装包」即可下载安装；其他平台请前往 Releases 页面获取。
-      </div>
-    </div>
-  </section>
+<section class="hero">
+<div class="badge"><span class="dot"></span>战术策略 · 单机 · 模组支持</div>
+<h1>策划一场<br><em>完美的银行大劫案</em></h1>
+<p class="sub">
+指挥劫匪小队，踩点、布防、破门、搬空金库，在警方抵达前全身而退。
+也可以换边执法，用特警、盾警与直升机把劫匪堵在银行里。
+</p>
+<div class="cta-row">
+<button class="btn btn-primary" onclick="location.href='yhdja-sweet'">▶ 网页试玩（免安装）</button>
+<a class="btn btn-ghost" href="#download">⬇ 下载软件</a>
+<a class="btn btn-gold" href="yhdja-mods">🧩 制作模组</a>
+</div>
+</section>
+<section class="section" id="features">
+<div class="sec-head">
+<h2>游戏特色</h2>
+<p>实时战术 AI · 多势力对抗 · 完整模组生态</p>
+</div>
+<div class="cards">
+<div class="card">
+<div class="card-ico">🎯</div>
+<h3>双视角对抗</h3>
+<p>劫匪视角主动逃跑，警方视角拦截抓捕。同一张地图，两套完全不同的战术思路。</p>
+</div>
+<div class="card">
+<div class="card-ico">🚔</div>
+<h3>多势力混战</h3>
+<p>政府、帮派、保安公司三方势力，敌对关系完整建模。保安公司会在关键时刻带枪增援。</p>
+</div>
+<div class="card">
+<div class="card-ico">👑</div>
+<h3>打BOSS模式</h3>
+<p>挑战 3 万血的警察局局长。三阶段战斗、五个技能、独立 BOSS 战音乐。</p>
+</div>
+<div class="card">
+<div class="card-ico">🧩</div>
+<h3>模组系统</h3>
+<p>自定义武器、单位、势力，导出 .yhdja 模组包分享给其他玩家。</p>
+</div>
+<div class="card">
+<div class="card-ico">📖</div>
+<h3>单位图鉴</h3>
+<p>所有单位的阵营、属性、敌对关系与进入方式一目了然，还能查看单位模型。</p>
+</div>
+<div class="card">
+<div class="card-ico">🎵</div>
+<h3>自定义音轨</h3>
+<p>普通音乐 3 段、BOSS 音乐 5 段、结束音乐 1 段，全部支持替换为你自己的音频文件。</p>
+</div>
+</div>
+</section>
+<section class="section" id="versions">
+<div class="sec-head">
+<h2>选择你的版本</h2>
+<p>网页试玩版免安装即开即玩，软件完整版解锁全部内容</p>
+</div>
+<div class="compare">
+<div class="plan trial">
+<div class="plan-tag">免费</div>
+<h3>网页试玩版</h3>
+<div class="price">浏览器直接运行 · 无需安装</div>
+<ul>
+<li><span class="ok">✓</span> 完整核心玩法（银行 / 警局地图）</li>
+<li><span class="ok">✓</span> 单位详细图鉴</li>
+<li><span class="ok">✓</span> 单局 3 分钟体验</li>
+<li class="off"><span class="no">✕</span> 不支持加载模组</li>
+<li class="off"><span class="no">✕</span> 不支持编辑本局单位</li>
+<li class="off"><span class="no">✕</span> 不支持打BOSS模式</li>
+<li class="off"><span class="no">✕</span> 无背景音乐</li>
+<li class="off"><span class="no">✕</span> 禁用狙击枪 / 帮派步枪 / 军用步枪</li>
+<li class="off"><span class="no">✕</span> 道具数量减半</li>
+</ul>
+<button class="btn btn-ghost" onclick="location.href='yhdja-sweet'">开始试玩</button>
+</div>
+<div class="plan full">
+<div class="plan-tag">完整版</div>
+<h3>软件完整版</h3>
+<div class="price">下载安装包 · 全部功能解锁</div>
+<ul>
+<li><span class="ok">✓</span> 全部地图与完整玩法</li>
+<li><span class="ok">✓</span> 加载模组（.yhdja）</li>
+<li><span class="ok">✓</span> 编辑本局所有势力及单位</li>
+<li><span class="ok">✓</span> 打BOSS模式（三阶段局长）</li>
+<li><span class="ok">✓</span> 全部武器与完整道具数量</li>
+<li><span class="ok">✓</span> 自定义音轨（普通 3 段 + BOSS 5 段 + 结束 1 段）</li>
+<li><span class="ok">✓</span> 单位详细图鉴与模型预览</li>
+<li class="off"><span class="no">✕</span> 不含「制作模组」（请用网页端制作）</li>
+</ul>
+<a class="btn btn-gold" href="#download">下载软件</a>
+</div>
+</div>
+</section>
+<section class="section" id="download">
+<div class="dl-box">
+<h2>下载软件完整版</h2>
+<p>完整版以软件安装包形式提供，安装后即可离线游玩全部内容。<br>模组文件（.yhdja）与音乐文件放在安装目录即可自动加载。</p>
+<div class="dl-grid">
+<a class="dl-item" href="https://github.com/tks124/tks/releases/download/v1.0.4/v1.0.4-yhdja.APK" rel="noopener">
+<span class="ico">🤖</span>
+<span class="meta"><b>支持安卓手机</b><span style="font-size:11px;">Android · v1.0.4 · .APK 点击直接安装</span></span>
+</a>
+<a class="dl-item" href="javascript:void(0)" id="winBtn" rel="noopener">
+<span class="ico">🪟</span>
+<span class="meta"><b>WINDOWS 版本</b><span style="font-size:11px;">Windows · 敬请期待</span></span>
+</a>
+<a class="dl-item" href="yhdja-mods">
+<span class="ico">🧩</span>
+<span class="meta"><b>制作模组</b><span>网页端在线制作</span></span>
+</a>
+</div>
+<div class="note">
+说明：完整版仅以软件安装包形式分发，不提供网页源码下载。安卓手机点击「支持安卓手机」即可下载安装；WINDOWS 版本暂不支持，敬请期待。
+</div>
+</div>
+</section>
 </main>
-
 <footer>
-  <div class="wrap">
-    银行大劫案 · 战术策略游戏<br>
-    本页面为游戏官方网站，试玩版可直接在浏览器运行，完整版以软件安装包形式提供。
-  </div>
+<div class="wrap">
+银行大劫案 · 战术策略游戏<br>
+本页面为游戏官方网站，试玩版可直接在浏览器运行，完整版以软件安装包形式提供。
+</div>
 </footer>
-
 <script>
 document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  a.addEventListener('click', function(e){
-    var t = document.querySelector(this.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
-  });
+a.addEventListener('click', function(e){
+var t = document.querySelector(this.getAttribute('href'));
+if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
 });
+});
+(function(){
+var win = document.getElementById('winBtn');
+if (!win) return;
+win.addEventListener('click', function(e){
+e.preventDefault();
+e.stopPropagation();
+showNotSupported();
+return false;
+});
+function showNotSupported(){
+var d = document.getElementById('notSupportedModal');
+if (!d) {
+d = document.createElement('div');
+d.id = 'notSupportedModal';
+d.style.cssText = 'position:fixed;inset:0;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+d.innerHTML = '<div style="background:#0f172a;border:1px solid #334155;border-radius:16px;max-width:380px;width:100%;padding:28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);">'
++ '<div style="font-size:44px;line-height:1;margin-bottom:12px;">🪟</div>'
++ '<h3 style="margin:0 0 10px;font-size:20px;color:#e2e8f0;">暂不支持</h3>'
++ '<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#94a3b8;">WINDOWS 版本暂未发布，敬请期待。<br>目前可下载安装安卓版本。</p>'
++ '<button id="notSupportedOk" style="background:#f59e0b;color:#111827;border:none;border-radius:10px;padding:11px 28px;font-size:15px;font-weight:700;cursor:pointer;">知道了</button>'
++ '</div>';
+document.body.appendChild(d);
+d.addEventListener('click', function(ev){
+if (ev.target === d || ev.target.id === 'notSupportedOk') d.style.display = 'none';
+});
+} else {
+d.style.display = 'flex';
+}
+}
+})();
 </script>
 </body>
 </html>
