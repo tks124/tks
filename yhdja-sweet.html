@@ -17,27 +17,43 @@
 </head>
 <body>
 <div id="boot"><div class="spin"></div><div>正在加载试玩版…</div><div id="err"></div></div>
-<script src="yhdja-sweet-1.js?v=3"></script>
-<script src="yhdja-sweet-2.js?v=3"></script>
-<script src="yhdja-sweet-3.js?v=3"></script>
-<script src="yhdja-sweet-4.js?v=3"></script>
 <script>
 (function(){
+  var SHARDS = 4;
   function fail(m){ document.getElementById('err').textContent = m; }
   function toBytes(b){
     var bin=atob(b), n=bin.length, o=new Uint8Array(n);
     for(var i=0;i<n;i++) o[i]=bin.charCodeAt(i);
     return o;
   }
-  try{
-    if(!window.__P) throw new Error('资源未加载完成，请刷新重试');
-    if(typeof DecompressionStream==='undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
-    var ds=new DecompressionStream('gzip');
-    var st=new Blob([toBytes(window.__P)]).stream().pipeThrough(ds);
-    new Response(st).text().then(function(h){
-      document.open(); document.write(h); document.close();
-    }).catch(function(e){ fail('试玩版启动失败：'+e.message); });
-  }catch(e){ fail('试玩版启动失败：'+e.message); }
+  function grab(i){
+    // 用 fetch + no-store 直接取分片，绕开浏览器脚本缓存
+    return fetch('yhdja-sweet-' + i + '.js?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){
+        if(!r.ok) throw new Error('分片 ' + i + ' 加载失败 (' + r.status + ')');
+        return r.text();
+      })
+      .then(function(t){
+        var m = t.match(/'([^']*)'\s*;?\s*$/);
+        if(!m) throw new Error('分片 ' + i + ' 格式异常');
+        return m[1];
+      });
+  }
+  var jobs = [];
+  for (var i = 1; i <= SHARDS; i++) jobs.push(grab(i));
+  Promise.all(jobs).then(function(parts){
+    var b64 = parts.join('');
+    if(!b64) throw new Error('资源为空');
+    if(typeof DecompressionStream === 'undefined')
+      throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
+    var ds = new DecompressionStream('gzip');
+    var st = new Blob([toBytes(b64)]).stream().pipeThrough(ds);
+    return new Response(st).text();
+  }).then(function(html){
+    document.open(); document.write(html); document.close();
+  }).catch(function(e){
+    fail('试玩版启动失败：' + e.message);
+  });
 })();
 </script>
 </body>
