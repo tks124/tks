@@ -30,6 +30,9 @@
   try{
     var b64 = window.__P;
     if(!b64 || b64.length < 1000){ throw new Error('分片未加载完整，请刷新重试'); }
+    // base64url -> base64
+    b64 = b64.replace(/-/g,'+').replace(/_/g,'/');
+    while (b64.length % 4 !== 0) b64 += '=';
     var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
     for (var i=0;i<n;i++) bytes[i]=bin.charCodeAt(i);
     if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
