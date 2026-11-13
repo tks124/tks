@@ -106,7 +106,7 @@ body.light .secret-line{background:rgba(0,0,0,0.04);}
 .deactivate-uid{font-size:15px;color:#94a3b8;margin-bottom:40px;}
 .deactivate-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(to right,#ef4444,#dc2626);color:white;font-size:16px;font-weight:bold;cursor:pointer;}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
@@ -257,7 +257,9 @@ body.light .secret-line{background:rgba(0,0,0,0.04);}
 const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
 let supabaseClient=null;
-if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+function __initSb(){ if(supabaseClient && !supabaseClient.__stub) return supabaseClient; supabaseClient = window.__sbInit ? window.__sbInit(SUPABASE_URL,SUPABASE_ANON_KEY,supabaseClient) : supabaseClient; return supabaseClient; }
+__initSb();
+if(window.__sbReady){ window.__sbReady.then(function(ok){ if(ok){ __initSb(); try{ if(typeof checkAuthState==='function') checkAuthState(); }catch(e){} } }); }
 
 const AUTH_KEY="sk124_auth_token";
 const AUTH_PAGE_URL="https://tks124.github.io/tks";
