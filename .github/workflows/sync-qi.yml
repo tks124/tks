@@ -11,14 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download payload
+      - name: Fetch payload from Supabase
+        env:
+          SB_URL: https://topdhxrkknnkfkcwegxl.supabase.co
+          SB_KEY: sb_publishable_U_BQvZL_ehjGkuZszGScYA_OnyExEYq
         run: |
-          curl -fsSL -o /tmp/p.tar.gz "https://static.teamily.ai/sites/6238b845-d4f6-4b93-919d-35ef13d6d1e0/documents/sync_payloadtar/sync_payload.tar.gz"
-          ls -la /tmp/p.tar.gz
-          mkdir -p /tmp/out && tar xzf /tmp/p.tar.gz -C /tmp/out
-          ls -laR /tmp/out
+          set -e
+          mkdir -p /tmp/out/qi
+          for n in compat.js SpaceKill124.html diy.html friends.html profile.html zc4.html qi_index.html; do
+            echo "== $n"
+            curl -fsS "$SB_URL/rest/v1/qi_sync?name=eq.$n&select=b64" \
+              -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
+              | python3 -c "import json,sys; d=json.load(sys.stdin); sys.stdout.write(d[0]['b64'])" > /tmp/$n.b64
+            base64 -d /tmp/$n.b64 | gunzip > /tmp/out/$n
+            ls -la /tmp/out/$n
+          done
+          mv /tmp/out/qi_index.html /tmp/out/qi/index.html
       - name: Copy into repo
         run: |
+          set -e
           cp /tmp/out/compat.js ./compat.js
           cp /tmp/out/SpaceKill124.html ./SpaceKill124.html
           cp /tmp/out/diy.html ./diy.html
@@ -27,7 +38,8 @@ jobs:
           cp /tmp/out/zc4.html ./zc4.html
           mkdir -p ./qi
           cp /tmp/out/qi/index.html ./qi/index.html
-          cp /tmp/out/qi/index.modern.html ./qi/index.modern.html
+          head -c 120 ./qi/index.html; echo
+          grep -c "compat.js" ./SpaceKill124.html || true
       - name: Commit
         run: |
           git config user.name "qi-sync-bot"
