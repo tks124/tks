@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceKill124 - 官网入口</title>
     <script>
-    if (!window.fetch) {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"><\/script>');
-    }
-    if (!window.AbortController) {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/abortcontroller-polyfill@1.7.5/dist/abortcontroller-polyfill-only.js"><\/script>');
-    }
-    if (!window.Promise) {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.3.0/dist/polyfill.min.js"><\/script>');
-    }
+    /* 依赖加载器：多 CDN 容错（任一源可达即可），全部失败也不阻塞页面渲染与交互 */
+    (function () {
+      var CDN = ['https://cdn.jsdelivr.net/npm/', 'https://fastly.jsdelivr.net/npm/', 'https://unpkg.com/'];
+      window.__loadLib = function (pkgPath, done) {
+        var i = 0;
+        function next() {
+          if (i >= CDN.length) { if (done) done(false); return; }
+          var s = document.createElement('script');
+          s.src = CDN[i++] + pkgPath;
+          s.async = true;
+          s.onload = function () { if (done) done(true); };
+          s.onerror = function () { s.parentNode && s.parentNode.removeChild(s); next(); };
+          document.head.appendChild(s);
+        }
+        next();
+      };
+      if (!window.fetch) window.__loadLib('whatwg-fetch@3.6.2/dist/fetch.umd.js');
+      if (!window.AbortController) window.__loadLib('abortcontroller-polyfill@1.7.5/dist/abortcontroller-polyfill-only.js');
+      if (!window.Promise) window.__loadLib('promise-polyfill@8.3.0/dist/polyfill.min.js');
+    })();
     </script>
     <style>
         body { margin: 0; padding: 0; background: linear-gradient(180deg, #000000 0%, #111827 100%); color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; flex-direction: column; }
@@ -53,8 +64,16 @@
         #musicBtn:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(139,92,246,0.7); }
         #musicBtn:active { transform: translateY(0); }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+    <script>
+    /* supabase-js / crypto-js 改为容错异步加载（原为同步 script，jsDelivr 一旦不可达会阻塞整页解析） */
+    window.__supabaseReady = new Promise(function (resolve) {
+      window.__loadLib('@supabase/supabase-js@2/dist/umd/supabase.js', function (ok) {
+        if (!ok || !window.supabase) { console.error('supabase-js 所有 CDN 源均加载失败'); resolve(false); }
+        else { resolve(true); }
+      });
+      window.__loadLib('crypto-js@4.2.0/crypto-js.min.js');
+    });
+    </script>
 </head>
 <body>
     <button id="musicBtn" onclick="goMusic()">🎵 点播</button>
@@ -180,9 +199,27 @@
         const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
 
         let supabaseClient = null;
-        if (window.supabase) {
-            try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
-            catch (error) { console.error("Supabase 初始化失败:", error); }
+        function initSupabaseClient() {
+            if (supabaseClient) return supabaseClient;
+            if (window.supabase) {
+                try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+                catch (error) { console.error("Supabase 初始化失败:", error); }
+            }
+            return supabaseClient;
+        }
+        initSupabaseClient();
+        if (!supabaseClient && window.__supabaseReady) {
+            window.__supabaseReady.then(function () {
+                if (initSupabaseClient()) { checkAuthStateSafe(); }
+                else { console.error("Supabase 不可用，登录/注册功能暂不可用"); }
+            });
+        }
+
+        /* 安全包装：Supabase 未就绪时不再抛异常导致后续 UI 事件绑定全部失效 */
+        async function checkAuthStateSafe() {
+            if (!supabaseClient) return;
+            try { await checkAuthState(); }
+            catch (e) { console.error("登录状态检查失败:", e); }
         }
 
         let pendingEmail = "";
@@ -272,7 +309,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            checkAuthState();
+            checkAuthStateSafe();
             document.getElementById("registerBtn").addEventListener("click", function() {
                 resetRegisterModal(); openModal("registerModal");
             });
@@ -561,7 +598,7 @@
         }
 
         async function logout() {
-            await supabaseClient.auth.signOut();
+            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
             localStorage.removeItem("account");
             localStorage.removeItem("email");
             localStorage.removeItem("password");
@@ -569,7 +606,7 @@
             localStorage.removeItem("gender");
             localStorage.removeItem("bio");
             localStorage.removeItem("sk124_auth_token");
-            checkAuthState();
+            checkAuthStateSafe();
             alert("已退出登录");
         }
 
