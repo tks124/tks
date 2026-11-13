@@ -1,0 +1,37 @@
+name: sync-qi
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-qi.yml'
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download payload
+        run: |
+          curl -fsSL -o /tmp/p.tar.gz "https://static.teamily.ai/sites/6238b845-d4f6-4b93-919d-35ef13d6d1e0/documents/sync_payloadtar/sync_payload.tar.gz"
+          ls -la /tmp/p.tar.gz
+          mkdir -p /tmp/out && tar xzf /tmp/p.tar.gz -C /tmp/out
+          ls -laR /tmp/out
+      - name: Copy into repo
+        run: |
+          cp /tmp/out/compat.js ./compat.js
+          cp /tmp/out/SpaceKill124.html ./SpaceKill124.html
+          cp /tmp/out/diy.html ./diy.html
+          cp /tmp/out/friends.html ./friends.html
+          cp /tmp/out/profile.html ./profile.html
+          cp /tmp/out/zc4.html ./zc4.html
+          mkdir -p ./qi
+          cp /tmp/out/qi/index.html ./qi/index.html
+          cp /tmp/out/qi/index.modern.html ./qi/index.modern.html
+      - name: Commit
+        run: |
+          git config user.name "qi-sync-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A
+          git commit -m "部署 qi 棋类大全页面 + 全站兼容层（多CDN容错/老内核polyfill/安全桩），修复登录 auth of null" || echo "no changes"
+          git push
