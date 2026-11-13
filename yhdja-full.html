@@ -99,15 +99,15 @@
     <h2>选择你的平台</h2>
     <div class="sub">安卓手机点击即可下载安装；其他平台请前往发布页获取最新版本。</div>
 
-    <a class="dl primary" href="https://github.com/tks124/tks/releases/download/v1.0.4/v1.0.4-yhdja.APK" rel="noopener">
+    <a class="dl primary" href="https://github.com/tks124/tks/releases/download/v1.1.0/v1.1.0-yhdja.APK" rel="noopener">
       <span class="ico">🤖</span>
-      <span class="meta"><b>Android 安装包（APK）</b><span>手机点击直接下载安装 · 安卓 8.0+</span></span>
+      <span class="meta"><b>支持安卓手机</b><span>Android · v1.1.0 · .APK 点击直接安装</span></span>
       <span class="arrow">⬇</span>
     </a>
 
-    <a class="dl" href="https://github.com/tks124/tks/releases" target="_blank" rel="noopener">
+    <a class="dl" href="javascript:void(0)" onclick="showWinToast();return false;">
       <span class="ico">🪟</span>
-      <span class="meta"><b>Windows 安装包</b><span>前往发布页获取最新版本</span></span>
+      <span class="meta"><b>WINDOWS 版本</b><span>Windows · 敬请期待</span></span>
       <span class="arrow">↗</span>
     </a>
 
@@ -157,5 +157,21 @@
     本页面为完整版软件下载页。
   </footer>
 </div>
+<script>
+function showWinToast(){
+  var d=document.getElementById('winToast');
+  if(!d){
+    d=document.createElement('div'); d.id='winToast';
+    d.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,.72);z-index:9999;backdrop-filter:blur(4px)';
+    d.innerHTML='<div style="background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:28px 32px;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)">'
+      +'<h3 style="margin:0 0 10px;font-size:20px;color:#e2e8f0;">暂不支持</h3>'
+      +'<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#94a3b8;">WINDOWS 版本暂未发布，敬请期待。<br>目前可下载安装安卓版本。</p>'
+      +'<button onclick="document.getElementById(\'winToast\').remove()" style="background:#f5b942;color:#0f172a;border:0;border-radius:10px;padding:10px 26px;font-size:14px;font-weight:700;cursor:pointer">知道了</button>'
+      +'</div>';
+    d.onclick=function(e){ if(e.target===d) d.remove(); };
+    document.body.appendChild(d);
+  }
+}
+</script>
 </body>
 </html>
