@@ -1,4 +1,5 @@
 name: sync-qi
+# trigger: admin-check-unified
 on:
   workflow_dispatch:
   push:
@@ -18,7 +19,7 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/out
-          NAMES="index.html qi_index.html 令牌介绍.html token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html SpaceKill124.html diy.html friends.html profile.html zc4.html"
+          NAMES="index.html compat.js qi_index.html 令牌介绍.html token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html"
           for n in $NAMES; do
             echo "== $n"
             enc=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$n")
@@ -31,21 +32,21 @@ jobs:
       - name: Copy into repo
         run: |
           set -e
-          for n in index.html token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html SpaceKill124.html diy.html friends.html profile.html zc4.html; do
+          for n in index.html compat.js token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html; do
             cp "/tmp/out/$n" "./$n"
           done
           cp "/tmp/out/令牌介绍.html" "./令牌介绍.html"
           mkdir -p ./qi
           cp /tmp/out/qi_index.html ./qi/index.html
-          rm -f ./compat.js
           echo "--- verify ---"
           grep -c "compat.js" ./index.html || true
           grep -o "当前版本 v[0-9.]*" ./令牌介绍.html || true
           grep -o "1\.[0-9]\.0" ./token-info.json | head -3 || true
+          head -c 100 ./qi/index.html; echo
       - name: Commit
         run: |
           git config user.name "qi-sync-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "恢复登录逻辑与服务器配置；登录失败提示规范为三句；管理员沿用 ADMIN_EMAIL 判定并加二次密码+2FA 校验" || echo "no changes"
+          git commit -m "管理员判定统一沿用 diy.html：读 profiles 记录 + 邮箱匹配 ADMIN_EMAIL" || echo "no changes"
           git push
