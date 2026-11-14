@@ -17,33 +17,35 @@ jobs:
           SB_KEY: sb_publishable_U_BQvZL_ehjGkuZszGScYA_OnyExEYq
         run: |
           set -e
-          mkdir -p /tmp/out/qi
-          for n in compat.js SpaceKill124.html diy.html friends.html profile.html zc4.html qi_index.html; do
+          mkdir -p /tmp/out
+          NAMES="index.html compat.js qi_index.html 令牌介绍.html token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html"
+          for n in $NAMES; do
             echo "== $n"
-            curl -fsS "$SB_URL/rest/v1/qi_sync?name=eq.$n&select=b64" \
+            enc=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$n")
+            curl -fsS "$SB_URL/rest/v1/qi_sync?name=eq.$enc&select=b64" \
               -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
-              | python3 -c "import json,sys; d=json.load(sys.stdin); sys.stdout.write(d[0]['b64'])" > /tmp/$n.b64
-            base64 -d /tmp/$n.b64 | gunzip > /tmp/out/$n
-            ls -la /tmp/out/$n
+              | python3 -c "import json,sys; d=json.load(sys.stdin); sys.stdout.write(d[0]['b64'])" > "/tmp/$n.b64"
+            base64 -d "/tmp/$n.b64" | gunzip > "/tmp/out/$n"
+            ls -la "/tmp/out/$n"
           done
-          mv /tmp/out/qi_index.html /tmp/out/qi/index.html
       - name: Copy into repo
         run: |
           set -e
-          cp /tmp/out/compat.js ./compat.js
-          cp /tmp/out/SpaceKill124.html ./SpaceKill124.html
-          cp /tmp/out/diy.html ./diy.html
-          cp /tmp/out/friends.html ./friends.html
-          cp /tmp/out/profile.html ./profile.html
-          cp /tmp/out/zc4.html ./zc4.html
+          for n in index.html compat.js token-info.json rjyz.html jianyujianzhushi.html qita.html 2wm.html rymd.html zc.html zc2.html zc3.html jg.html cd.html yhdja.html yhdja-full.html yhdja-mods.html yhdja-sweet.html; do
+            cp "/tmp/out/$n" "./$n"
+          done
+          cp "/tmp/out/令牌介绍.html" "./令牌介绍.html"
           mkdir -p ./qi
-          cp /tmp/out/qi/index.html ./qi/index.html
-          head -c 120 ./qi/index.html; echo
-          grep -c "compat.js" ./SpaceKill124.html || true
+          cp /tmp/out/qi_index.html ./qi/index.html
+          echo "--- verify ---"
+          grep -c "compat.js" ./index.html || true
+          grep -o "当前版本 v[0-9.]*" ./令牌介绍.html || true
+          grep -o "1\.[0-9]\.0" ./token-info.json | head -3 || true
+          head -c 100 ./qi/index.html; echo
       - name: Commit
         run: |
           git config user.name "qi-sync-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "部署 qi 棋类大全页面 + 全站兼容层（多CDN容错/老内核polyfill/安全桩），修复登录 auth of null" || echo "no changes"
+          git commit -m "qi: 军棋暗棋(人机)+布阵编辑器；全站兼容层；管理员邮箱二次验证；令牌介绍版本 1.8/1.9" || echo "no changes"
           git push
