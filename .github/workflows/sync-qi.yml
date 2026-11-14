@@ -1,5 +1,5 @@
 name: sync-qi
-# trigger: yhdja-sweet-update-2026-11-14T14-25
+# trigger: yhdja-mods-update-2026-11-14T14-30
 on:
   workflow_dispatch:
   push:
@@ -49,5 +49,5 @@ jobs:
           git config user.name "qi-sync-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "qi: 同步试玩版（警方视角/事件系统/管理员菜单/音乐）" || echo "no changes"
+          git commit -m "qi: 同步模组页（.json 上传支持）" || echo "no changes"
           git push
