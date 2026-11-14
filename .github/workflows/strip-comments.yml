@@ -1,0 +1,45 @@
+name: strip-comments
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/strip-comments.yml'
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch payload
+        env:
+          SB_URL: https://topdhxrkknnkfkcwegxl.supabase.co
+          SB_KEY: sb_publishable_U_BQvZL_ehjGkuZszGScYA_OnyExEYq
+        run: |
+          set -e
+          mkdir -p /tmp/out
+          for n in 2wm.html index.html jg.html yhdja-mods.js qi_index_modern.html; do
+            curl -fsS "$SB_URL/rest/v1/qi_sync?name=eq.$n&select=b64" \
+              -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
+              | python3 -c "import json,sys; d=json.load(sys.stdin); sys.stdout.write(d[0]['b64'])" \
+              | python3 -c "import base64,zlib,sys; sys.stdout.buffer.write(zlib.decompress(base64.b64decode(sys.stdin.read()),31))" > "/tmp/out/$n"
+            ls -la "/tmp/out/$n"
+          done
+      - name: Copy into repo
+        run: |
+          set -e
+          cp /tmp/out/2wm.html ./2wm.html
+          cp /tmp/out/index.html ./index.html
+          cp /tmp/out/jg.html ./jg.html
+          cp /tmp/out/yhdja-mods.js ./yhdja-mods.js
+          cp /tmp/out/qi_index_modern.html ./qi/index.modern.html
+          echo "--- sanity ---"
+          grep -c '<!--' ./index.html || echo "0 html comments in index.html"
+          grep -c '^[[:space:]]*//' ./yhdja-mods.js || echo "0 line comments in yhdja-mods.js"
+      - name: Commit
+        run: |
+          git config user.name "qi-sync-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: 移除公开网页代码中的注释" || echo "no changes"
+          git push
