@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>银行大劫案 · 制作模组</title>
 <style>
 html,body{margin:0;height:100%;background:#070b14;overflow:hidden}
@@ -14,23 +14,24 @@ html,body{margin:0;height:100%;background:#070b14;overflow:hidden}
 </head>
 <body>
 <div id="ld"><div class="sp"></div><div id="st">正在加载模组编辑器…</div><div id="er"></div></div>
-<script src="yhdja-mods-1.js"></script>
-<script src="yhdja-mods-2.js"></script>
 <script>
 (function(){
   var st=document.getElementById('st'), er=document.getElementById('er');
   function fail(m){ st.textContent='加载失败'; er.textContent=m; var s=document.querySelector('.sp'); if(s) s.style.display='none'; }
-  try{
-    var b64 = window.__M;
-    if(!b64 || b64.length < 1000) throw new Error('分片未加载完整，请刷新重试');
-    while (b64.length % 4 !== 0) b64 += '=';
-    var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
-    for (var i=0;i<n;i++) bytes[i]=bin.charCodeAt(i);
-    if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
-    new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text().then(function(html){
-      document.open(); document.write(html); document.close();
-    }).catch(function(e){ fail('模组编辑器启动失败：'+e.message); });
-  }catch(e){ fail('模组编辑器启动失败：'+e.message); }
+  var parts=["yhdja-mods-1.js","yhdja-mods-2.js"];
+  Promise.all(parts.map(function(p){ return fetch(p).then(function(r){ if(!r.ok) throw new Error(p+' '+r.status); return r.text(); }); }))
+  .then(function(txts){
+    var b64='';
+    txts.forEach(function(t){ var m=t.match(/'([A-Za-z0-9+/=]+)'/); if(m) b64+=m[1]; });
+    if(b64.length<1000) throw new Error('分片未加载完整，请刷新重试');
+    while(b64.length%4!==0) b64+='=';
+    var bin=atob(b64), n=bin.length, bytes=new Uint8Array(n);
+    for(var i=0;i<n;i++) bytes[i]=bin.charCodeAt(i);
+    if(typeof DecompressionStream==='undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
+    return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  })
+  .then(function(html){ document.open(); document.write(html); document.close(); })
+  .catch(function(e){ fail('启动失败：'+e.message); });
 })();
 </script>
 </body>
