@@ -197,8 +197,6 @@
         const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
         const RESERVED_NAME = "太空杀124";
         const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
-        /* 管理员判定沿用 diy.html 原有方式：邮箱等于 ADMIN_EMAIL */
-        const ADMIN_EMAIL = "qwe18965540810@qq.com";
 
         let supabaseClient = null;
         function initSupabaseClient() {
@@ -227,8 +225,6 @@
         let pendingEmail = "";
         let loginMode = "pwd";
         let pendingLoginInfo = null;
-        /* 管理员标记：沿用 diy.html 的判定结果（数据库 profiles 记录 + 邮箱匹配） */
-        let isAdmin = false;
 
         function isReservedName(account, email) {
             if (!account) return false;
@@ -388,21 +384,6 @@
             } catch (e) { console.error("ensureProfile 异常:", e); return null; }
         }
 
-        /* 管理员判定：完全沿用 diy.html 的 init() 写法 ——
-           先从数据库 profiles 表按邮箱取出该账号记录，记录存在且邮箱等于 ADMIN_EMAIL 才算管理员。
-           不新增任何字段、不另造一套规则。 */
-        async function resolveAdmin(email) {
-            isAdmin = false;
-            if (!supabaseClient || !email) return false;
-            try {
-                const { data, error } = await supabaseClient.from("profiles").select("*").eq("email", email).maybeSingle();
-                if (error) { console.error("管理员判定查询失败:", error); return false; }
-                if (!data) return false;
-                isAdmin = (email === ADMIN_EMAIL);
-            } catch (e) { console.error("管理员判定异常:", e); isAdmin = false; }
-            return isAdmin;
-        }
-
         async function saveProfileToDB(email, account, gender, bio) {
             if (!supabaseClient || !email) return { ok: false, msg: "未登录" };
             const { error } = await supabaseClient.from("profiles")
@@ -440,7 +421,6 @@
             const email = document.getElementById("regEmail").value.trim();
             const msg = document.getElementById("regMsg");
             if (!email) { msg.textContent = "请先输入邮箱！"; msg.style.color = "#ef4444"; return; }
-            if (email.toLowerCase() === ADMIN_EMAIL) { msg.textContent = "该邮箱不可用于注册"; msg.style.color = "#ef4444"; return; }
             const btn = document.getElementById("sendCodeBtn");
             btn.disabled = true; btn.textContent = "发送中..."; msg.textContent = "";
             try {
@@ -561,17 +541,9 @@
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value;
             if (!email || !password) { alert("请填写邮箱和密码"); return; }
-            if (!supabaseClient || !supabaseClient.auth) { alert("无法连接服务器"); return; }
             try {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
                 if (error) { alert(loginErrText(error)); return; }
-                /* 管理员邮箱：必须再给一遍密码；若开了双因素，finishLoginAfterAuth 会再要 6 位验证码 */
-                if (email.toLowerCase() === ADMIN_EMAIL) {
-                    const pwd2 = window.prompt("管理员账号，请再次输入密码");
-                    if (!pwd2) { try { await supabaseClient.auth.signOut(); } catch (e) {} alert("账号密码错误"); return; }
-                    const chk = await supabaseClient.auth.signInWithPassword({ email: email, password: pwd2 });
-                    if (chk.error) { try { await supabaseClient.auth.signOut(); } catch (e) {} alert("账号密码错误"); return; }
-                }
                 await finishLoginAfterAuth(data.user, email, password);
             } catch (err) { alert(loginErrText(err)); }
         }
@@ -580,9 +552,7 @@
             const email = document.getElementById("loginCodeEmail").value.trim();
             const token = document.getElementById("loginCode").value.trim();
             if (!email) { alert("请输入邮箱地址！"); return; }
-            if (email.toLowerCase() === ADMIN_EMAIL) { alert("管理员账号请使用密码登录"); switchLoginTab("pwd"); document.getElementById("loginEmail").value = email; return; }
             if (!token || token.length !== 6) { alert("请输入6位验证码！"); return; }
-            if (!supabaseClient || !supabaseClient.auth) { alert("无法连接服务器"); return; }
             try {
                 const { data, error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
                 if (error) { alert(loginErrText(error)); return; }
@@ -617,8 +587,6 @@
             if (password) localStorage.setItem("password", password);
             localStorage.setItem("sk124_auth_token", "true");
             if (profile) renderUserInfo(profile, email);
-            await resolveAdmin(email);
-            localStorage.setItem("is_admin", isAdmin ? "1" : "0");
             alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
             closeModal("twoFAModal");
             closeModal("loginModal");
@@ -652,8 +620,6 @@
             localStorage.removeItem("gender");
             localStorage.removeItem("bio");
             localStorage.removeItem("sk124_auth_token");
-            localStorage.removeItem("is_admin");
-            isAdmin = false;
             checkAuthStateSafe();
             alert("已退出登录");
         }
@@ -683,8 +649,6 @@
                 contentContainer.style.display = "block";
                 userInfo.style.display = "block";
                 if (profile) renderUserInfo(profile, session.user.email);
-                await resolveAdmin(session.user.email);
-                localStorage.setItem("is_admin", isAdmin ? "1" : "0");
             } else {
                 mainContainer.style.display = "block";
                 contentContainer.style.display = "none";
