@@ -56,7 +56,7 @@ body{margin:0;background:#0f172a;color:#e2e8f0;font-family:'Microsoft YaHei',san
 .badge-author{background:#e53935;box-shadow:0 0 4px #ff5722,0 0 8px #ff9800;}
 .badge-z{background:#2196f3;}.badge-s{background:#ffc107;}.badge-a{background:#e53935;}
 </style>
-<script src="compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="wrap">
@@ -102,9 +102,7 @@ const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
 const OFFICIAL_EMAIL="qwe18965540810@qq.com";
 let supabaseClient=null;
-function __initSb(){ if(supabaseClient && !supabaseClient.__stub) return supabaseClient; supabaseClient = window.__sbInit ? window.__sbInit(SUPABASE_URL,SUPABASE_ANON_KEY,supabaseClient) : supabaseClient; return supabaseClient; }
-__initSb();
-if(window.__sbReady){ window.__sbReady.then(function(ok){ if(ok){ __initSb(); try{ if(typeof boot==='function') boot(); }catch(e){} } }); }
+if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 let myEmail="",myUid=null,myAccount="";
 let friendsCache=[];

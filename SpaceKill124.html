@@ -31,7 +31,7 @@ footer{background-color:#333;color:#fff;text-align:center;padding:15px 0;font-si
 .modal-buttons button{flex:1;padding:10px;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:white;}
 .btn-cancel{background:#ef4444;}.btn-confirm{background:#10b981;}
 </style>
-<script src="compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="container">
@@ -71,9 +71,7 @@ footer{background-color:#333;color:#fff;text-align:center;padding:15px 0;font-si
 const SUPABASE_URL="https://xryfrqxelzetzkgsaycl.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
 let supabaseClient=null;
-function __initSb(){ if(supabaseClient && !supabaseClient.__stub) return supabaseClient; supabaseClient = window.__sbInit ? window.__sbInit(SUPABASE_URL,SUPABASE_ANON_KEY,supabaseClient) : supabaseClient; return supabaseClient; }
-__initSb();
-if(window.__sbReady){ window.__sbReady.then(function(ok){ if(ok){ __initSb(); try{ if(typeof checkAuthState==='function') checkAuthState(); }catch(e){} } }); }
+if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const AUTH_KEY="sk124_auth_token";
 const AUTH_PAGE_URL="https://tks124.github.io/tks";

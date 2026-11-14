@@ -124,7 +124,7 @@ body.admin #adminMenuBtn{display:flex;}
 .loading-fill{height:100%;width:0;background:linear-gradient(90deg,#0a6cff,#4a9bff);transition:width .2s;}
 .loading-pct{margin-top:10px;font-size:12px;color:var(--muted);}
 </style>
-<script src="compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="progressBar"></div>
@@ -359,9 +359,7 @@ const ADMIN_EMAIL = "qwe18965540810@qq.com";
 const BAN_KEYWORDS = ["傻逼","智障","脑残","弱智","废物","去死","滚蛋","傻","蠢"];
 
 let supabaseClient = null;
-function __initSb(){ if(supabaseClient && !supabaseClient.__stub) return supabaseClient; supabaseClient = window.__sbInit ? window.__sbInit(SUPABASE_URL,SUPABASE_ANON_KEY,supabaseClient) : supabaseClient; return supabaseClient; }
-__initSb();
-if(window.__sbReady){ window.__sbReady.then(function(ok){ if(ok){ __initSb(); try{ if(typeof init==='function') init(); }catch(e){} } }); }
+if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let myEmail = "";
 let myUid = null;

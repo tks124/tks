@@ -54,7 +54,7 @@
         .code-row input { margin-bottom: 0; text-align: center; letter-spacing: 2px; }
         .code-row button { flex: 0 0 110px; font-size: 13px; padding: 0 8px; }
     </style>
-    <script src="compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="box">
@@ -113,14 +113,8 @@
     const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
     let supabaseClient = null;
 
-    function __initSb() {
-        if (supabaseClient && !supabaseClient.__stub) return supabaseClient;
-        supabaseClient = window.__sbInit ? window.__sbInit(SUPABASE_URL, SUPABASE_ANON_KEY, supabaseClient) : supabaseClient;
-        return supabaseClient;
-    }
-    __initSb();
-    if (window.__sbReady) {
-        window.__sbReady.then(function (ok) { if (ok) __initSb(); });
+    if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
     let currentEmail = "";
