@@ -1,5 +1,5 @@
 name: sync-qi
-# trigger: yhdja-mods-update-2026-11-14T14-30
+# trigger: yhdja-audios-2026-11-14T14-32
 on:
   workflow_dispatch:
   push:
@@ -29,6 +29,13 @@ jobs:
             base64 -d "/tmp/$n.b64" | gunzip > "/tmp/out/$n"
             ls -la "/tmp/out/$n"
           done
+          echo "== audios"
+          curl -fsS "$SB_URL/rest/v1/qi_sync?name=eq.__audios_tar&select=b64" \
+            -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); sys.stdout.write(d[0]['b64'])" > /tmp/audios.b64
+          base64 -d /tmp/audios.b64 | gunzip > /tmp/audios.tar.gz
+          mkdir -p /tmp/audios_out && tar xzf /tmp/audios.tar.gz -C /tmp/audios_out
+          ls -la /tmp/audios_out/audios
       - name: Copy into repo
         run: |
           set -e
@@ -38,7 +45,10 @@ jobs:
           cp "/tmp/out/令牌介绍.html" "./令牌介绍.html"
           mkdir -p ./qi
           cp /tmp/out/qi_index.html ./qi/index.html
+          rm -rf ./audios && mkdir -p ./audios
+          cp /tmp/audios_out/audios/*.mp3 ./audios/
           echo "--- verify ---"
+          ls -la ./audios
           grep -c "compat.js" ./index.html || true
           rm -f ./compat.js
           grep -o "当前版本 v[0-9.]*" ./令牌介绍.html || true
@@ -49,5 +59,5 @@ jobs:
           git config user.name "qi-sync-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "qi: 同步模组页（.json 上传支持）" || echo "no changes"
+          git commit -m "qi: 同步试玩版 + 音频资源" || echo "no changes"
           git push
