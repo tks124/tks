@@ -1,5 +1,5 @@
 name: sync-qi
-# trigger: admin-check-unified
+# trigger: board-render-fix
 on:
   workflow_dispatch:
   push:
@@ -39,14 +39,12 @@ jobs:
           mkdir -p ./qi
           cp /tmp/out/qi_index.html ./qi/index.html
           echo "--- verify ---"
-          grep -c "compat.js" ./index.html || true
-          grep -o "当前版本 v[0-9.]*" ./令牌介绍.html || true
-          grep -o "1\.[0-9]\.0" ./token-info.json | head -3 || true
-          head -c 100 ./qi/index.html; echo
+          grep -c "resolveAdmin" ./index.html || true
+          grep -c "initSbTks" ./qi/index.html || true
       - name: Commit
         run: |
           git config user.name "qi-sync-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "管理员判定统一沿用 diy.html：读 profiles 记录 + 邮箱匹配 ADMIN_EMAIL" || echo "no changes"
+          git commit -m "修复棋盘渲染：高度预算与线条可见度；管理员判定沿用 diy.html" || echo "no changes"
           git push
