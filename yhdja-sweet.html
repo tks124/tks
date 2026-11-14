@@ -1,1 +1,47 @@
-__PLACEHOLDER__
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>银行大劫案 · 网页试玩版</title>
+<style>
+  html,body{margin:0;height:100%;background:#070b14;overflow:hidden;}
+  #ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:14px;background:#070b14;color:#94a3b8;
+      font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;z-index:9;}
+  .sp{width:34px;height:34px;border:3px solid #1e293b;border-top-color:#f5b942;
+      border-radius:50%;animation:r .8s linear infinite;}
+  @keyframes r{to{transform:rotate(360deg)}}
+  #er{color:#f87171;font-size:12px;max-width:600px;text-align:center;line-height:1.7;padding:0 20px;}
+</style>
+</head>
+<body>
+<div id="ld"><div class="sp"></div><div id="st">正在加载试玩版…</div><div id="er"></div></div>
+<script src="yhdja-sweet-1.js"></script>
+<script src="yhdja-sweet-2.js"></script>
+<script src="yhdja-sweet-3.js"></script>
+<script src="yhdja-sweet-4.js"></script>
+<script src="yhdja-sweet-5.js"></script>
+<script src="yhdja-sweet-6.js"></script>
+<script>
+(function(){
+  var st=document.getElementById('st'), er=document.getElementById('er');
+  function fail(m){ st.textContent='加载失败'; er.textContent=m; var s=document.querySelector('.sp'); if(s) s.style.display='none'; }
+  try{
+    var b64 = window.__P;
+    if(!b64 || b64.length < 1000){ throw new Error('分片未加载完整，请刷新重试'); }
+    
+    b64 = b64.replace(/-/g,'+').replace(/_/g,'/');
+    while (b64.length % 4 !== 0) b64 += '=';
+    var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
+    for (var i=0;i<n;i++) bytes[i]=bin.charCodeAt(i);
+    if (typeof DecompressionStream === 'undefined') throw new Error('浏览器不支持解压，请使用新版 Chrome / Edge / Safari');
+    var s2 = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    new Response(s2).text().then(function(html){
+      document.open(); document.write(html); document.close();
+    }).catch(function(e){ fail('试玩版启动失败：'+e.message); });
+  }catch(e){ fail('试玩版启动失败：'+e.message); }
+})();
+</script>
+</body>
+</html>
