@@ -227,6 +227,8 @@
         let pendingEmail = "";
         let loginMode = "pwd";
         let pendingLoginInfo = null;
+        /* 管理员标记：沿用 diy.html 的判定结果（数据库 profiles 记录 + 邮箱匹配） */
+        let isAdmin = false;
 
         function isReservedName(account, email) {
             if (!account) return false;
@@ -384,6 +386,21 @@
                 if (insErr) { console.error("创建资料失败:", insErr); return null; }
                 return inserted;
             } catch (e) { console.error("ensureProfile 异常:", e); return null; }
+        }
+
+        /* 管理员判定：完全沿用 diy.html 的 init() 写法 ——
+           先从数据库 profiles 表按邮箱取出该账号记录，记录存在且邮箱等于 ADMIN_EMAIL 才算管理员。
+           不新增任何字段、不另造一套规则。 */
+        async function resolveAdmin(email) {
+            isAdmin = false;
+            if (!supabaseClient || !email) return false;
+            try {
+                const { data, error } = await supabaseClient.from("profiles").select("*").eq("email", email).maybeSingle();
+                if (error) { console.error("管理员判定查询失败:", error); return false; }
+                if (!data) return false;
+                isAdmin = (email === ADMIN_EMAIL);
+            } catch (e) { console.error("管理员判定异常:", e); isAdmin = false; }
+            return isAdmin;
         }
 
         async function saveProfileToDB(email, account, gender, bio) {
@@ -600,6 +617,8 @@
             if (password) localStorage.setItem("password", password);
             localStorage.setItem("sk124_auth_token", "true");
             if (profile) renderUserInfo(profile, email);
+            await resolveAdmin(email);
+            localStorage.setItem("is_admin", isAdmin ? "1" : "0");
             alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
             closeModal("twoFAModal");
             closeModal("loginModal");
@@ -633,6 +652,8 @@
             localStorage.removeItem("gender");
             localStorage.removeItem("bio");
             localStorage.removeItem("sk124_auth_token");
+            localStorage.removeItem("is_admin");
+            isAdmin = false;
             checkAuthStateSafe();
             alert("已退出登录");
         }
@@ -662,6 +683,8 @@
                 contentContainer.style.display = "block";
                 userInfo.style.display = "block";
                 if (profile) renderUserInfo(profile, session.user.email);
+                await resolveAdmin(session.user.email);
+                localStorage.setItem("is_admin", isAdmin ? "1" : "0");
             } else {
                 mainContainer.style.display = "block";
                 contentContainer.style.display = "none";
