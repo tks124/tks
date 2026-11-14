@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceKill124 - 官网入口</title>
+    <script src="compat.js"></script>
     <script>
     /* 依赖加载器：多 CDN 容错（任一源可达即可），全部失败也不阻塞页面渲染与交互 */
     (function () {
@@ -175,6 +176,19 @@
         </div>
     </div>
 
+    <div id="adminPwdModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>管理员二次验证</h2>
+            <p style="font-size:0.9rem;color:#9ca3af;margin-bottom:16px;">检测到管理员邮箱，请再次输入密码以确认身份。</p>
+            <input type="password" id="adminPwdInput" class="modal-input" placeholder="管理员密码">
+            <p id="adminPwdMsg" style="font-size:0.85rem;color:#ef4444;min-height:20px;"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" onclick="cancelAdminPwd()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="submitAdminPwd()">确认</button>
+            </div>
+        </div>
+    </div>
+
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <h2>编辑资料</h2>
@@ -197,11 +211,35 @@
         const SUPABASE_ANON_KEY = "sb_publishable_bV150rxd0EeojJEL53Cgwg_Lc3ZUkoU";
         const RESERVED_NAME = "太空杀124";
         const RESERVED_OWNER_EMAIL = "qwe18965540810@qq.com";
+        /* 管理员专属邮箱：登录时必须二次校验密码（+ 已开启双因素时再校验 6 位动态码）
+           普通用户不得使用该邮箱，也不得获得管理员权限 */
+        const ADMIN_EMAIL = "qwe18965540810@qq.com";
+        const ADMIN_FLAG_KEY = "sk124_admin_ok";
+        function isAdminEmail(email) {
+            return String(email || "").trim().toLowerCase() === ADMIN_EMAIL;
+        }
+        function setAdminSession(on) {
+            try {
+                if (on) sessionStorage.setItem(ADMIN_FLAG_KEY, "1");
+                else sessionStorage.removeItem(ADMIN_FLAG_KEY);
+            } catch (e) {}
+        }
+        function hasAdminSession() {
+            try { return sessionStorage.getItem(ADMIN_FLAG_KEY) === "1"; } catch (e) { return false; }
+        }
+        async function safeSignOut() {
+            setAdminSession(false);
+            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
+        }
 
         let supabaseClient = null;
         function initSupabaseClient() {
-            if (supabaseClient) return supabaseClient;
-            if (window.supabase) {
+            if (supabaseClient && !supabaseClient.__stub) return supabaseClient;
+            if (window.__sbInit) {
+                supabaseClient = window.__sbInit(SUPABASE_URL, SUPABASE_ANON_KEY, supabaseClient);
+                return supabaseClient;
+            }
+            if (window.supabase && window.supabase.createClient) {
                 try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
                 catch (error) { console.error("Supabase 初始化失败:", error); }
             }
@@ -421,6 +459,12 @@
             const email = document.getElementById("regEmail").value.trim();
             const msg = document.getElementById("regMsg");
             if (!email) { msg.textContent = "请先输入邮箱！"; msg.style.color = "#ef4444"; return; }
+            /* 管理员专属邮箱不允许走普通注册流程 */
+            if (isAdminEmail(email)) {
+                msg.textContent = "该邮箱为管理员专属，不能用于普通注册。";
+                msg.style.color = "#ef4444";
+                return;
+            }
             const btn = document.getElementById("sendCodeBtn");
             btn.disabled = true; btn.textContent = "发送中..."; msg.textContent = "";
             try {
@@ -467,6 +511,7 @@
             const account = document.getElementById("regAccount").value.trim();
             const password = document.getElementById("regPassword").value;
             if (!account) { alert("请输入账号名！"); return; }
+            if (isAdminEmail(pendingEmail)) { alert("管理员邮箱不能用于普通注册。"); return; }
             if (!password || password.length < 6) { alert("密码长度至少6位！"); return; }
             if (isReservedName(account, pendingEmail)) { alert("该账号名为保留名称，仅限指定邮箱使用！"); return; }
             const btn = document.getElementById("completeRegBtn");
@@ -527,6 +572,15 @@
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value;
             if (!email || !password) { alert("请填写邮箱和密码"); return; }
+            /* 管理员邮箱：走密码 + 二次校验 + 可选 2FA 的管理员登录 */
+            if (isAdminEmail(email)) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                    if (error) { alert("管理员登录失败：" + error.message); return; }
+                    await finishLoginAfterAuth(data.user, email, password);
+                } catch (err) { alert("登录出错: " + err.message); }
+                return;
+            }
             try {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
                 if (error) { alert("登录失败: " + error.message); return; }
@@ -538,6 +592,13 @@
             const email = document.getElementById("loginCodeEmail").value.trim();
             const token = document.getElementById("loginCode").value.trim();
             if (!email) { alert("请输入邮箱地址！"); return; }
+            /* 管理员邮箱不走验证码登录，必须密码 + 二次校验 */
+            if (isAdminEmail(email)) {
+                alert("管理员邮箱请使用「密码登录」，并完成二次验证。");
+                switchLoginTab("pwd");
+                document.getElementById("loginEmail").value = email;
+                return;
+            }
             if (!token || token.length !== 6) { alert("请输入6位验证码！"); return; }
             try {
                 const { data, error } = await supabaseClient.auth.verifyOtp({ email: email, token: token, type: "email" });
@@ -547,13 +608,50 @@
         }
 
         async function finishLoginAfterAuth(user, email, password) {
+            const admin = isAdminEmail(email);
+
+            /* ---------- 管理员分支：必须再给一遍密码 ---------- */
+            if (admin) {
+                if (!password) {
+                    /* 验证码登录路径没有密码，这里补一次 */
+                    password = await promptAdminPassword();
+                    if (!password) { await safeSignOut(); return; }
+                }
+                /* 用密码再校验一次身份（即使已经通过验证码登录） */
+                const chk = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                if (chk.error) {
+                    alert("管理员密码校验失败：" + chk.error.message);
+                    await safeSignOut();
+                    return;
+                }
+                let aprofile = await ensureProfile(email, user.user_metadata ? user.user_metadata.account : "");
+                if (aprofile) {
+                    const banned = await enforceBan(aprofile.uid, email, aprofile.account);
+                    if (banned) { await safeSignOut(); return; }
+                }
+                /* 已开启双因素 → 再要 6 位动态码 */
+                if (aprofile && aprofile.two_factor_secret) {
+                    pendingLoginInfo = { email: email, password: password, profile: aprofile, admin: true };
+                    closeModal("loginModal");
+                    document.getElementById("twoFACode").value = "";
+                    document.getElementById("twoFAMsg").textContent = "";
+                    openModal("twoFAModal");
+                    document.getElementById("twoFACode").focus();
+                    return;
+                }
+                await completeLogin(email, password, aprofile, true);
+                return;
+            }
+
+            /* ---------- 普通用户分支：绝不给管理员权限 ---------- */
+            setAdminSession(false);
             let profile = await ensureProfile(email, user.user_metadata ? user.user_metadata.account : "");
             if (profile) {
                 const banned = await enforceBan(profile.uid, email, profile.account);
                 if (banned) return;
             }
             if (profile && profile.two_factor_secret) {
-                pendingLoginInfo = { email: email, password: password, profile: profile };
+                pendingLoginInfo = { email: email, password: password, profile: profile, admin: false };
                 closeModal("loginModal");
                 document.getElementById("twoFACode").value = "";
                 document.getElementById("twoFAMsg").textContent = "";
@@ -561,19 +659,49 @@
                 document.getElementById("twoFACode").focus();
                 return;
             }
-            await completeLogin(email, password, profile);
+            await completeLogin(email, password, profile, false);
         }
 
-        async function completeLogin(email, password, profile) {
+        /* ---------- 管理员补密码弹窗 ---------- */
+        let _adminPwdResolve = null;
+        function promptAdminPassword() {
+            return new Promise(function (resolve) {
+                _adminPwdResolve = resolve;
+                document.getElementById("adminPwdInput").value = "";
+                document.getElementById("adminPwdMsg").textContent = "";
+                openModal("adminPwdModal");
+                setTimeout(function () {
+                    try { document.getElementById("adminPwdInput").focus(); } catch (e) {}
+                }, 60);
+            });
+        }
+        function submitAdminPwd() {
+            const v = document.getElementById("adminPwdInput").value;
+            if (!v) { document.getElementById("adminPwdMsg").textContent = "请输入管理员密码"; return; }
+            closeModal("adminPwdModal");
+            const r = _adminPwdResolve; _adminPwdResolve = null;
+            if (r) r(v);
+        }
+        function cancelAdminPwd() {
+            closeModal("adminPwdModal");
+            const r = _adminPwdResolve; _adminPwdResolve = null;
+            if (r) r(null);
+        }
+
+        async function completeLogin(email, password, profile, isAdmin) {
             if (profile) {
                 const banned = await enforceBan(profile.uid, email, profile.account);
                 if (banned) return;
             }
+            /* 只有走完管理员二次校验的会话才置管理员标记 */
+            const admin = !!isAdmin && isAdminEmail(email);
+            setAdminSession(admin);
             localStorage.setItem("email", email);
             if (password) localStorage.setItem("password", password);
             localStorage.setItem("sk124_auth_token", "true");
+            localStorage.setItem("sk124_is_admin", admin ? "1" : "0");
             if (profile) renderUserInfo(profile, email);
-            alert("登录成功！你的 UID 是 " + (profile ? profile.uid : "-"));
+            alert((admin ? "管理员登录成功！" : "登录成功！") + "你的 UID 是 " + (profile ? profile.uid : "-"));
             closeModal("twoFAModal");
             closeModal("loginModal");
             window.location.href = "rjyz.html";
@@ -587,18 +715,19 @@
             const secret = pendingLoginInfo.profile.two_factor_secret;
             const ok = verifyTOTP(secret, code);
             if (!ok) { msg.textContent = "验证码错误，请重试"; return; }
-            await completeLogin(pendingLoginInfo.email, pendingLoginInfo.password, pendingLoginInfo.profile);
+            await completeLogin(pendingLoginInfo.email, pendingLoginInfo.password, pendingLoginInfo.profile, pendingLoginInfo.admin);
             pendingLoginInfo = null;
         }
 
         async function cancel2FALogin() {
             pendingLoginInfo = null;
             closeModal("twoFAModal");
-            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
+            await safeSignOut();
         }
 
         async function logout() {
-            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
+            await safeSignOut();
+            localStorage.removeItem("sk124_is_admin");
             localStorage.removeItem("account");
             localStorage.removeItem("email");
             localStorage.removeItem("password");
@@ -621,6 +750,14 @@
             const contentContainer = document.getElementById("contentContainer");
             const userInfo = document.getElementById("userInfo");
             if (session) {
+                /* 管理员邮箱：本次会话必须已通过密码(+2FA)二次校验，否则强制重新登录 */
+                if (isAdminEmail(session.user.email) && !hasAdminSession()) {
+                    await safeSignOut();
+                    mainContainer.style.display = "block";
+                    contentContainer.style.display = "none";
+                    userInfo.style.display = "none";
+                    return;
+                }
                 const profile = await ensureProfile(session.user.email, session.user.user_metadata ? session.user.user_metadata.account : "");
                 if (profile) {
                     const banned = await enforceBan(profile.uid, session.user.email, profile.account);
