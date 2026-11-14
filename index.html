@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceKill124 - 官网入口</title>
     <script>
-    /* 依赖加载器：多 CDN 容错（任一源可达即可），全部失败也不阻塞页面渲染与交互 */
+    
     (function () {
       var CDN = ['https://cdn.jsdelivr.net/npm/', 'https://fastly.jsdelivr.net/npm/', 'https://unpkg.com/'];
       window.__loadLib = function (pkgPath, done) {
@@ -65,7 +65,7 @@
         #musicBtn:active { transform: translateY(0); }
     </style>
     <script>
-    /* supabase-js / crypto-js 改为容错异步加载（原为同步 script，jsDelivr 一旦不可达会阻塞整页解析） */
+    
     window.__supabaseReady = new Promise(function (resolve) {
       window.__loadLib('@supabase/supabase-js@2/dist/umd/supabase.js', function (ok) {
         if (!ok || !window.supabase) { console.error('supabase-js 所有 CDN 源均加载失败'); resolve(false); }
@@ -215,7 +215,7 @@
             });
         }
 
-        /* 安全包装：Supabase 未就绪时不再抛异常导致后续 UI 事件绑定全部失效 */
+        
         async function checkAuthStateSafe() {
             if (!supabaseClient) return;
             try { await checkAuthState(); }
@@ -523,7 +523,7 @@
             else await loginWithCode();
         }
 
-        /* 登录失败提示：只给三种结论，不输出原始错误信息 */
+        
         function loginErrText(err) {
             if (!supabaseClient || !supabaseClient.auth) return "无法连接服务器";
             var m = String((err && (err.message || err.error_description || err.msg)) || err || "").toLowerCase();

@@ -1,5 +1,5 @@
 
-// ===== 基础数据（与游戏一致）=====
+
 var BASE_FACTIONS = { police:'政府', robber:'帮派', security:'保安公司', neutral:'中立' };
 var BASE_WEAPONS = {
   pistol:{name:'手枪',mag:12,dmg:12,rate:0.35,reload:1.8,range:3,spread:0.07,speedMod:1,isSniper:false},
@@ -15,11 +15,11 @@ var BASE_WEAPONS = {
 
 var customWeapons = {};
 var customUnits = {};
-var customFactions = {};   // key -> [enemyKeys]
+var customFactions = {};   
 var factionNames = Object.assign({}, BASE_FACTIONS);
 var selection = { weapons:{}, units:{}, factions:{} };
 
-// ===== 工具 =====
+
 function toast(msg, type){
   var t = document.getElementById('toast');
   t.innerText = msg;
@@ -29,7 +29,7 @@ function toast(msg, type){
 }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
-// ===== Tab =====
+
 document.querySelectorAll('.tab').forEach(function(tab){
   tab.onclick = function(){
     document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
@@ -39,7 +39,7 @@ document.querySelectorAll('.tab').forEach(function(tab){
   };
 });
 
-// ===== 武器 =====
+
 function addWeapon(){
   var name = document.getElementById('wName').value.trim() || '自定义武器';
   var key = 'custom_w_' + Date.now();
@@ -61,7 +61,7 @@ function addWeapon(){
 }
 function delWeapon(k){ delete customWeapons[k]; delete selection.weapons[k]; renderAll(); }
 
-// ===== 单位 =====
+
 function addUnit(){
   var name = document.getElementById('uName').value.trim() || '自定义单位';
   var key = 'custom_u_' + Date.now();
@@ -88,7 +88,7 @@ function addUnit(){
 }
 function delUnit(k){ delete customUnits[k]; delete selection.units[k]; renderAll(); }
 
-// ===== 势力 =====
+
 function addFaction(){
   var name = document.getElementById('fName').value.trim();
   if (!name) { toast('请输入势力名称', 'err'); return; }
@@ -98,7 +98,7 @@ function addFaction(){
   var enemies = [];
   for (var i=0;i<sel.options.length;i++) if (sel.options[i].selected) enemies.push(sel.options[i].value);
   customFactions[key] = enemies;
-  // 双向
+  
   enemies.forEach(function(e){
     if (!customFactions[e]) customFactions[e] = [];
     if (customFactions[e].indexOf(key) < 0) customFactions[e].push(key);
@@ -115,7 +115,7 @@ function delFaction(k){
   renderAll();
 }
 
-// ===== 渲染 =====
+
 function renderAll(){
   renderWeaponList();
   renderUnitList();
@@ -163,7 +163,7 @@ function renderFactionList(){
 }
 
 function renderSelects(){
-  // 单位表单：势力
+  
   var fSel = document.getElementById('uFaction');
   var curF = fSel.value;
   fSel.innerHTML = Object.keys(factionNames).map(function(k){
@@ -171,7 +171,7 @@ function renderSelects(){
   }).join('');
   if (curF) fSel.value = curF;
 
-  // 单位表单：武器
+  
   var wSel = document.getElementById('uWeapon');
   var curW = wSel.value;
   var opts = '<option value="">无武器</option>';
@@ -184,7 +184,7 @@ function renderSelects(){
   wSel.innerHTML = opts;
   if (curW) wSel.value = curW;
 
-  // 势力表单：敌对
+  
   var eSel = document.getElementById('fEnemies');
   var curE = Array.from(eSel.selectedOptions || []).map(function(o){ return o.value; });
   eSel.innerHTML = Object.keys(factionNames).map(function(k){
@@ -223,7 +223,7 @@ function selAll(cat, val){
   renderSelection();
 }
 
-// ===== 导出 =====
+
 function exportMod(){
   var selW = {}, selU = {}, selF = {};
   Object.keys(selection.weapons).forEach(function(k){ if (customWeapons[k]) selW[k] = customWeapons[k]; });
@@ -263,5 +263,5 @@ function clearAll(){
   toast('已清空');
 }
 
-// 初始化
+
 renderAll();

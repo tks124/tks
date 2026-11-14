@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <script src="compat.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>太空杀124二维码生成器</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -36,7 +35,7 @@
         const AUTH_PAGE_URL = "https://tks124.github.io/tks/";
         const LANG_KEY = "sk124_lang";
 
-        // ============ 语言支持（只读，不提供切换） ============
+        
         const currentLang = localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'zh';
 
         const translations = {
@@ -80,7 +79,7 @@
                 }
             });
         }
-        // ============ 语言支持结束 ============
+        
 
         window.onload = function() {
             applyLanguage();
