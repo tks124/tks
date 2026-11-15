@@ -804,7 +804,8 @@ function makeUnit(type,x,y,extra){
            carrying:null, inCar:false, path:null, lastPathTarget:null, pathUpdateTimer:0, wanderTarget:null, target:null, 
            captive:null, isCaptured:false, capturedBy:null, stunTimer:0, intimidatedCount:0, hasGrenade: extra.hasGrenade || false, 
            canRespawn: extra.canRespawn !== false, hasRPG: extra.hasRPG || false, rpgFired: false, rpgCd: 0, isHiding: false, isTrapped: false, stamina: 50, maxStamina: 50, reporting: false, reportTimer: 0, reported: false,
-           isBoss: !!d.isBoss, invincible: 0, p3Shield: false, sweepTimer: 0, sweepAngle: 0, sweepCd: 0, skill1Timer: 30, skill3Timer: 12, bossPhase: 1, stunImmune: 0 };
+           isBoss: !!d.isBoss, invincible: 0, p3Shield: false, sweepTimer: 0, sweepAngle: 0, sweepCd: 0, skill1Timer: 30, skill3Timer: 12, bossPhase: 1, stunImmune: 0,
+           entry: extra.entry || d.entry || 'start', isModUnit: !!customUnits[type] };
 }
 
 function moveTo(u, tx, ty, dt, mul){
