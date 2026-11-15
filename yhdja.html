@@ -1,98 +1,98 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<script src="compat.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>银行大劫案 - 官网</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
+<html 语言=“zh-CN”>
+<头部>
+<元数据 charset=“UTF-8”>
+<脚本 src=“compat.js”></脚本>
+<元数据 名称=“视口” 内容=“宽度=device-width，初始缩放比例=1.0”>
+<标题>银行大劫案 - 官网</标题>
+<风格>
+* { 边距：0；内边距：0；盒模型：边界框； }
 :root {
---bg:#070b14; --panel:#0f172a; --line:#1e293b;
---gold:#f5b942; --red:#e11d48; --blue:#3b82f6; --txt:#e2e8f0; --dim:#94a3b8;
+--背景
+--黄金
 }
-body {
-font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-background: var(--bg); color: var(--txt); overflow-x:hidden;
--webkit-font-smoothing: antialiased;
+身体
+字体家族
+背景色：var(--bg)；文字颜色：var(--txt)；水平滚动隐藏。
+-webkit-font-smoothing
 }
-.bg-fx { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.bg-fx { 位置：固定；填充比例：100%；层级：0；不可交互；溢出内容被隐藏。 }
 .bg-fx::before {
-content:''; position:absolute; width:900px; height:900px; border-radius:50%;
-background: radial-gradient(circle, rgba(225,29,72,0.20), transparent 65%);
-top:-380px; left:-260px; filter:blur(20px);
+内容
+背景
+顶部：-380像素；左侧：-260像素；滤镜：模糊20像素。
 }
 .bg-fx::after {
-content:''; position:absolute; width:800px; height:800px; border-radius:50%;
-background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
-bottom:-360px; right:-240px; filter:blur(20px);
+内容
+背景
+底部：-360px；右侧：-240px；滤镜：模糊20像素；
 }
 .grid-lines {
-position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.35;
-background-image: linear-gradient(rgba(148,163,184,0.07) 1px, transparent 1px),
-linear-gradient(90deg, rgba(148,163,184,0.07) 1px, transparent 1px);
-background-size: 56px 56px;
-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
--webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%);
+定位：固定；内边距：0；层级：0；不可交互；透明度：0.35；
+背景图像：线性渐变（rgba(148,163,184,0.07) 1像素，透明1像素），
+度
+背景尺寸
+掩码图像
+-webkit-mask-image：径向渐变（椭圆形状，中心位于50% 0%位置，20%范围内的颜色为黑色，78%范围内的颜色为透明色）；
 }
 .wrap { position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:0 22px; }
-header {
-position:sticky; top:0; z-index:50;
-backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-background: rgba(7,11,20,0.78); border-bottom:1px solid rgba(30,41,59,0.9);
+标题 {
+位置
+背景模糊效果：模糊14像素；-webkit背景模糊效果：模糊14像素。
+背景
 }
 .nav { display:flex; align-items:center; justify-content:space-between; height:64px; }
 .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; letter-spacing:0.5px; }
 .logo-mark {
-width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
-background: linear-gradient(135deg, var(--red), #7f1d1d); font-size:16px;
-box-shadow: 0 4px 16px rgba(225,29,72,0.4);
+宽度：32像素；高度：32像素；边框圆角：9像素；布局方式：网格布局；元素居中显示。
+背景
+盒阴影
 }
 .nav-links { display:flex; gap:22px; font-size:13px; color:var(--dim); }
-.nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
-.nav-links a:hover { color:var(--gold); }
+.nav-links a {颜色：继承父元素颜色；文本装饰：无；颜色变化过渡时间：0.2秒；}
+.nav-links a:hover {颜色：var(--gold);}
 .nav-cta {
-padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
-background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206; border:none;
-transition: transform .15s, box-shadow .2s; font-family:inherit;
+填充物
+背景
+过渡
 }
 .nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,185,66,0.35); }
-.hero { padding: 74px 0 56px; text-align:center; }
+.hero { 内边距：74px 0 56px；文本居中； }
 .badge {
-display:inline-flex; align-items:center; gap:7px; font-size:11.5px; letter-spacing:1.2px;
-padding:6px 14px; border-radius:999px; color:var(--gold);
-background: rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.28);
-margin-bottom:22px; text-transform:uppercase;
+显示
+填充物
+背景
+下边距
 }
-.dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); }
-h1 {
-font-size: clamp(34px, 6.2vw, 62px); line-height:1.1; font-weight:900; letter-spacing:-1.5px;
-background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
--webkit-background-clip:text; background-clip:text; color:transparent;
-margin-bottom:18px;
+.dot { 宽度：6px；高度：6px；边框圆角：50%；背景色：var(--gold)；阴影效果：0 0 8px var(--gold)；}
+h1
+字体大小
+背景
+-webkit背景裁剪
+下边距
 }
-h1 em {
-font-style:normal;
-background: linear-gradient(135deg, var(--gold), var(--red));
--webkit-background-clip:text; background-clip:text; color:transparent;
+透明
+字体样式
+背景
+-webkit-background-clip:text; background-clip:text; 颜色：透明;
 }
-.sub { font-size:15px; color:var(--dim); line-height:1.85; max-width:600px; margin:0 auto 34px; }
+.sub { 字体大小：15像素；颜色：var(--dim)；行高：1.85；最大宽度：600像素；垂直居中显示，下方留有34像素的间距； }
 .cta-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
 .btn {
-display:inline-flex; align-items:center; justify-content:center; gap:9px;
-padding:14px 30px; border-radius:11px; font-size:14.5px; font-weight:800;
-cursor:pointer; border:none; text-decoration:none; transition: all .18s;
-font-family:inherit;
+display:inline-flex; 对齐方式：垂直居中、水平居中；元素间距：9px；
+填充物
+cursor:pointer; 边界宽度：无；文本装饰：无；所有属性的过渡时间：0.18秒。
+字体家族
 }
 .btn-primary {
-background: linear-gradient(135deg, var(--red), #9f1239); color:#fff;
+背景
 box-shadow: 0 8px 28px rgba(225,29,72,0.35);
 }
 .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(225,29,72,0.5); }
 .btn-ghost {
-background: rgba(30,41,59,0.6); color:var(--txt); border:1px solid #334155;
+背景
 }
-.btn-ghost:hover { background: rgba(51,65,85,0.8); border-color:#475569; transform:translateY(-2px); }
+.btn-ghost:hover {背景色：rgba(51,65,85,0.8)；边框颜色：#475569；垂直位移：-2像素。}
 .btn-gold {
 background: linear-gradient(135deg, var(--gold), #d97706); color:#1a1206;
 box-shadow: 0 8px 28px rgba(245,185,66,0.28);
@@ -286,8 +286,8 @@ text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
 <h2>下载软件完整版</h2>
 <p>完整版以软件安装包形式提供，安装后即可离线游玩全部内容。<br>模组文件（.yhdja）与音乐文件放在安装目录即可自动加载。</p>
 <div class="dl-grid">
-<a class="dl-item" href="https://github.com/tks124/tks/releases/download/v1.1.0/v1.1.0-yhdja.APK" rel="noopener">
-<span class="meta"><b>支持安卓手机</b><span style="font-size:11px;">Android · v1.1.0 ·  点击直接安装</span></span>
+<a class="dl-item" href="https://github.com/tks124/tks/releases/download/v2.4.2/v2.4.2-yhdja.APK" rel="noopener">
+<span class="meta"><b>支持安卓手机</b><span style="font-size:11px;">Android · v2.4.2 ·  点击直接安装</span></span>
 </a>
 <a class="dl-item" href="javascript:void(0)" id="winBtn" rel="noopener">
 <span class="meta"><b>WINDOWS 版本</b><span style="font-size:11px;">Windows · 敬请期待</span></span>
