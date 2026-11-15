@@ -1,5 +1,5 @@
 name: sync-qi
-# trigger: yhdja-audios-2026-11-14T14-32
+# trigger: yhdja-v13-2026-11-15T02-25
 on:
   workflow_dispatch:
   push:
