@@ -1,5 +1,5 @@
 name: sync-qi
-# trigger: yhdja-v13b-2026-11-15T02-45
+# trigger: yhdja-v13c-2026-11-15T03-05
 on:
   workflow_dispatch:
   push:
