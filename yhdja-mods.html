@@ -603,8 +603,22 @@ function selAll(cat, val){
 function exportMod(){
   var selW = {}, selU = {}, selF = {};
   Object.keys(selection.weapons).forEach(function(k){ if (customWeapons[k]) selW[k] = customWeapons[k]; });
-  Object.keys(selection.units).forEach(function(k){ if (customUnits[k]) selU[k] = customUnits[k]; });
-  Object.keys(selection.factions).forEach(function(k){ if (customFactions[k]) selF[k] = customFactions[k]; });
+  // 单位：team 写可读名字，teamId 保留内部索引
+  Object.keys(selection.units).forEach(function(k){
+    var u = customUnits[k]; if (!u) return;
+    var c = {}; for (var q in u) c[q] = u[q];
+    c.teamId = u.team;
+    c.team = factionNames[u.team] || u.team;
+    selU[k] = c;
+  });
+  // 势力：写 {name, hostile:[名字]}，不再只写内部 ID
+  Object.keys(selection.factions).forEach(function(k){
+    if (!customFactions[k]) return;
+    selF[k] = {
+      name: factionNames[k] || k,
+      hostile: (customFactions[k] || []).map(function(x){ return factionNames[x] || x; })
+    };
+  });
 
   var total = Object.keys(selW).length + Object.keys(selU).length + Object.keys(selF).length;
   if (total === 0) { toast('请先勾选要导出的内容', 'err'); return; }

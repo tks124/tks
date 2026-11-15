@@ -3180,6 +3180,18 @@ function validateModFields(rawW, rawU){
     return warns;
 }
 
+// 势力名 <-> 内部 ID 互转：导出写名字，导入按名字反查回 ID
+function resolveFactionKey(v){
+    if (v === null || v === undefined || v === '') return 'neutral';
+    v = String(v);
+    if (factionNames[v]) return v;
+    for (var k in factionNames) if (factionNames[k] === v) return k;
+    if (defaultFactions[v]) return v;
+    return v;
+}
+function isInternalId(v){
+    return /^custom_[fuw]_[0-9a-z]+$/i.test(String(v)) || /^inline_w_/i.test(String(v));
+}
 function applyModPayload(payload, opt){
     opt = opt || {};
     var modsTxt = payload['mods.txt'] || '';
@@ -3214,8 +3226,17 @@ function applyModPayload(payload, opt){
             // 模组势力默认与警方敌对（帮派阵营），除非显式声明为友方
             if (!arr.length && fv.team !== 'police' && fv.friendly !== true) arr = ['police'];
         }
+        arr = arr.map(resolveFactionKey);
         customFactions[fk] = arr;
-        if (!factionNames[fk]) factionNames[fk] = (fv && fv.name) ? fv.name : fk;
+        var fname = (fv && (fv.name || fv['名称'])) || factionNames[fk];
+        if (!fname || isInternalId(fname)) fname = isInternalId(fk) ? '自定义势力' : fk;
+        factionNames[fk] = fname;
+    }
+    // 势力注册完成后再把单位的 team 名字反查成内部 ID（顺序不能提前）
+    for (var uk2 in newU) {
+        newU[uk2].team = resolveFactionKey(newU[uk2].team);
+        customUnits[uk2].team = newU[uk2].team;
+        DATA[uk2].team = newU[uk2].team;
     }
     if (payload['roster.json'] && payload['roster.json'].length) { roster = payload['roster.json']; rosterApplied = false; }
     return { author: author, modVersion: modVersion,
@@ -3486,8 +3507,10 @@ function importModFile(file){
 function unitFactionName(team){
     if (!team) return '无';
     if (factionNames[team]) return factionNames[team];
+    var k = resolveFactionKey(team);
+    if (factionNames[k]) return factionNames[k];
     // 模组内部 ID（custom_f_xxx / custom_u_xxx）绝不直接显示给玩家
-    if (/^custom_[fuw]_/.test(String(team))) return '自定义势力';
+    if (isInternalId(team)) return '自定义势力';
     return String(team);
 }
 function unitEffectText(d){
