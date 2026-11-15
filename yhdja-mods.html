@@ -255,6 +255,15 @@
           <div class="field"><label>携带武器</label><select id="uWeapon"></select></div>
         </div>
         <div class="row2">
+          <div class="field"><label>来源 / 入场方式（必填）</label>
+            <select id="uEntry">
+              <option value="start">开局即在场的单位</option>
+              <option value="responder">随优先警员增援抵达（警车）</option>
+              <option value="swat">随特警增援抵达（特警车）</option>
+              <option value="gang">随帮派增援抵达（帮派车）</option>
+              <option value="guard">随国民警卫队抵达（军车）</option>
+            </select>
+          </div>
           <div class="field"><label>行为逻辑</label>
             <select id="uBehavior">
               <option value="attack">主动进攻</option>
@@ -369,6 +378,13 @@ var BASE_WEAPONS = {
 var customWeapons = {};
 var customUnits = {};
 var customFactions = {};   
+var ENTRY_LABEL = {
+  start: '开局即在场的单位',
+  responder: '随优先警员增援抵达（警车）',
+  swat: '随特警增援抵达（特警车）',
+  gang: '随帮派增援抵达（帮派车）',
+  guard: '随国民警卫队抵达（军车）'
+};
 var factionNames = Object.assign({}, BASE_FACTIONS);
 var selection = { weapons:{}, units:{}, factions:{} };
 
@@ -437,6 +453,7 @@ function addUnit(){
     view: parseInt(document.getElementById('uView').value) || 260,
     weaponKey: wKey,
     behavior: document.getElementById('uBehavior').value,
+    entry: (document.getElementById('uEntry') ? document.getElementById('uEntry').value : 'start') || 'start',
     author: document.getElementById('uAuthor').value.trim() || 'Anonymous'
   };
   if (wKey === 'shield_item') u.shield = true;
@@ -504,7 +521,7 @@ function renderUnitList(){
     var w = u.weaponKey ? (customWeapons[u.weaponKey] || BASE_WEAPONS[u.weaponKey]) : null;
     return '<div class="item"><div><div class="name">' + esc(u.name) + '</div>' +
       '<div class="meta">' + esc(factionNames[u.team]||u.team) + ' · 血量 ' + u.hp + ' · 速度 ' + u.speed +
-      ' · ' + (w ? esc(w.name) : '无武器') + '</div></div>' +
+      ' · ' + (w ? esc(w.name) : '无武器') + ' · 来源：' + esc(ENTRY_LABEL[u.entry] || '开局即在场的单位') + '</div></div>' +
       '<button class="btn btn-red btn-sm" onclick="delUnit(\'' + k + '\')">删除</button></div>';
   }).join('');
 }
@@ -733,7 +750,7 @@ function handlePackFiles(fileList){
   if (!files.length) return;
   var pending = files.length;
   files.forEach(function(f){
-    var isZipName = /\.(yhdja|zip)$/i.test(f.name);
+    var isZipName = /\.(yhdja|zip)$/i.test(f.name);   
     var r = new FileReader();
     r.onload = async function(ev){
       var buf = ev.target.result;
@@ -878,7 +895,8 @@ function buildPack(){
       if (obj && typeof obj === 'object') for (var k2 in obj) merged['wq.json'][k2] = obj[k2];
     } else if (nm === 'sl.json' || nm === 'factions.json') {
       if (obj && typeof obj === 'object') for (var k3 in obj) merged['sl.json'][k3] = obj[k3];
-    } else if (nm === 'mods.txt') {
+    } else if (/\.txt$/i.test(nm)) {
+      
       modsTxtLines.push(f.text);
     } else if (obj && typeof obj === 'object' && (obj['dy.json'] || obj['wq.json'] || obj['sl.json'] || obj['mods.txt'])) {
       
