@@ -359,6 +359,8 @@ sweep(document)})();</script>
       <button id="callSwat" class="action-btn" style="display:none;">派遣特警</button>
       <button id="breachBtn" class="action-btn" style="display:none;">强制强突 (仅谈判)</button>
       <button id="guardBtn" class="action-btn" style="display:none;">呼叫国民警卫队</button>
+      <button id="callFbiBtn" class="action-btn" style="display:none;">呼叫FBI探员</button>
+      <button id="callNsaBtn" class="action-btn" style="display:none;">呼叫国安小队</button>
       <button id="pvExtraBtn" class="action-btn" style="display:none; background:#a855f7;">可额外增援</button>
     </div>
     <div id="policeInfo">当前状态：等待中...</div>
@@ -530,6 +532,7 @@ var defaultWeapons = {
   rifle  : {name:'步枪',  mag:30, dmg:8,  rate:0.12, reload:4.6, range:4, spread:0.25, speedMod:0.9, isSniper:false},
   sniper : {name:'狙击枪',mag:4,  dmg:80, rate:1.5,  reload:3.6, range:8, spread:0.01, speedMod:0.54, isSniper:true},
   gang_rifle: {name:'帮派步枪', mag:30, dmg:8, rate:0.12, reload:2.0, range:4, spread:0.2, speedMod:0.95, isSniper:false},
+  cartel_rifle: {name:'改装型帮派步枪', mag:30, dmg:11, rate:0.09, reload:2.6, range:4, spread:0.2, speedMod:0.8, isSniper:false},
   military_rifle: {name:'军用步枪', mag:80, dmg:4, rate:0.1, reload:1.3, range:5, spread:0.3, speedMod:0.9, isSniper:false},
   boss_rifle: {name:'改装军用步枪', mag:150, dmg:14, rate:0.06, reload:0.9, range:9, spread:0.14, speedMod:1, isSniper:false},
   shield_item: {name:'防弹盾牌', mag:0, dmg:0, rate:0, reload:0, range:0, spread:0, speedMod:0.5, isSniper:false, isShield:true}
@@ -538,15 +541,16 @@ var WEAPONS = Object.assign({}, defaultWeapons);
 var customWeapons = {};
 
 // 势力定义：士兵/警察等归「政府」；保安归「保安公司」；劫匪归「帮派」
-var defaultFactions = { 'police': '政府', 'robber': '帮派', 'security': '保安公司', 'neutral': '中立' };
+var defaultFactions = { 'police': '政府', 'robber': '帮派', 'security': '保安公司', 'neutral': '中立', 'cartel': '毒枭' };
 var customFactions = {}; 
 var factionNames = Object.assign({}, defaultFactions);
 
 // ===== 敌对关系矩阵（单向声明，双向生效）=====
 var HOSTILITY = {
-  police:   ['robber'],
-  robber:   ['police', 'security'],
-  security: ['robber'],
+  police:   ['robber', 'cartel'],
+  robber:   ['police', 'security', 'cartel'],
+  security: ['robber', 'cartel'],
+  cartel:   ['police', 'robber', 'security'],
   neutral:  []
 };
 function hostileListOf(team){
@@ -573,6 +577,10 @@ var defaultUnits = {
   shield    :{name:'盾警', icon:'bar', hp:50, armor:0.4, speed:0.2, r:9, color:'#1e3a8a', team:'police', view:260, weaponKey:'shield_item', behavior:'attack'},
   commander :{name:'指挥官', icon:'star', hp:10, armor:0, speed:0.35,r:7, color:'#1e3a8a', team:'police', view:260, weaponKey:null, behavior:'defend'},
   detective :{name:'警探', icon:'none', hp:30, armor:0, speed:0.45,r:8, color:'#1e3a8a', team:'police', view:260, weaponKey:'smg', behavior:'attack'},
+  fbi       :{name:'FBI探员', icon:'star', hp:60, armor:0.45, speed:0.5, r:8, color:'#1e40af', team:'police', view:300, weaponKey:'smg', behavior:'attack', entry:'便衣警车（每车 6 人）'},
+  nsaLeader :{name:'国安队长', icon:'star', hp:120, armor:0.4, speed:0.5, r:9, color:'#4a66c2', team:'police', view:320, weaponKey:'rifle', behavior:'attack', commander:true, entry:'国安专车（每车 8 人，仅 1 名队长）'},
+  nsaMember :{name:'国安队员', icon:'square', hp:80, armor:0.4, speed:0.5, r:8, color:'#5272d9', team:'police', view:300, weaponKey:'rifle', behavior:'attack', entry:'国安专车（每车 8 人）'},
+  cartel    :{name:'毒枭成员', icon:'square', hp:90, armor:0.5, speed:0.34, r:8, color:'#7c3aed', team:'cartel', view:300, weaponKey:'cartel_rifle', behavior:'attack', entry:'地图侧面交易点'},
   boss      :{name:'警察局局长', icon:'star', hp:40000, armor:0.35, speed:0.72, r:22, color:'#1d4ed8', team:'police', view:520, weaponKey:'boss_rifle', behavior:'attack', isBoss:true, entry:'打BOSS模式登场（警察局中央）', desc:'政府势力。体型明显更大，全场移速最快。三阶段战斗，每 1.3 万血进入下一阶段。'}
 };
 // 各单位进入方式说明（详细页展示）
@@ -591,6 +599,10 @@ var ENTRY_TEXT = {
   shield:'盾警，随特警队乘车抵达',
   commander:'指挥官，随特警队乘车抵达',
   detective:'警探，警力门刷新或随车抵达',
+  fbi:'便衣警车抵达（每车 6 人，警报前巡逻不停车）',
+  nsaLeader:'国安专车抵达（金库清空后每 40 秒一辆，每车 1 名队长）',
+  nsaMember:'国安专车抵达（金库清空后每 40 秒一辆，每车 8 人）',
+  cartel:'地图侧面交易点出现，直升机到场后加入战斗',
   boss:'打BOSS模式登场（警察局中央）'
 };
 var DATA = Object.assign({}, defaultUnits);
@@ -978,7 +990,9 @@ function damage(u,dmg,attacker){
       if (u.canRespawn && u.type !== 'gang' && u.type !== 'eliteGang') { u.down=true; u.downTimer=50; u.state='倒地'; } else { u.dead=true; u.state='阵亡'; }
       if (u.captive) { u.captive.isCaptured = false; u.captive.capturedBy = null; u.captive = null; }
       if (u.carrying) { u.carrying.taken = false; u.carrying.delivered = false; u.carrying.x = u.x; u.carrying.y = u.y; u.carrying = null; }
-    } else { u.dead=true; u.state='倒下'; if(u.team==='police') onPoliceKilled(u); if(u.type==='teller' && !alarm) triggerAlarm();
+    } else { u.dead=true; u.state='倒下';
+      if (u.type === 'nsaLeader' || u.type === 'nsaMember') spawnGloryGrenade(u);
+      if(u.team==='police') onPoliceKilled(u); if(u.type==='teller' && !alarm) triggerAlarm();
       if (u.type==='civ' || u.type==='teller') { if (typeof evCivDead !== 'undefined') evCivDead++; }
       if (u.isBoss) {
           stopBossMusic();
@@ -1480,11 +1494,175 @@ function spawnUnit(type,x,y,extra){
     var u=makeUnit(type,x,y,extra); 
     if(!u) return null;
     var isCustom = !!customUnits[type];
-    if(u.team === 'police' && !isCustom && !(extra && extra.ignoreLimit) && !checkPoliceLimit()) return null;
+    var bypassLimit = (type === 'fbi' || type === 'nsaLeader' || type === 'nsaMember');
+    if(u.team === 'police' && !isCustom && !bypassLimit && !(extra && extra.ignoreLimit) && !checkPoliceLimit()) return null;
     units.push(u);
     // 保安公司触发③：警方第一次刷新
     if (!bossMode && u.team === 'police' && !securityTriggered.policeSpawn) triggerSecurity('policeSpawn');
     return u; 
+}
+
+
+// ===================== FBI / 国安 / 毒枭 运行时状态 =====================
+var fbiTimer = -1;            // FBI 便衣警车刷新计时（30 秒）
+var fbiCarsFirstWave = true;  // 警报后第一波 1 辆，之后每次 2 辆
+var fbiBreachDone = false;    // 突击开始时的一次性 FBI 行动（开门/拆雷/救人质）
+var nsaTimer = -1;            // 国安专车刷新计时（40 秒）
+var nsaSpawned = false;
+var cartelTimer = -1;         // 毒枭增援计时（30 秒）
+var cartelTrade = null;       // 侧面交易点
+var cartelJoined = false;     // 毒枭是否已加入战斗
+var cartelCallers = 0;        // 场上可呼叫增援的毒枭数量
+var gloryGrenades = [];       // 光荣雷
+
+// 场上是否已有某类型单位存活
+function hasAliveType(t){
+    for (var i=0;i<units.length;i++){ var u=units[i]; if(u.type===t && !u.dead && !u.down) return true; }
+    return false;
+}
+// 特警队必须带一个指挥官：场上没有就补一个
+function ensureSwatCommander(){
+    if (hasAliveType('commander')) return false;
+    // 优先从警力门进入；没有警力门的地图（如银行）回退到主门/小门
+    var alive = (typeof policeDoors !== 'undefined' ? policeDoors : []).filter(function(d){ return !d.destroyed; });
+    var doors = alive.length ? alive : (typeof policeDoors !== 'undefined' ? policeDoors : []);
+    var px, py;
+    if (doors.length) {
+        var d = doors[Math.floor(Math.random()*doors.length)];
+        px = d.x; py = d.y;
+    } else if (typeof mainDoor !== 'undefined' && mainDoor) {
+        px = mainDoor.x + mainDoor.w/2; py = mainDoor.y + mainDoor.h/2;
+    } else {
+        px = ROOM.x + ROOM.w/2; py = ROOM.y + ROOM.h/2;
+    }
+    var sp = safeSpawnPoint(px, py, 40);
+    var u = spawnUnit('commander', sp.x, sp.y, {ignoreLimit:true});
+    return !!u;
+}
+
+// ---- FBI 便衣警车：警报前只巡逻不停车；警报后停车放 6 人，之后每次 2 辆 ----
+function spawnFbiWave(force){
+    // FBI 属于警方增援：警方视角下同样要刷新（force 仅用于按钮提前呼叫）
+    var cars = 1;
+    if (alarm) { cars = fbiCarsFirstWave ? 1 : 2; fbiCarsFirstWave = false; }
+    for (var c=0;c<cars;c++){
+        var team = [];
+        for (var i=0;i<6;i++) team.push({type:'fbi'});
+        if (typeof GAME_LOG !== 'undefined') GAME_LOG.calledUnits += 6;
+        spawnVehicle('fbi_car', team, true);   // FBI 主要走小门
+    }
+}
+// 突击开始时 FBI 一次性行动：强制大门常开 + 拆除暗雷 + 解救人质
+function fbiAssaultActions(){
+    if (fbiBreachDone) return;
+    if (!hasAliveType('fbi')) return;
+    fbiBreachDone = true;
+    mainDoor.forcedOpen = true;             // 大门永久打开
+    var defused = 0;
+    for (var i=0;i<placedMines.length;i++){ if (placedMines[i].active){ placedMines[i].active=false; defused++; } }
+    var freed = 0;
+    for (var j=0;j<units.length;j++){
+        var u = units[j];
+        if (u.isCaptured || u.type==='hostage'){
+            if (u.captive){ u.captive.isCaptured=false; u.captive.capturedBy=null; u.captive=null; }
+            u.isCaptured = false; u.capturedBy = null; u.isTrapped = false; u.type='civ'; freed++;
+        }
+    }
+    if (defused || freed) showAnnouncement('FBI 已排除暗雷 ' + defused + ' 枚，解救人质 ' + freed + ' 名。', 4);
+}
+
+// ---- 国安专车：金库清空后每 40 秒一辆，每车 8 人（1 名队长 + 7 名队员）----
+function spawnNsaWave(force){
+    // 国安属于警方增援：警方视角下同样要刷新
+    var team = [];
+    if (!hasAliveType('nsaLeader')) team.push({type:'nsaLeader'});
+    while (team.length < 8) team.push({type:'nsaMember'});
+    if (typeof GAME_LOG !== 'undefined') GAME_LOG.calledUnits += team.length;
+    spawnVehicle('nsa_van', team, false);
+    nsaSpawned = true;
+}
+// 光荣雷：队长/队员阵亡时原地留雷，炸死周围劫匪与帮派成员
+function spawnGloryGrenade(u){
+    gloryGrenades.push({ x:u.x, y:u.y, timer:1.0, r:110, team:u.team });
+}
+function updateGloryGrenades(dt){
+    for (var i=gloryGrenades.length-1;i>=0;i--){
+        var g = gloryGrenades[i];
+        g.timer -= dt;
+        if (g.timer <= 0){
+            for (var j=0;j<units.length;j++){
+                var t = units[j];
+                if (t.dead || t.down) continue;
+                if (t.team === 'police' || t.team === 'security' || t.team === 'neutral') continue;
+                if (dist(t, g) < g.r) damage(t, 900, null);
+            }
+            showToast('国安人员阵亡，光荣雷爆炸。');
+            gloryGrenades.splice(i,1);
+        }
+    }
+}
+
+// ---- 毒枭：敌视所有人，改装帮派步枪 ----
+function updateCartel(u,dt){
+    if (u.down || u.dead) return;
+    if (u.reloading > 0){ u.reloading -= dt; if (u.reloading <= 0){ if (u.weapon) u.weapon.ammo = u.weapon.mag; u.state='待命'; } return; }
+    if (u.cd > 0) u.cd -= dt;
+    // 未加入战斗时在交易点待命
+    if (!cartelJoined){
+        u.state = '交易中';
+        if (cartelTrade) moveTo(u, cartelTrade.x, cartelTrade.y, dt, 0.3);
+        return;
+    }
+    var threat = findNearestVisible(u, function(x){ return !x.dead && !x.down && isEnemy(u.team, x.team); });
+    if (threat){
+        var d = dist(u, threat);
+        turnTo(u, Math.atan2(threat.y-u.y, threat.x-u.x), dt);
+        if (d > wRange(u)*0.9) { moveTo(u, threat.x, threat.y, dt); u.state='推进'; }
+        else { shootAt(u, threat); u.state='交火'; }
+        return;
+    }
+    // 无可见敌人 → 巡逻推进
+    if (!u.wanderTarget || dist(u, u.wanderTarget) < 24 || Math.random() < 0.01){
+        u.wanderTarget = safeSpawnPoint(ROOM.x + ROOM.w/2, ROOM.y + ROOM.h/2, Math.max(ROOM.w,ROOM.h)/2);
+    }
+    moveTo(u, u.wanderTarget.x, u.wanderTarget.y, dt, 0.6);
+    u.state = '搜索';
+}
+// 毒枭增援：+7 人，10% 概率额外多一个「可呼叫增援」的成员
+function cartelReinforce(){
+    if (!cartelJoined) return 0;
+    var base = cartelTrade ? {x:cartelTrade.x, y:cartelTrade.y} : {x:W-40, y:H/2};
+    var n = 7;
+    for (var i=0;i<n;i++){
+        var sp = safeSpawnPoint(base.x, base.y, 70);
+        var u = spawnUnit('cartel', sp.x, sp.y, {ignoreLimit:true});
+        if (u) { u.canCall = false; }
+    }
+    if (Math.random() < 0.10){
+        var sp2 = safeSpawnPoint(base.x, base.y, 70);
+        var c = spawnUnit('cartel', sp2.x, sp2.y, {ignoreLimit:true});
+        if (c) { c.canCall = true; cartelCallers++; }
+    }
+    showAnnouncement('毒枭增援抵达：' + n + ' 名成员加入战斗。', 3);
+    return n;
+}
+// 侧面交易点事件：右侧无小门处出现 2 名毒枭
+function evCartelTradePoint(){
+    if (cartelTrade) return;
+    cartelTrade = { x: W - 45, y: H/2 };
+    for (var i=0;i<2;i++){
+        var sp = safeSpawnPoint(cartelTrade.x, cartelTrade.y, 30);
+        var u = spawnUnit('cartel', sp.x, sp.y, {ignoreLimit:true});
+        if (u) u.canCall = false;
+    }
+    showAnnouncement('地图侧面发现可疑人员交易。', 4);
+}
+// 直升机到场 → 毒枭加入战斗并开始 30 秒增援
+function cartelJoinBattle(){
+    if (cartelJoined || !cartelTrade) return;
+    cartelJoined = true;
+    cartelTimer = 30;
+    showAnnouncement('直升机抵达，毒枭武装正式加入战斗。', 4);
 }
 
 function spawnVehicle(type, unitsToSpawn, atSmallDoor) {
@@ -1613,6 +1791,7 @@ function updateVehicles(dt) {
                     spawnUnit(v.units[j].type, sp3.x, sp3.y, Object.assign({ignoreLimit:true}, v.units[j].extra||{})); 
                 } 
                 showAnnouncement('特警队已抵达现场，下一批特警队将在' + Math.ceil(swatCooldown) + '秒后抵达', 3.5); 
+                if (typeof cartelJoinBattle === 'function') cartelJoinBattle();
             }
         } else if (v.state === 'hover') {
             v.timer -= dt; updateHeliWander(v, dt, false);
@@ -1635,6 +1814,8 @@ function updateVehicles(dt) {
       var dx = v.targetX - v.x, dy = v.targetY - v.y; var d = Math.sqrt(dx*dx + dy*dy);
       if (d > 5 && !isNaN(d)) { v.x += (dx/d) * 90 * dt; v.y += (dy/d) * 90 * dt; v.angle = Math.atan2(dy,dx); }
       else { 
+          // FBI 便衣警车：警报未触发时只巡逻，绝不停车
+          if (v.type === 'fbi_car' && !alarm) { v.state = 'drive_out'; continue; }
           // 人数上限 / 场上单位上限：已达上限则不放人，直接开走
           var canDrop = true;
           if (v.units && v.units.length) {
@@ -2428,6 +2609,7 @@ function updateTacticalItems(dt){
       for(var u=0; u<units.length; u++){
           var unit = units[u];
           if(unit.team === mine.team) continue; 
+          if(unit.type === 'nsaMember' || unit.type === 'nsaLeader') continue;   // 国安不触发暗雷
           if(unit.team !== 'robber' && unit.type !== 'gang' && unit.type !== 'eliteGang' && !unit.dead && !unit.down){
               if(dist(unit, mine) < 20){
                   mine.active = false;
@@ -2609,6 +2791,8 @@ function drawVehicleModel(x, y, type, angle, time) {
     else if (type === 'military_truck') ctx.fillStyle = '#15803d'; 
     else if (type === 'gang_van') ctx.fillStyle = '#7f1d1d';
     else if (type === 'security_van') ctx.fillStyle = '#f8fafc';
+    else if (type === 'fbi_car') ctx.fillStyle = '#1f2937';
+    else if (type === 'nsa_van') ctx.fillStyle = '#0f172a';
     else ctx.fillStyle = '#ef4444'; 
     drawRoundRect(ctx, -25, -15, 50, 30, 8); ctx.fill();
     // 保安公司：白红组合涂装
@@ -2620,6 +2804,13 @@ function drawVehicleModel(x, y, type, angle, time) {
         ctx.fillRect(-4, -15, 8, 30);
     }
     ctx.fillStyle = '#93c5fd'; drawRoundRect(ctx, 10, -10, 12, 20, 4); ctx.fill(); drawRoundRect(ctx, -15, -10, 15, 20, 4); ctx.fill();
+    if (type === 'fbi_car') {
+        ctx.fillStyle = '#111827'; ctx.fillRect(-25, -15, 50, 8);
+        ctx.fillStyle = '#d1d5db'; ctx.fillRect(-8, -6, 16, 3);
+    } else if (type === 'nsa_van') {
+        ctx.fillStyle = '#1e3a8a'; ctx.fillRect(-25, -4, 50, 8);
+        var fl3 = Math.floor(time * 14) % 2 === 0; ctx.fillStyle = fl3 ? '#60a5fa' : '#1d4ed8'; ctx.fillRect(-4, -9, 8, 18);
+    }
     if (type === 'police_car' || type === 'swat_van') {
         var flash = Math.floor(time * 10) % 2 === 0; ctx.fillStyle = flash ? '#ff0000' : '#3b82f6'; ctx.fillRect(-5, -8, 10, 16);
     } else if (type === 'security_van') {
@@ -3870,6 +4061,10 @@ function toggleUIButtons() {
     document.getElementById('callSwat').style.display = (!isRobber && inGame) ? 'block' : 'none';
     document.getElementById('breachBtn').style.display = (!isRobber && inGame && !bossMode) ? 'block' : 'none';
     document.getElementById('guardBtn').style.display = (!isRobber && inGame) ? 'block' : 'none';
+    var fbiB = document.getElementById('callFbiBtn');
+    if (fbiB) fbiB.style.display = (!isRobber && inGame && !bossMode) ? 'block' : 'none';
+    var nsaB = document.getElementById('callNsaBtn');
+    if (nsaB) nsaB.style.display = (!isRobber && inGame && !bossMode) ? 'block' : 'none';
     var pvB = document.getElementById('pvExtraBtn');
     if (pvB) pvB.style.display = (isRobber || !(typeof pvExtraReady !== 'undefined' && pvExtraReady)) ? 'none' : 'block';
     // BOSS 战：封锁 / 躲避 两个按钮彻底不存在
@@ -3898,6 +4093,21 @@ document.getElementById('callSwat').onclick = function() {
     spawnVehicle('swat_van', team, Math.random() < 0.3);
     if (Math.random() < 0.4) { spawnHelicopter([{type:'detective'}, {type:'detective'}, {type:'detective'}, {type:'detective'}], false); }
     showAnnouncement('特警队已赶到，下一批特警队将在' + Math.ceil(swatTimer) + '秒后抵达', 3.5);
+};
+
+document.getElementById('callFbiBtn').onclick = function() {
+    if (gameState !== 'playing' || playerRole !== 'police') return;
+    if (bossMode) return;
+    spawnFbiWave(true);
+    fbiTimer = 30;
+    showAnnouncement('已协调 FBI 提前抵达现场。', 3.5);
+};
+document.getElementById('callNsaBtn').onclick = function() {
+    if (gameState !== 'playing' || playerRole !== 'police') return;
+    if (bossMode) return;
+    spawnNsaWave(true);
+    nsaTimer = 40;
+    showAnnouncement('已协调国安小队提前抵达现场。', 3.5);
 };
 
 document.getElementById('breachBtn').onclick = function() {
@@ -4021,6 +4231,10 @@ function selectDeploy(type) {
 function initGame(){
   if (typeof logReset === 'function') logReset();
   units=[]; bullets=[]; money=[]; vehicles=[]; grenades=[]; placedBombs=[]; placedTraps=[]; placedSpeakers=[]; placedMines=[]; hideTimer=-1; retreatCountdown=-1;
+  fbiTimer=-1; fbiCarsFirstWave=true; fbiBreachDone=false;
+  nsaTimer=-1; nsaSpawned=false;
+  cartelTimer=-1; cartelTrade=null; cartelJoined=false; cartelCallers=0; gloryGrenades=[];
+  if (typeof mainDoor !== 'undefined') mainDoor.forcedOpen=false;
   supplyCrates=[]; supplyDropTimer=45;
   if (typeof preloadBossAudio === 'function') preloadBossAudio();
   gameTime=0; vaultOpen=false; respawnPoints=0; policeScore=0;
@@ -4604,7 +4818,7 @@ function update(dt){
           }
       }
   }
-  mainDoor.openAngle = (anyUnitNearMain && !barricadeClosed) ? Math.PI/2 : 0;
+  mainDoor.openAngle = ((anyUnitNearMain && !barricadeClosed) || mainDoor.forcedOpen) ? Math.PI/2 : 0;
   smallDoor.openAngle = anyUnitNearSmall ? Math.PI/2 : 0;
 
   for(var i=0;i<units.length;i++){
@@ -4627,6 +4841,7 @@ function update(dt){
               case 'eliteGang': updateRobber(u,dt); break;
               case 'teller':
               case 'civ': updateFlee(u,dt); break;
+              case 'cartel': updateCartel(u,dt); break;
               default: updateCop(u,dt); break;
             }
         }
@@ -4634,6 +4849,8 @@ function update(dt){
   }
 
   updateBullets(dt); updateGrenades(dt); updateVehicles(dt); updateTacticalItems(dt); updateSpawner(dt);
+  if (typeof updateGloryGrenades === 'function') updateGloryGrenades(dt);
+  if (typeof updateAuxSpawners === 'function') updateAuxSpawners(dt);
   if (typeof updateSupplyDrops === 'function') updateSupplyDrops(dt);
   if (typeof pvUpdate === 'function') pvUpdate(dt);
   if (typeof refreshSupportButtons === 'function') refreshSupportButtons();
@@ -5113,6 +5330,47 @@ function pvSpawnGangWave(){
     spawnVehicle('gang_van', team, Math.random() < 0.5);
     showAnnouncement((playerRole === 'police' ? '敌方' : '我方') + '帮派成员正在赶来。', 3);
 }
+
+// ===================== 增援计时器总控（FBI / 国安 / 毒枭 / 特警指挥官）=====================
+function updateAuxSpawners(dt){
+    if (gameState !== 'playing') return;
+    if (gamePhase === 'scout') return;
+
+    // ---- FBI 便衣警车：每 30 秒 ----
+    if (!bossMode){
+        if (fbiTimer < 0) fbiTimer = 30;
+        fbiTimer -= dt;
+        if (fbiTimer <= 0){ fbiTimer = 30; spawnFbiWave(false); }
+    }
+
+    // ---- 国安专车：金库钱归零后，一瞬间来一辆，之后每 40 秒 ----
+    if (!bossMode && currentMap === 'bank'){
+        var moneyLeft = 0;
+        for (var i=0;i<money.length;i++) if (!money[i].taken && !money[i].delivered) moneyLeft++;
+        if (moneyLeft === 0){
+            if (!nsaSpawned){ spawnNsaWave(false); nsaTimer = 40; }
+            else {
+                if (nsaTimer < 0) nsaTimer = 40;
+                nsaTimer -= dt;
+                if (nsaTimer <= 0){ nsaTimer = 40; spawnNsaWave(false); }
+            }
+        }
+    }
+
+    // ---- 毒枭：加入战斗后每 30 秒 +7 人 ----
+    if (cartelJoined){
+        if (cartelTimer < 0) cartelTimer = 30;
+        cartelTimer -= dt;
+        if (cartelTimer <= 0){ cartelTimer = 30; cartelReinforce(); }
+    }
+
+    // ---- 突击阶段：FBI 一次性破门/拆雷/救人质；特警指挥官补齐 ----
+    if (isAssaultPhase){
+        fbiAssaultActions();
+        ensureSwatCommander();
+    }
+}
+
 function pvUpdate(dt){
     if (playerRole !== 'police') { pvHideOverlay(); return; }
     if (gameState !== 'playing') return;
@@ -5364,7 +5622,8 @@ var EVENTS = [
   {id:'riot',      name:'暴动',         maps:'all',      cond:'平民伤亡累计达到 6 人后引发骚乱'},
   {id:'airdrop',   name:'空投补给',     maps:'all',      cond:'警方兵力低于 40% 时请求空中补给'},
   {id:'sandstorm', name:'沙尘暴',       maps:'all',      cond:'对局满 120 秒后，按气象概率触发'},
-  {id:'blizzard',  name:'暴雪',         maps:'all',      cond:'对局满 120 秒后，按气象概率触发'}
+  {id:'blizzard',  name:'暴雪',         maps:'all',      cond:'对局满 120 秒后，按气象概率触发'},
+  {id:'cartel',    name:'毒枭交易',     maps:'all',      cond:'劫匪与警方交火或对峙时，地图侧面出现两名毒枭成员交易'}
 ];
 
 function evInit(){
@@ -5575,6 +5834,7 @@ function evTrigger(id, silent){
     case 'airdrop': evAirdrop(); break;
     case 'sandstorm': evSandstorm(); break;
     case 'blizzard': evBlizzard(); break;
+    case 'cartel': evCartelTradePoint(); evLog.push('毒枭交易'); break;
   }
   return true;
 }
@@ -5610,6 +5870,8 @@ function evAutoCheck(dt){
   if (evAllowed('riot') && !evFired.riot && evCivDead >= 6) { evFired.riot = 1; evTrigger('riot'); }
   // 空投补给：警方兵力低于 40%
   if (evAllowed('airdrop') && !evFired.airdrop && playerRole === 'police' && pvForceMax > 0 && pvForce < pvForceMax * 0.4) { evFired.airdrop = 1; evTrigger('airdrop'); }
+  // 毒枭交易：劫匪与警方已交火或处于对峙（警报已触发且双方在场）时，侧面出现交易
+  if (evAllowed('cartel') && !evFired.cartel && !cartelTrade && alarm && gang > 0 && police > 0 && globalShotsFired) { evFired.cartel = 1; evTrigger('cartel'); }
   // 沙尘暴 / 暴雪：必须由雷暴强对流天气演变而来（互斥，只来一种）
   if (evAllowed('sandstorm') && !evFired.sandstorm && !evFired.blizzard && evFired.storm && gameTime > (evStormAt + 30)) { evFired.sandstorm = 1; evTrigger('sandstorm'); }
   if (evAllowed('blizzard') && !evFired.blizzard && !evFired.sandstorm && evFired.storm && gameTime > (evStormAt + 30)) { evFired.blizzard = 1; evTrigger('blizzard'); }
