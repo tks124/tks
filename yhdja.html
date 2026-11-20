@@ -289,8 +289,8 @@ text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
 <a class="dl-item" href="https://github.com/tks124/tks/releases/download/v2.4.2/v2.4.2-yhdja.APK" rel="noopener">
 <span class="meta"><b>支持安卓手机</b><span style="font-size:11px;">Android · v2.4.2 ·  点击直接安装</span></span>
 </a>
-<a class="dl-item" href="javascript:void(0)" id="winBtn" rel="noopener">
-<span class="meta"><b>WINDOWS 版本</b><span style="font-size:11px;">Windows · 敬请期待</span></span>
+<a class="dl-item" href="https://github.com/tks124/tks/releases/download/v1.0.0/default.exe" rel="noopener" download>
+<span class="meta"><b>电脑版（测试版）</b><span style="font-size:11px;">Windows x64 · 测试版 · 21.7 MB · 点击下载 EXE</span></span>
 </a>
 <a class="dl-item" href="yhdja-full">
 <span class="meta"><b>完整版说明</b><span>版本内容与安装指引</span></span>
@@ -300,7 +300,7 @@ text-align:center; font-size:11.5px; color:#64748b; line-height:1.9;
 </a>
 </div>
 <div class="note">
-说明：完整版仅以软件安装包形式分发，不提供网页源码下载。安卓手机点击「支持安卓手机」即可下载安装；WINDOWS 版本暂不支持，敬请期待。
+说明：完整版仅以软件安装包形式分发，不提供网页源码下载。安卓手机点击「支持安卓手机」即可下载安装；电脑版为 <b style="color:#f59e0b;">测试版</b>，点击「电脑版（测试版）」下载 EXE，仅支持 Windows 64 位，功能与稳定性仍在验证中，可能存在问题。
 </div>
 </div>
 </section>
@@ -318,36 +318,6 @@ var t = document.querySelector(this.getAttribute('href'));
 if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
 });
 });
-(function(){
-var win = document.getElementById('winBtn');
-if (!win) return;
-win.addEventListener('click', function(e){
-e.preventDefault();
-e.stopPropagation();
-showNotSupported();
-return false;
-});
-function showNotSupported(){
-var d = document.getElementById('notSupportedModal');
-if (!d) {
-d = document.createElement('div');
-d.id = 'notSupportedModal';
-d.style.cssText = 'position:fixed;inset:0;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
-d.innerHTML = '<div style="background:#0f172a;border:1px solid #334155;border-radius:16px;max-width:380px;width:100%;padding:28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);">'
-+ ''
-+ '<h3 style="margin:0 0 10px;font-size:20px;color:#e2e8f0;">暂不支持</h3>'
-+ '<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#94a3b8;">WINDOWS 版本暂未发布，敬请期待。<br>目前可下载安装安卓版本。</p>'
-+ '<button id="notSupportedOk" style="background:#f59e0b;color:#111827;border:none;border-radius:10px;padding:11px 28px;font-size:15px;font-weight:700;cursor:pointer;">知道了</button>'
-+ '</div>';
-document.body.appendChild(d);
-d.addEventListener('click', function(ev){
-if (ev.target === d || ev.target.id === 'notSupportedOk') d.style.display = 'none';
-});
-} else {
-d.style.display = 'flex';
-}
-}
-})();
 </script>
 </body>
   </html>
